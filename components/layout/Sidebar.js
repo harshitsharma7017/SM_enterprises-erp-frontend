@@ -12,6 +12,24 @@ import { useState } from 'react';
  * Every entry is permission-gated. A section header only renders when the user
  * can see at least one of its children.
  */
+function NavItem({ href, icon, label, permission, treeview, can, collapsed, isActive }) {
+  if (permission && !can(permission)) return null;
+  const active = isActive(href);
+  return (
+    <li>
+      <Link
+        href={href}
+        className={`sidebar-link ${active ? 'active' : ''} ${treeview ? 'treeview-child' : ''}`}
+      >
+        <span className="sidebar-icon">
+          <i className={`bi ${icon}`}></i>
+        </span>
+        {!collapsed && <span>{label}</span>}
+      </Link>
+    </li>
+  );
+}
+
 export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
   const pathname = usePathname();
   const [userMgmtOpen, setUserMgmtOpen] = useState(
@@ -20,23 +38,6 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
 
   const isActive = (path) => pathname.startsWith(path);
 
-  const NavItem = ({ href, icon, label, permission, treeview }) => {
-    if (permission && !can(permission)) return null;
-    const active = isActive(href);
-    return (
-      <li>
-        <Link
-          href={href}
-          className={`sidebar-link ${active ? 'active' : ''} ${treeview ? 'treeview-child' : ''}`}
-        >
-          <span className="sidebar-icon">
-            <i className={`bi ${icon}`}></i>
-          </span>
-          {!collapsed && <span>{label}</span>}
-        </Link>
-      </li>
-    );
-  };
 
   return (
     <aside
