@@ -75,11 +75,13 @@ export default function FormatForm({ formatId }) {
   };
 
   useEffect(() => {
-    if (formatId) {
-      fetchFormat();
-    } else {
-      fetchDefaults();
-    }
+    queueMicrotask(() => {
+      if (formatId) {
+        fetchFormat();
+      } else {
+        fetchDefaults();
+      }
+    });
   }, [formatId]);
 
 const handleChange = (e) => {
@@ -376,7 +378,7 @@ const handleChange = (e) => {
 
             {/* Item Table Columns */}
             <FormSection title="Item Table Columns" icon="bi-layout-three-columns" subtitle="Untick a column to drop it, mark it mandatory, or drag rows to reorder the item table.">
-              <p className="text-xs text-gray-500 mb-3">Sr. No., Qty and Amount are always drawn — a row without them is not an order line. Give <strong>Size</strong> sub-columns (e.g. S, M, L, XL) to turn every item row's size entry into a fixed qty-per-size grid instead of free-form colour/size rows.</p>
+              <p className="text-xs text-gray-500 mb-3">Sr. No., Qty and Amount are always drawn — a row without them is not an order line. Give <strong>Size</strong> sub-columns (e.g. S, M, L, XL) to turn every item row&apos;s size entry into a fixed qty-per-size grid instead of free-form colour/size rows.</p>
               
               <div className="overflow-x-auto border border-gray-200 rounded-md">
                 <table className="min-w-full divide-y divide-gray-200 text-sm text-left">

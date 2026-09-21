@@ -51,7 +51,7 @@ export default function FormatIndex() {
   }, [filters]);
 
   useEffect(() => {
-    fetchFormats();
+    queueMicrotask(fetchFormats);
   }, [fetchFormats]);
 
   const handleFilterChange = (e) => {

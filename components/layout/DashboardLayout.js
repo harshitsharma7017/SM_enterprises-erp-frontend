@@ -10,10 +10,12 @@ export default function DashboardLayout({ children }) {
 
   // Restore sidebar state from localStorage
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('sidebar_collapsed');
-      if (saved === 'true') setSidebarCollapsed(true);
-    } catch (e) { /* no persistence */ }
+    queueMicrotask(() => {
+      try {
+        const saved = localStorage.getItem('sidebar_collapsed');
+        if (saved === 'true') setSidebarCollapsed(true);
+      } catch (e) { /* no persistence */ }
+    });
   }, []);
 
   const toggleSidebar = () => {

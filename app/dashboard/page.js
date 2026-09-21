@@ -5,6 +5,25 @@ import { useAuth } from '../../hooks/useAuth';
 import { apiClient } from '../../lib/api-client';
 import Link from 'next/link';
 
+const StatCard = ({ title, value, icon, color, linkHref, linkLabel, permission, loading, can }) => (
+  <div className="col-span-1">
+    <div className={`small-box ${color}`}>
+      <div className="inner">
+        <h3>{loading ? '—' : (typeof value === 'number' ? value.toLocaleString() : value)}</h3>
+        <p>{title}</p>
+      </div>
+      <i className={`small-box-icon bi ${icon}`}></i>
+      {linkHref && permission && can(permission) ? (
+        <Link href={linkHref} className="small-box-footer">
+          {linkLabel} <i className="bi bi-arrow-right-circle-fill ml-1"></i>
+        </Link>
+      ) : (
+        <span className="small-box-footer opacity-75">{linkLabel || title}</span>
+      )}
+    </div>
+  </div>
+);
+
 export default function DashboardPage() {
   const { can } = useAuth(true);
   const [stats, setStats] = useState(null);
@@ -30,25 +49,6 @@ export default function DashboardPage() {
       });
   }, []);
 
-  const StatCard = ({ title, value, icon, color, linkHref, linkLabel, permission }) => (
-    <div className="col-span-1">
-      <div className={`small-box ${color}`}>
-        <div className="inner">
-          <h3>{loading ? '—' : (typeof value === 'number' ? value.toLocaleString() : value)}</h3>
-          <p>{title}</p>
-        </div>
-        <i className={`small-box-icon bi ${icon}`}></i>
-        {linkHref && permission && can(permission) ? (
-          <Link href={linkHref} className="small-box-footer">
-            {linkLabel} <i className="bi bi-arrow-right-circle-fill ml-1"></i>
-          </Link>
-        ) : (
-          <span className="small-box-footer opacity-75">{linkLabel || title}</span>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <DashboardLayout>
       <div className="mb-6">
@@ -64,6 +64,8 @@ export default function DashboardPage() {
           linkHref="/sales/inquiries"
           linkLabel="View Inquiries"
           permission="inquiry.view"
+          loading={loading}
+          can={can}
         />
         <StatCard
           title="Order Confirmations"
@@ -73,6 +75,8 @@ export default function DashboardPage() {
           linkHref="/sales/order-confirmations"
           linkLabel="View Order Confirmations"
           permission="order-confirmation.view"
+          loading={loading}
+          can={can}
         />
         <StatCard
           title="Purchase Orders"
@@ -82,6 +86,8 @@ export default function DashboardPage() {
           linkHref="/procurement/purchase-orders"
           linkLabel="View Purchase Orders"
           permission="purchase-order.view"
+          loading={loading}
+          can={can}
         />
         <StatCard
           title="Open Shipments"
@@ -91,6 +97,8 @@ export default function DashboardPage() {
           linkHref="/export/documents"
           linkLabel="View Export Documents"
           permission="export-document.view"
+          loading={loading}
+          can={can}
         />
         <StatCard
           title="Buyer Outstanding"
@@ -100,6 +108,8 @@ export default function DashboardPage() {
           linkHref="/reports/outstanding"
           linkLabel="View Outstanding"
           permission="outstanding.view"
+          loading={loading}
+          can={can}
         />
         <StatCard
           title="Supplier Outstanding"
@@ -109,6 +119,8 @@ export default function DashboardPage() {
           linkHref="/reports/outstanding"
           linkLabel="View Outstanding"
           permission="outstanding.view"
+          loading={loading}
+          can={can}
         />
       </div>
 

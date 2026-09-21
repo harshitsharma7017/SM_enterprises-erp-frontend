@@ -52,7 +52,7 @@ export default function CategoryIndex() {
   }, [filters]);
 
   useEffect(() => {
-    fetchCategories();
+    queueMicrotask(fetchCategories);
   }, [fetchCategories]);
 
   const handleFilterChange = (e) => {
