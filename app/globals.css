@@ -1,26 +1,150 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f7fa;
+  --foreground: #111827;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e9edf2;
+  --sidebar-header-color: #9aa4b2;
+  --sidebar-link-color: #4b5563;
+  --sidebar-link-hover-bg: #f3f6fa;
+  --sidebar-link-active-bg: #eff4ff;
+  --sidebar-link-active-color: #1d4ed8;
+  --sidebar-icon-color: #8b95a5;
+  --primary: #2563eb;
+  --primary-light: #eff4ff;
+  --header-border: #e9edf2;
+  --card-border: #e9edf2;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-link: var(--sidebar-link-color);
+  --color-sidebar-icon: var(--sidebar-icon-color);
+  --color-sidebar-header: var(--sidebar-header-color);
+  --color-header-border: var(--header-border);
+  --color-card-border: var(--card-border);
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
 }
+
+/* Sidebar section headers */
+.nav-header {
+  color: var(--sidebar-header-color);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1.1rem 1.15rem 0.4rem;
+}
+
+/* Sidebar nav-link */
+.sidebar-link {
+  color: var(--sidebar-link-color);
+  font-size: 0.885rem;
+  font-weight: 500;
+  border-radius: 8px;
+  margin: 1px 0.6rem;
+  padding: 0.5rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.12s ease, color 0.12s ease;
+  text-decoration: none;
+}
+.sidebar-link:hover {
+  background: var(--sidebar-link-hover-bg);
+  color: #111827;
+}
+.sidebar-link:hover .sidebar-icon {
+  color: var(--primary);
+}
+.sidebar-link.active {
+  background: var(--sidebar-link-active-bg);
+  color: var(--sidebar-link-active-color);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+.sidebar-link.active .sidebar-icon {
+  color: var(--primary);
+}
+
+.sidebar-icon {
+  font-size: 1rem;
+  width: 1.25rem;
+  color: var(--sidebar-icon-color);
+  transition: color 0.12s ease;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Treeview child links */
+.sidebar-link.treeview-child {
+  font-size: 0.845rem;
+  padding-left: 2.4rem;
+}
+
+/* Sidebar scrollbar */
+.sidebar-scroll::-webkit-scrollbar { width: 6px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: #dfe4ea; border-radius: 3px; }
+.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: #c8cfd8; }
+
+/* Card matching original */
+.card {
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+/* Small box (dashboard stat cards) */
+.small-box {
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+}
+.small-box .inner h3 { font-size: 2rem; font-weight: 700; margin: 0; }
+.small-box .inner p { font-size: 0.875rem; margin: 0.25rem 0 0; opacity: 0.9; }
+.small-box-icon {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  font-size: 3.5rem;
+  opacity: 0.15;
+}
+.small-box-footer {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  text-decoration: none;
+  color: rgba(255,255,255,0.85);
+}
+.small-box-footer:hover { color: #fff; text-decoration: underline; }
+
+/* Alert styles */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+.alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+.alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+.alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+.alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }

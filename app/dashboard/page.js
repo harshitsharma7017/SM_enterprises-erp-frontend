@@ -1,84 +1,140 @@
+'use client';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
-import DashboardCard from '../../components/ui/DashboardCard';
+import { useAuth } from '../../hooks/useAuth';
+import { apiClient } from '../../lib/api-client';
+import Link from 'next/link';
 
 export default function DashboardPage() {
+  const { can } = useAuth(true);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiClient.get('/dashboard/stats')
+      .then(res => {
+        setStats(res.data || res);
+        setLoading(false);
+      })
+      .catch(() => {
+        // Dashboard stats endpoint may not exist yet — show zeros
+        setStats({
+          inquiryCount: 0,
+          orderConfirmationCount: 0,
+          purchaseOrderCount: 0,
+          openShipmentCount: 0,
+          buyerOutstanding: 0,
+          supplierOutstanding: 0,
+        });
+        setLoading(false);
+      });
+  }, []);
+
+  const StatCard = ({ title, value, icon, color, linkHref, linkLabel, permission }) => (
+    <div className="col-span-1">
+      <div className={`small-box ${color}`}>
+        <div className="inner">
+          <h3>{loading ? '—' : (typeof value === 'number' ? value.toLocaleString() : value)}</h3>
+          <p>{title}</p>
+        </div>
+        <i className={`small-box-icon bi ${icon}`}></i>
+        {linkHref && permission && can(permission) ? (
+          <Link href={linkHref} className="small-box-footer">
+            {linkLabel} <i className="bi bi-arrow-right-circle-fill ml-1"></i>
+          </Link>
+        ) : (
+          <span className="small-box-footer opacity-75">{linkLabel || title}</span>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <DashboardLayout>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-        <p className="text-gray-500 mt-1">Overview of factory operations (Dummy Data)</p>
+        <h2 className="text-2xl font-semibold text-gray-900" style={{ fontWeight: 600 }}>Dashboard</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <DashboardCard 
-          title="Active Orders" 
-          value="24" 
-          subtitle="4 awaiting confirmation"
-          icon={
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-          }
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+        <StatCard
+          title="Total Inquiries"
+          value={stats?.inquiryCount}
+          icon="bi-inbox-fill"
+          color="bg-blue-600"
+          linkHref="/sales/inquiries"
+          linkLabel="View Inquiries"
+          permission="inquiry.view"
         />
-        <DashboardCard 
-          title="Pending POs" 
-          value="8" 
-          subtitle="Across 3 suppliers"
-          icon={
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
-          }
+        <StatCard
+          title="Order Confirmations"
+          value={stats?.orderConfirmationCount}
+          icon="bi-cart-check-fill"
+          color="bg-green-600"
+          linkHref="/sales/order-confirmations"
+          linkLabel="View Order Confirmations"
+          permission="order-confirmation.view"
         />
-        <DashboardCard 
-          title="Production Today" 
-          value="1,240 pcs" 
-          subtitle="Target: 1,500 pcs"
-          icon={
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-          }
+        <StatCard
+          title="Purchase Orders"
+          value={stats?.purchaseOrderCount}
+          icon="bi-cart3"
+          color="bg-cyan-500"
+          linkHref="/procurement/purchase-orders"
+          linkLabel="View Purchase Orders"
+          permission="purchase-order.view"
         />
-        <DashboardCard 
-          title="Pending QC" 
-          value="6" 
-          subtitle="Batches awaiting inspection"
-          icon={
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          }
+        <StatCard
+          title="Open Shipments"
+          value={stats?.openShipmentCount}
+          icon="bi-truck"
+          color="bg-amber-500"
+          linkHref="/export/documents"
+          linkLabel="View Export Documents"
+          permission="export-document.view"
+        />
+        <StatCard
+          title="Buyer Outstanding"
+          value={stats?.buyerOutstanding != null ? Number(stats.buyerOutstanding).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+          icon="bi-cash-stack"
+          color="bg-red-600"
+          linkHref="/reports/outstanding"
+          linkLabel="View Outstanding"
+          permission="outstanding.view"
+        />
+        <StatCard
+          title="Supplier Outstanding"
+          value={stats?.supplierOutstanding != null ? Number(stats.supplierOutstanding).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+          icon="bi-building"
+          color="bg-gray-800"
+          linkHref="/reports/outstanding"
+          linkLabel="View Outstanding"
+          permission="outstanding.view"
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity Mock */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Activity</h3>
-          <ul className="space-y-4">
-            <li className="flex gap-4">
-              <div className="h-2 w-2 rounded-full bg-green-500 mt-2"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Work Order #WO-8841 Released</p>
-                <p className="text-xs text-gray-500">2 hours ago by Admin</p>
-              </div>
-            </li>
-            <li className="flex gap-4">
-              <div className="h-2 w-2 rounded-full bg-blue-500 mt-2"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Goods Inward #GI-102 Approved</p>
-                <p className="text-xs text-gray-500">5 hours ago by QC</p>
-              </div>
-            </li>
-            <li className="flex gap-4">
-              <div className="h-2 w-2 rounded-full bg-yellow-500 mt-2"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">New Inquiry received from Buyer 01</p>
-                <p className="text-xs text-gray-500">Yesterday</p>
-              </div>
-            </li>
-          </ul>
+      {/* Charts placeholder — will be connected when dashboard stats API is ready */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="card p-6">
+          <h3 className="text-base font-semibold text-gray-900 mb-4">
+            <i className="bi bi-graph-up-arrow mr-1"></i>Pipeline Trend (6 Months)
+          </h3>
+          <div className="flex items-center justify-center text-gray-400 text-sm" style={{ minHeight: 310 }}>
+            <div className="text-center">
+              <i className="bi bi-bar-chart text-4xl mb-2 block opacity-30"></i>
+              <p>Charts will render once the dashboard stats API is connected.</p>
+            </div>
+          </div>
         </div>
-
-        {/* Development Notice */}
-        <div className="bg-blue-50 p-6 rounded-lg shadow-sm border border-blue-100 flex flex-col justify-center">
-          <h3 className="text-lg font-bold text-blue-900 mb-2">Development Phase</h3>
-          <p className="text-sm text-blue-800">
-            This dashboard contains statically marked mock data solely to verify protected routing and authentication state restoration. ERP business modules and actual metrics will be connected in future phases.
-          </p>
+        <div className="card p-6">
+          <h3 className="text-base font-semibold text-gray-900 mb-4">
+            <i className="bi bi-pie-chart-fill mr-1"></i>Inquiry Status Distribution
+          </h3>
+          <div className="flex items-center justify-center text-gray-400 text-sm" style={{ minHeight: 310 }}>
+            <div className="text-center">
+              <i className="bi bi-pie-chart text-4xl mb-2 block opacity-30"></i>
+              <p>Charts will render once the dashboard stats API is connected.</p>
+            </div>
+          </div>
         </div>
       </div>
     </DashboardLayout>

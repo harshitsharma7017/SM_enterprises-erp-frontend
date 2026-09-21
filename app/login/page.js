@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -22,9 +21,9 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
-    
+
     setError('');
-    
+
     if (!email || !password) {
       return setError('Please fill in both fields.');
     }
@@ -39,23 +38,40 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-50 font-sans">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8" style={{ background: 'var(--background)' }}>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-          GARMENT<span className="text-blue-600">ERP</span>
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Sign in to your factory workspace
+        {/* Brand */}
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <span
+            className="grid place-items-center rounded-xl"
+            style={{
+              width: 48, height: 48,
+              background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)',
+              color: '#fff', fontWeight: 700, fontSize: '1.1rem',
+            }}
+          >
+            GT
+          </span>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 tracking-tight" style={{ margin: 0 }}>
+              Guru Traders
+            </h2>
+            <p className="text-xs text-gray-400 uppercase tracking-wider font-medium" style={{ margin: 0 }}>
+              Export ERP
+            </p>
+          </div>
+        </div>
+        <p className="text-center text-sm text-gray-500">
+          Sign in to your workspace
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-sm sm:rounded-lg sm:px-10 border border-gray-200">
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm flex items-center">
-              <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
+              <i className="bi bi-exclamation-octagon mr-2 flex-shrink-0"></i>
               {error}
             </div>
           )}
@@ -87,20 +103,21 @@ export default function LoginPage() {
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
                 />
-                <button 
+                <button
                   type="button"
                   className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-gray-500 hover:text-blue-600"
                   onClick={() => setShowPassword(!showPassword)}
-                  tabIndex="-1"
+                  tabIndex={-1}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer' }}
                 >
-                  {showPassword ? 'Hide' : 'Show'}
+                  <i className={`bi ${showPassword ? 'bi-eye-fill' : 'bi-eye'}`}></i>
                 </button>
               </div>
             </div>
@@ -115,26 +132,6 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Don&apos;t have an account?</span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <Link
-                href="/signup"
-                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              >
-                Create account
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </div>
