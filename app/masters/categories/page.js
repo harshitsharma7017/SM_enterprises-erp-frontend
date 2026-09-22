@@ -14,7 +14,8 @@ export default function CategoryIndex() {
   const [categories, setCategories] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  const [error, setError] = useState(null);
+
   const [filters, setFilters] = useState({
     search: '',
     status: '',
@@ -23,6 +24,7 @@ export default function CategoryIndex() {
 
   const fetchCategories = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const query = new URLSearchParams();
       if (filters.search) query.set('search', filters.search);
@@ -44,8 +46,9 @@ export default function CategoryIndex() {
           to: Math.min(offset + limit, res.data.count),
         });
       }
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
+    } catch (err) {
+      console.error('Failed to fetch categories:', err);
+      setError(err.data?.message || err.message || 'Failed to fetch categories');
     } finally {
       setLoading(false);
     }
@@ -99,6 +102,8 @@ export default function CategoryIndex() {
       </div>
 
       <Card title="Category Master" variant="primary" actions={Actions}>
+        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+
         <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={(e) => e.preventDefault()}>
           <div className="flex-1 min-w-[200px]">
             <label className="block text-xs text-gray-500 mb-1">Search</label>
