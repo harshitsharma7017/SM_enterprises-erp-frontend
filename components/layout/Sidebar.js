@@ -99,17 +99,17 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           {canAny(['category.view', 'po-format.view', 'product.view', 'buyer.view', 'supplier.view', 'jobber.view', 'agent.view', 'fob-value.view', 'markup.view']) && (
             <>
               {!collapsed && <li className="nav-header">Masters</li>}
-              <NavItem href="/masters/categories" icon="bi-tags" label="Categories" permission="category.view" />
-              <NavItem href="/masters/formats" icon="bi-file-earmark-ruled" label="Order Formats" permission="po-format.view" />
-              <NavItem href="/masters/products" icon="bi-box-seam" label="Products" permission="product.view" />
-              <NavItem href="/masters/buyers" icon="bi-globe-asia-australia" label="Buyers" permission="buyer.view" />
-              <NavItem href="/masters/suppliers" icon="bi-truck" label="Suppliers" permission="supplier.view" />
+              <NavItem href="/masters/categories" icon="bi-tags" label="Categories" permission="category.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/formats" icon="bi-file-earmark-ruled" label="Order Formats" permission="po-format.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/products" icon="bi-box-seam" label="Products" permission="product.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/buyers" icon="bi-globe-asia-australia" label="Buyers" permission="buyer.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/suppliers" icon="bi-truck" label="Suppliers" permission="supplier.view" can={can} collapsed={collapsed} isActive={isActive} />
               {(can('jobber.view') || can('supplier.view')) && (
-                <NavItem href="/masters/jobbers" icon="bi-tools" label="Jobbers" />
+                <NavItem href="/masters/jobbers" icon="bi-tools" label="Jobbers" can={can} collapsed={collapsed} isActive={isActive} />
               )}
-              <NavItem href="/masters/agents" icon="bi-person-badge" label="Agents" permission="agent.view" />
-              <NavItem href="/masters/fob-values" icon="bi-currency-dollar" label="FOB Values" permission="fob-value.view" />
-              <NavItem href="/masters/markups" icon="bi-percent" label="Markup" permission="markup.view" />
+              <NavItem href="/masters/agents" icon="bi-person-badge" label="Agents" permission="agent.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/fob-values" icon="bi-currency-dollar" label="FOB Values" permission="fob-value.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/markups" icon="bi-percent" label="Markup" permission="markup.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 
@@ -117,8 +117,8 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           {canAny(['inquiry.view', 'order-confirmation.view']) && (
             <>
               {!collapsed && <li className="nav-header">Sales</li>}
-              <NavItem href="/sales/inquiries" icon="bi-chat-square-text" label="Inquiries" permission="inquiry.view" />
-              <NavItem href="/sales/order-confirmations" icon="bi-check2-square" label="Order Confirmations" permission="order-confirmation.view" />
+              <NavItem href="/sales/inquiries" icon="bi-chat-square-text" label="Inquiries" permission="inquiry.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/sales/order-confirmations" icon="bi-check2-square" label="Order Confirmations" permission="order-confirmation.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 
@@ -126,8 +126,8 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           {canAny(['purchase-order.view', 'inward-entry.view']) && (
             <>
               {!collapsed && <li className="nav-header">Procurement</li>}
-              <NavItem href="/procurement/purchase-orders" icon="bi-cart-check" label="Purchase Orders" permission="purchase-order.view" />
-              <NavItem href="/procurement/inward-entries" icon="bi-box-arrow-in-down" label="Goods Inward" permission="inward-entry.view" />
+              <NavItem href="/procurement/purchase-orders" icon="bi-cart-check" label="Purchase Orders" permission="purchase-order.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/procurement/inward-entries" icon="bi-box-arrow-in-down" label="Goods Inward" permission="inward-entry.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 
@@ -135,8 +135,8 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           {canAny(['packing.view', 'export-document.view']) && (
             <>
               {!collapsed && <li className="nav-header">Export</li>}
-              <NavItem href="/export/packing" icon="bi-boxes" label="Packing" permission="packing.view" />
-              <NavItem href="/export/documents" icon="bi-files" label="Export Documents" permission="export-document.view" />
+              <NavItem href="/export/packing" icon="bi-boxes" label="Packing" permission="packing.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/export/documents" icon="bi-files" label="Export Documents" permission="export-document.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 
@@ -144,11 +144,11 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           {canAny(['purchase-bill.view', 'debit-note.view', 'payment.view', 'foreign-payment.view', 'agent-commission.view']) && (
             <>
               {!collapsed && <li className="nav-header">Finance</li>}
-              <NavItem href="/finance/purchase-bills" icon="bi-receipt" label="Purchase Bills" permission="purchase-bill.view" />
-              <NavItem href="/finance/debit-notes" icon="bi-file-earmark-minus" label="Debit Notes" permission="debit-note.view" />
-              <NavItem href="/finance/supplier-payments" icon="bi-cash-coin" label="Supplier Payments" permission="payment.view" />
-              <NavItem href="/finance/buyer-receipts" icon="bi-currency-exchange" label="Buyer Receipts" permission="foreign-payment.view" />
-              <NavItem href="/finance/agent-commission" icon="bi-cash-stack" label="Agent Commission" permission="agent-commission.view" />
+              <NavItem href="/finance/purchase-bills" icon="bi-receipt" label="Purchase Bills" permission="purchase-bill.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/finance/debit-notes" icon="bi-file-earmark-minus" label="Debit Notes" permission="debit-note.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/finance/supplier-payments" icon="bi-cash-coin" label="Supplier Payments" permission="payment.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/finance/buyer-receipts" icon="bi-currency-exchange" label="Buyer Receipts" permission="foreign-payment.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/finance/agent-commission" icon="bi-cash-stack" label="Agent Commission" permission="agent-commission.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 
@@ -156,8 +156,8 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           {canAny(['outstanding.view', 'report.view']) && (
             <>
               {!collapsed && <li className="nav-header">Reports</li>}
-              <NavItem href="/reports/outstanding" icon="bi-hourglass-split" label="Outstanding" permission="outstanding.view" />
-              <NavItem href="/reports" icon="bi-bar-chart-line" label="Reports" permission="report.view" />
+              <NavItem href="/reports/outstanding" icon="bi-hourglass-split" label="Outstanding" permission="outstanding.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/reports" icon="bi-bar-chart-line" label="Reports" permission="report.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 
@@ -165,7 +165,7 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           {canAny(['user.view', 'role.view', 'permission.view', 'company-profile.view']) && (
             <>
               {!collapsed && <li className="nav-header">Administration</li>}
-              <NavItem href="/administration/company-profile" icon="bi-buildings" label="Company Profile" permission="company-profile.view" />
+              <NavItem href="/administration/company-profile" icon="bi-buildings" label="Company Profile" permission="company-profile.view" can={can} collapsed={collapsed} isActive={isActive} />
 
               {/* User Management treeview */}
               {canAny(['user.view', 'role.view', 'permission.view']) && (
@@ -186,9 +186,9 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
                   </button>
                   {userMgmtOpen && !collapsed && (
                     <ul className="list-none p-0 m-0">
-                      <NavItem href="/user-management/users" icon="bi-dot" label="Users" permission="user.view" treeview />
-                      <NavItem href="/user-management/roles" icon="bi-dot" label="Roles" permission="role.view" treeview />
-                      <NavItem href="/user-management/permissions" icon="bi-dot" label="Permissions" permission="permission.view" treeview />
+                      <NavItem href="/user-management/users" icon="bi-dot" label="Users" permission="user.view" treeview can={can} collapsed={collapsed} isActive={isActive} />
+                      <NavItem href="/user-management/roles" icon="bi-dot" label="Roles" permission="role.view" treeview can={can} collapsed={collapsed} isActive={isActive} />
+                      <NavItem href="/user-management/permissions" icon="bi-dot" label="Permissions" permission="permission.view" treeview can={can} collapsed={collapsed} isActive={isActive} />
                     </ul>
                   )}
                 </li>

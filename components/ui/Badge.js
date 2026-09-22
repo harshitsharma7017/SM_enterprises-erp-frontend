@@ -17,3 +17,73 @@ export function StandardBadge({ children, className = '' }) {
     </span>
   );
 }
+
+const WORKFLOW_COLORS = {
+  gray: 'bg-gray-100 text-gray-800 border-gray-200',
+  cyan: 'bg-cyan-100 text-cyan-800 border-cyan-200',
+  blue: 'bg-blue-100 text-blue-800 border-blue-200',
+  green: 'bg-green-100 text-green-800 border-green-200',
+  red: 'bg-red-100 text-red-800 border-red-200',
+  amber: 'bg-amber-100 text-amber-800 border-amber-200',
+};
+
+// Mirrors Inquiry::STATUSES / STATUS_COLORS in the original ERP.
+export const INQUIRY_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  price_working: { label: 'Price Working', color: 'cyan' },
+  quote_sent: { label: 'Quote Sent', color: 'blue' },
+  confirmed: { label: 'Confirmed', color: 'green' },
+  converted_to_oc: { label: 'Converted to OC', color: 'green' },
+  lost: { label: 'Lost', color: 'red' },
+};
+
+// Mirrors OrderConfirmation::STATUSES / STATUS_COLORS in the original ERP.
+export const OC_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  sent: { label: 'OC Sent', color: 'cyan' },
+  confirmed: { label: 'Confirmed', color: 'green' },
+};
+
+// Mirrors PurchaseOrder::STATUSES / STATUS_COLORS in the original ERP.
+export const PO_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  raised: { label: 'Raised', color: 'blue' },
+  partial: { label: 'Partial', color: 'amber' },
+  received: { label: 'Received', color: 'green' },
+};
+
+// Mirrors ExportDocument::STATUSES / STATUS_COLORS in the original ERP.
+export const EXPORT_DOC_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  in_progress: { label: 'In Progress', color: 'blue' },
+  closed: { label: 'Closed', color: 'green' },
+};
+
+// Mirrors ExportDocumentChecklist::STATUSES / STATUS_COLORS — the Node
+// backend only ever writes 'pending' or 'uploaded' (see Phase 5A report),
+// unlike the original's fuller pending/generated/uploaded/received/cancelled
+// set, so 'generated'/'received'/'cancelled' are kept here only for display
+// parity if a future backend change starts using them.
+export const CHECKLIST_STATUS_BADGES = {
+  pending: { label: 'Pending', color: 'gray' },
+  generated: { label: 'Generated', color: 'blue' },
+  uploaded: { label: 'Uploaded', color: 'green' },
+  received: { label: 'Received', color: 'green' },
+  cancelled: { label: 'Draft cancelled', color: 'amber' },
+};
+
+// Mirrors InwardEntry::STATUSES / STATUS_COLORS in the original ERP.
+export const INWARD_STATUS_BADGES = {
+  pending: { label: 'Pending Inspection', color: 'amber' },
+  approved: { label: 'QC Approved', color: 'green' },
+  rejected: { label: 'QC Rejected', color: 'red' },
+};
+
+export function WorkflowBadge({ status, config }) {
+  const entry = config[status] || { label: status || '—', color: 'gray' };
+  return (
+    <span className={`badge border rounded-md px-2 py-1 text-xs font-medium ${WORKFLOW_COLORS[entry.color]}`}>
+      {entry.label}
+    </span>
+  );
+}
