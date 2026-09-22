@@ -27,3 +27,21 @@ export function toPaginationFromMeta({ total, page, last_page }, limit = 15) {
     total: safeTotal,
   };
 }
+
+// Adapts the { current_page, per_page, total, last_page } meta shape used by
+// the Packing, Finance and Report list endpoints — a different key naming
+// than toPaginationFromMeta's { total, page, last_page } (see their
+// controllers' shared sendPaginatedResponse/getPagination helpers).
+export function toPaginationFromCurrentPageMeta({ current_page, per_page, total, last_page }) {
+  const safeTotal = Number(total) || 0;
+  const safePage = Number(current_page) || 1;
+  const safeLimit = Number(per_page) || 15;
+  const safeLastPage = Number(last_page) || Math.max(1, Math.ceil(safeTotal / safeLimit));
+  return {
+    current_page: safePage,
+    last_page: safeLastPage,
+    from: safeTotal > 0 ? (safePage - 1) * safeLimit + 1 : 0,
+    to: Math.min(safePage * safeLimit, safeTotal),
+    total: safeTotal,
+  };
+}
