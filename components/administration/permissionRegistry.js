@@ -26,6 +26,11 @@ export const GROUPS = {
     inquiry: { label: 'Inquiries', actions: ['view', 'create', 'edit', 'delete', 'approve', 'export'] },
     'order-confirmation': { label: 'Order Confirmations', actions: ['view', 'create', 'edit', 'delete', 'approve', 'export'] },
   },
+  Planning: {
+    'brand-projection': { label: 'Brand Projections' },
+    'material-requirement': { label: 'Material Requirements' },
+    'material-plan': { label: 'Material Plans' },
+  },
   Procurement: {
     'purchase-order': { label: 'Purchase Orders', actions: ['view', 'create', 'edit', 'delete', 'approve', 'export'] },
     'inward-entry': { label: 'Goods Inward', actions: ['view', 'create', 'edit', 'delete', 'approve'] },

@@ -79,6 +79,24 @@ export const INWARD_STATUS_BADGES = {
   rejected: { label: 'QC Rejected', color: 'red' },
 };
 
+// Planning statuses (brand projection → material requirement → material plan).
+export const PROJECTION_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  finalized: { label: 'Finalized', color: 'green' },
+};
+
+export const REQUIREMENT_STATUS_BADGES = {
+  open: { label: 'Open', color: 'amber' },
+  planned: { label: 'Planned', color: 'green' },
+  closed: { label: 'Closed', color: 'gray' },
+};
+
+export const PLAN_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  planned: { label: 'Planned', color: 'blue' },
+  closed: { label: 'Closed', color: 'green' },
+};
+
 export function WorkflowBadge({ status, config }) {
   const entry = config[status] || { label: status || '—', color: 'gray' };
   return (

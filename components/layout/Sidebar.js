@@ -125,6 +125,16 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
             </>
           )}
 
+          {/* ═══════ PLANNING ═══════ */}
+          {canAny(['brand-projection.view', 'material-requirement.view', 'material-plan.view']) && (
+            <>
+              {!collapsed && <li className="nav-header">Planning</li>}
+              <NavItem href="/planning/brand-projections" icon="bi-graph-up-arrow" label="Brand Projections" permission="brand-projection.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/planning/material-requirements" icon="bi-list-check" label="Material Requirements" permission="material-requirement.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/planning/material-plans" icon="bi-calendar2-week" label="Material Plans" permission="material-plan.view" can={can} collapsed={collapsed} isActive={isActive} />
+            </>
+          )}
+
           {/* ═══════ PROCUREMENT ═══════ */}
           {canAny(['purchase-order.view', 'inward-entry.view']) && (
             <>

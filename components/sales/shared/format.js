@@ -36,6 +36,13 @@ export function formatAmount(value) {
   return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Quantity in a UOM with `decimals` allowed places — "10,000.5", not "10000.500000".
+export function formatQuantity(value, decimals = 0) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return '0';
+  return n.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: Number(decimals) || 0 });
+}
+
 export function toDateInputValue(value) {
   if (!value) return '';
   const m = String(value).match(DATE_ONLY_RE);
