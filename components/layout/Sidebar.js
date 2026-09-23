@@ -7,7 +7,7 @@ import { useState } from 'react';
  * Sidebar — faithful reproduction of the original Guru Traders ERP sidebar.
  *
  * Sections match config/permissions.php groups, in the same order:
- *   Masters → Sales → Procurement → Export → Finance → Reports → Administration
+ *   Masters → Sales → Planning → Procurement → Inventory → Export → Finance → Reports → Administration
  *
  * Every entry is permission-gated. A section header only renders when the user
  * can see at least one of its children.
@@ -144,6 +144,16 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
               <NavItem href="/procurement/lots" icon="bi-stack" label="Lots" permission="inward-entry.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/quality-control" icon="bi-clipboard-check" label="Quality Control" permission="inward-entry.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/procurement/returns" icon="bi-box-arrow-up" label="Supplier Returns" permission="supplier-return.view" can={can} collapsed={collapsed} isActive={isActive} />
+            </>
+          )}
+
+          {/* ═══════ INVENTORY ═══════ */}
+          {canAny(['stock.view', 'stock.ledger', 'stock-location.view']) && (
+            <>
+              {!collapsed && <li className="nav-header">Inventory</li>}
+              <NavItem href="/inventory/stock" icon="bi-boxes" label="Stock" permission="stock.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/inventory/ledger" icon="bi-journal-text" label="Stock Ledger" permission="stock.ledger" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/inventory/locations" icon="bi-geo-alt" label="Stock Locations" permission="stock-location.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 

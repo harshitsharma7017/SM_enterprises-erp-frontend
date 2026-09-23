@@ -93,14 +93,15 @@ export default function LotsPage() {
                 <th className="px-4 py-2 font-medium">Supplier</th>
                 <th className="px-4 py-2 font-medium">Received</th>
                 <th className="px-4 py-2 font-medium">QC</th>
+                <th className="px-4 py-2 font-medium text-right">Usable Stock</th>
                 <th className="px-4 py-2 font-medium">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {loading ? (
-                <tr><td colSpan="11" className="text-center py-8 text-gray-500">Loading lots...</td></tr>
+                <tr><td colSpan="12" className="text-center py-8 text-gray-500">Loading lots...</td></tr>
               ) : rows.length === 0 ? (
-                <EmptyState colspan={11} icon="bi-stack" title="No lots yet" message="Lots are created when a goods receipt is posted." />
+                <EmptyState colspan={12} icon="bi-stack" title="No lots yet" message="Lots are created when a goods receipt is posted." />
               ) : rows.map((l) => (
                 <tr key={l.id} className="hover:bg-gray-50">
                   <td className="px-4 py-2"><Link href={`/procurement/lots/${l.id}`} className="font-mono font-semibold text-gray-900 hover:text-blue-600">{l.lot_no}</Link></td>
@@ -121,6 +122,7 @@ export default function LotsPage() {
                       <div className="text-gray-500"><span className="text-green-700">{formatQuantity(l.qc_accepted_quantity, l.uom_decimal_places)}</span> / <span className="text-red-700">{formatQuantity(l.qc_rejected_quantity, l.uom_decimal_places)}</span></div>
                     )}
                   </td>
+                  <td className="px-4 py-2 text-right whitespace-nowrap">{formatQuantity(l.stock_quantity, l.uom_decimal_places)}</td>
                   <td className="px-4 py-2"><WorkflowBadge status={l.status} config={LOT_STATUS_BADGES} /></td>
                 </tr>
               ))}

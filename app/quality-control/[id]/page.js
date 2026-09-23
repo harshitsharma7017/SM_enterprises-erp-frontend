@@ -9,7 +9,7 @@ import { WorkflowBadge, QC_STATUS_BADGES, POSTING_STATUS_BADGES, qcBadgeStatus }
 import TraceChain from '@/components/quality/TraceChain';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
-import { formatDate, formatDateTime, formatQuantity, formatAmount } from '@/components/sales/shared/format';
+import { formatDate, formatDateTime, formatQuantity, formatAmount, todayDateInputValue } from '@/components/sales/shared/format';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 
@@ -30,6 +30,8 @@ export default function QcShowPage({ params }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [notice, setNotice] = useState(null);
+  const [locations, setLocations] = useState([]);
+  const [posting, setPosting] = useState({ location_id: '', movement_date: todayDateInputValue(), remarks: '' });
 
   const fetchQc = useCallback(async () => {
     try {
@@ -45,6 +47,32 @@ export default function QcShowPage({ params }) {
   useEffect(() => {
     queueMicrotask(fetchQc);
   }, [fetchQc]);
+
+  // Active locations of the QC's company, for Post to Stock.
+  const qcCompanyId = qc?.company_id;
+  useEffect(() => {
+    if (!qcCompanyId || !can('stock.post')) return;
+    apiClient.get(`/inventory/locations?company_id=${qcCompanyId}&status=active&limit=500`)
+      .then((res) => setLocations(res.data || []))
+      .catch(() => setLocations([]));
+  }, [qcCompanyId, can]);
+
+  const postToStock = async (e) => {
+    e.preventDefault();
+    if (!confirm(`Post the accepted ${qc.accepted_quantity ? formatQuantity(qc.accepted_quantity, qc.uom_decimal_places) : ''} ${qc.unit || ''} of ${qc.qc_no} to stock? This creates an immutable stock movement and the inspection can no longer be cancelled.`)) return;
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const res = await apiClient.post('/inventory/stock/receive-qc', { ...posting, quality_inspection_id: Number(id), location_id: Number(posting.location_id) });
+      setNotice(res.message || null);
+      await fetchQc();
+    } catch (err) {
+      setError(err.message || 'Posting to stock failed');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const run = async (action, body) => {
     setBusy(true);
@@ -99,7 +127,7 @@ export default function QcShowPage({ params }) {
             {isCompleted && debitable > 0 && can('debit-note.create') && (
               <Link href={`/finance/debit-notes/create?quality_inspection_id=${id}`} className={`${BTN} border border-purple-300 text-purple-800 hover:bg-purple-50`}><i className="bi bi-file-earmark-minus me-1"></i> Debit Note</Link>
             )}
-            {qc.status !== 'cancelled' && can('inward-entry.approve') && (
+            {qc.status !== 'cancelled' && !qc.stock_movement_id && can('inward-entry.approve') && (
               <button type="button" disabled={busy} onClick={cancel} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>
             )}
             <Link href="/quality-control" className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>Back</Link>
@@ -140,6 +168,42 @@ export default function QcShowPage({ params }) {
           <div><dt className="text-gray-500 text-xs">Recorded by</dt><dd className="mt-1 text-gray-900">{qc.creator_name || '—'} · {formatDateTime(qc.created_at)}</dd></div>
         </dl>
       </Card>
+
+      {isCompleted && Number(qc.accepted_quantity) > 0 && (
+        <Card title="Stock" variant="info">
+          {qc.stock_movement_id ? (
+            <p className="text-sm m-0">
+              Accepted {q(qc.stock_quantity)} posted to stock as{' '}
+              {can('stock.ledger') ? <Link href={`/inventory/ledger/${qc.stock_movement_id}`} className="font-mono text-blue-600 hover:underline">{qc.stock_movement_no}</Link> : <span className="font-mono">{qc.stock_movement_no}</span>}
+              {' '}on {formatDate(qc.stock_movement_date)} at <span className="font-mono">{qc.stock_location_code}</span> ({qc.stock_location_name}).
+            </p>
+          ) : can('stock.post') ? (
+            <form onSubmit={postToStock} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+              <p className="md:col-span-5 text-sm m-0 text-gray-600">Accepted {q(qc.accepted_quantity)} is not in stock yet. Rejected quantity never enters usable stock.</p>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Location *</label>
+                <select required value={posting.location_id} onChange={(e) => setPosting({ ...posting, location_id: e.target.value })} className="form-select w-full rounded border-gray-300 text-sm">
+                  <option value="">{locations.length ? '— Select —' : 'No active location'}</option>
+                  {locations.map((l) => <option key={l.id} value={l.id}>{l.code} · {l.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Date *</label>
+                <input type="date" required value={posting.movement_date} onChange={(e) => setPosting({ ...posting, movement_date: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
+                <input type="text" maxLength={2000} value={posting.remarks} onChange={(e) => setPosting({ ...posting, remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+              </div>
+              <button type="submit" disabled={busy || !posting.location_id} className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium disabled:opacity-60">
+                <i className="bi bi-box-arrow-in-down me-1"></i> Post to Stock
+              </button>
+            </form>
+          ) : (
+            <p className="text-sm text-gray-500 m-0">Accepted quantity not posted to stock yet.</p>
+          )}
+        </Card>
+      )}
 
       <Card title="Source & Traceability" variant="info">
         <TraceChain doc={qc} quantityLabel="Lot quantity" />

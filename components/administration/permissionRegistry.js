@@ -33,8 +33,12 @@ export const GROUPS = {
   },
   Procurement: {
     'purchase-order': { label: 'Purchase Orders', actions: ['view', 'create', 'edit', 'delete', 'approve', 'export'] },
-    'inward-entry': { label: 'Goods Receipts (GRN) · approve = Quality Control', actions: ['view', 'create', 'edit', 'delete', 'post', 'approve'] },
+    'inward-entry': { label: 'Goods Receipts (GRN) · post = post / cancel · approve = Quality Control', actions: ['view', 'create', 'edit', 'delete', 'post', 'approve'] },
     'supplier-return': { label: 'Supplier Returns', actions: ['view', 'create', 'post', 'cancel'] },
+  },
+  Inventory: {
+    stock: { label: 'Stock', actions: ['view', 'ledger', 'post', 'adjust'] },
+    'stock-location': { label: 'Stock Locations', actions: ['view', 'create', 'edit'] },
   },
   Export: {
     packing: { label: 'Packing' },
@@ -66,7 +70,10 @@ export const ACTION_LABELS = {
   edit: 'Edit',
   delete: 'Delete',
   approve: 'Approve',
-  post: 'Post / Cancel',
+  post: 'Post',
+  cancel: 'Cancel',
+  ledger: 'Ledger',
+  adjust: 'Adjust',
   export: 'Export',
   generate: 'Generate',
   sync: 'Sync',
@@ -74,7 +81,7 @@ export const ACTION_LABELS = {
 
 // Column order for the matrix — every action actually used by any module,
 // in config/permissions.php's declared order.
-export const ALL_ACTIONS = ['view', 'create', 'edit', 'delete', 'post', 'approve', 'export', 'generate', 'sync'];
+export const ALL_ACTIONS = ['view', 'create', 'edit', 'delete', 'post', 'cancel', 'approve', 'ledger', 'adjust', 'export', 'generate', 'sync'];
 
 export function moduleActions(group, moduleKey) {
   return GROUPS[group]?.[moduleKey]?.actions || DEFAULT_ACTIONS;

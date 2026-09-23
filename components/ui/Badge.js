@@ -82,6 +82,20 @@ export const POSTING_STATUS_BADGES = {
   cancelled: { label: 'Cancelled', color: 'red' },
 };
 
+// Stock ledger (stock_movements.movement_type) and balance state.
+export const STOCK_MOVEMENT_LABELS = {
+  QC_ACCEPTED_RECEIPT: 'QC Accepted Receipt',
+  STOCK_ADJUSTMENT: 'Stock Adjustment',
+};
+export const STOCK_STATUS_BADGES = {
+  available: { label: 'Available', color: 'green' },
+  nil: { label: 'Nil', color: 'gray' },
+};
+export const LOCATION_STATUS_BADGES = {
+  active: { label: 'Active', color: 'green' },
+  inactive: { label: 'Inactive', color: 'gray' },
+};
+
 // Where a purchase order came from (purchase_orders.origin).
 export const PO_ORIGIN_LABELS = {
   order_confirmation: 'Order Confirmation',

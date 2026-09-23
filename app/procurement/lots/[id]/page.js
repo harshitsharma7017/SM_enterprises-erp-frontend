@@ -81,9 +81,14 @@ export default function LotShowPage({ params }) {
           <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">Rejected</div><div className="font-semibold text-red-700">{formatQuantity(lot.qc_rejected_quantity, dp)}</div></div>
           <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">Returned / Rejected not returned</div><div className="font-semibold">{formatQuantity(lot.returned_quantity, dp)} / {formatQuantity(Number(lot.qc_rejected_quantity) - Number(lot.returned_quantity), dp)}</div></div>
         </div>
+        <div className="flex flex-wrap items-center gap-3 rounded border border-blue-200 bg-blue-50 p-2 text-sm mb-3">
+          <span className="text-blue-800">Usable stock now: <span className="font-semibold">{formatQuantity(lot.stock_quantity, dp)} {lot.unit}</span></span>
+          <span className="text-blue-700 text-xs">(accepted posted to stock {formatQuantity(lot.stock_received_quantity, dp)})</span>
+          {can('stock.view') && <Link href={`/inventory/stock/${lot.id}`} className="ml-auto text-blue-700 hover:underline text-xs">Stock movements →</Link>}
+        </div>
         {lot.inspections.length === 0 ? <p className="text-sm text-gray-500 m-0">Not inspected yet.</p> : (
           <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">QC No.</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium text-right">Inspected</th><th className="py-1.5 font-medium text-right">Accepted</th><th className="py-1.5 font-medium text-right">Rejected</th><th className="py-1.5 font-medium text-right">Returned</th><th className="py-1.5 font-medium">Status</th></tr></thead>
+            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">QC No.</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium text-right">Inspected</th><th className="py-1.5 font-medium text-right">Accepted</th><th className="py-1.5 font-medium text-right">Rejected</th><th className="py-1.5 font-medium text-right">Returned</th><th className="py-1.5 font-medium">Status</th><th className="py-1.5 font-medium">Stock</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
               {lot.inspections.map((qc) => (
                 <tr key={qc.id}>
@@ -94,6 +99,7 @@ export default function LotShowPage({ params }) {
                   <td className="py-1.5 text-right">{qc.rejected_quantity === null ? '—' : formatQuantity(qc.rejected_quantity, dp)}</td>
                   <td className="py-1.5 text-right">{formatQuantity(qc.returned_quantity, dp)}</td>
                   <td className="py-1.5"><WorkflowBadge status={qcBadgeStatus(qc)} config={QC_STATUS_BADGES} /></td>
+                  <td className="py-1.5 font-mono text-xs">{qc.stock_movement_no || '—'}</td>
                 </tr>
               ))}
             </tbody>
