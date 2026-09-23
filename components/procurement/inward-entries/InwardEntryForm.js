@@ -229,19 +229,19 @@ export default function InwardEntryForm({ entryId = null }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Inward Date <span className="text-red-500">*</span></label>
-            <input type="date" required value={inwardDate} onChange={(e) => setInwardDate(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" required value={inwardDate} onChange={(e) = placeholder="Enter InwardDate"> setInwardDate(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Challan / DC No.</label>
-            <input type="text" value={challanNo} onChange={(e) => setChallanNo(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" value={challanNo} onChange={(e) = placeholder="Enter ChallanNo"> setChallanNo(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Challan Date</label>
-            <input type="date" value={challanDate} onChange={(e) => setChallanDate(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" value={challanDate} onChange={(e) = placeholder="Enter ChallanDate"> setChallanDate(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
           </div>
           <div className="md:col-span-3">
             <label className="block text-xs font-medium text-gray-700 mb-1">Receipt Remarks</label>
-            <textarea rows={2} value={remarks} onChange={(e) => setRemarks(e.target.value)} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+            <textarea rows={2} value={remarks} onChange={(e) = placeholder="Enter Remarks"> setRemarks(e.target.value)} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
           </div>
         </div>
       </FormSection>
@@ -287,12 +287,12 @@ export default function InwardEntryForm({ entryId = null }) {
                         min="0"
                         max={entryId ? undefined : item.ordered_qty}
                         value={item.received_qty}
-                        onChange={(e) => updateItem(index, { received_qty: e.target.value })}
+                        onChange={(e) = placeholder="Enter Received Qty"> updateItem(index, { received_qty: e.target.value })}
                         className="form-input w-24 rounded border-gray-300 text-sm text-right"
                       />
                     </td>
                     <td className="px-3 py-2">
-                      <input type="text" value={item.remarks} onChange={(e) => updateItem(index, { remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                      <input type="text" value={item.remarks} onChange={(e) = placeholder="Enter Remarks"> updateItem(index, { remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                     </td>
                   </tr>
                 ))}

@@ -128,12 +128,12 @@ export default function QcPanel({ entry, can, onQcDone }) {
                           min="0"
                           max={row.received_qty}
                           value={row.rejected_qty}
-                          onChange={(e) => handleRejectedChange(index, e.target.value)}
+                          onChange={(e) = placeholder="Enter Rejected Qty"> handleRejectedChange(index, e.target.value)}
                           className="form-input w-20 rounded border-gray-300 text-sm text-right text-red-700"
                         />
                       </td>
                       <td className="px-3 py-2">
-                        <input type="text" value={row.qc_remarks} onChange={(e) => updateRow(index, { qc_remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                        <input type="text" value={row.qc_remarks} onChange={(e) = placeholder="Enter Qc Remarks"> updateRow(index, { qc_remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                       </td>
                     </tr>
                   ))}

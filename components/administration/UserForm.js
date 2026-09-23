@@ -91,21 +91,21 @@ export default function UserForm({ mode, user }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Full Name <span className="text-red-500">*</span></label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required
+          <input type="text" value={name} onChange={(e) = placeholder="Enter Name"> setName(e.target.value)} required
             className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.name ? 'border-red-400' : 'border-gray-300'}`} />
           {fieldErrors.name && <p className="text-xs text-red-600 mt-1">{fieldErrors.name}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Email Address <span className="text-red-500">*</span></label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+          <input type="email" value={email} onChange={(e) = placeholder="Enter Email"> setEmail(e.target.value)} required
             className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.email ? 'border-red-400' : 'border-gray-300'}`} />
           {fieldErrors.email && <p className="text-xs text-red-600 mt-1">{fieldErrors.email}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-          <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210"
+          <input type="text" value={phone} onChange={(e) = placeholder="Enter Phone"> setPhone(e.target.value)} placeholder="+91 98765 43210"
             className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.phone ? 'border-red-400' : 'border-gray-300'}`} />
           {fieldErrors.phone && <p className="text-xs text-red-600 mt-1">{fieldErrors.phone}</p>}
         </div>
@@ -126,7 +126,7 @@ export default function UserForm({ mode, user }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Password {!isEdit && <span className="text-red-500">*</span>}
           </label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required={!isEdit}
+          <input type="password" value={password} onChange={(e) = placeholder="Enter Password"> setPassword(e.target.value)} required={!isEdit}
             autoComplete="new-password"
             className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.password ? 'border-red-400' : 'border-gray-300'}`} />
           <p className="text-xs text-gray-400 mt-1">{isEdit ? 'Leave blank to keep the current password.' : 'Minimum 8 characters, with letters and numbers.'}</p>
@@ -137,7 +137,7 @@ export default function UserForm({ mode, user }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Confirm Password {!isEdit && <span className="text-red-500">*</span>}
           </label>
-          <input type="password" value={passwordConfirmation} onChange={(e) => setPasswordConfirmation(e.target.value)} required={!isEdit}
+          <input type="password" value={passwordConfirmation} onChange={(e) = placeholder="Enter PasswordConfirmation"> setPasswordConfirmation(e.target.value)} required={!isEdit}
             autoComplete="new-password"
             className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.password_confirmation ? 'border-red-400' : 'border-gray-300'}`} />
           {fieldErrors.password_confirmation && <p className="text-xs text-red-600 mt-1">{fieldErrors.password_confirmation}</p>}

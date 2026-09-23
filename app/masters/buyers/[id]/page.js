@@ -2,7 +2,7 @@
 
 import { use } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import Header from '@/components/layout/Header';
+
 import BuyerForm from '@/components/masters/buyers/BuyerForm';
 
 export default function EditBuyerPage({ params }) {
@@ -10,16 +10,11 @@ export default function EditBuyerPage({ params }) {
 
   return (
     <DashboardLayout>
-      <Header 
-        title="Edit Buyer" 
-        breadcrumbs={[
-          { label: 'Masters', href: '/masters' }, 
-          { label: 'Buyers', href: '/masters/buyers' }, 
-          { label: 'Edit' }
-        ]} 
-      />
+      <div className="mb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 m-0">Edit Buyer</h2>
+      </div>
       
-      <div className="p-6">
+      <div className="pt-2">
         <BuyerForm buyerId={id} />
       </div>
     </DashboardLayout>

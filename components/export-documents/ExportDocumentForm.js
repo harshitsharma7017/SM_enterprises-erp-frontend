@@ -253,7 +253,7 @@ export default function ExportDocumentForm({ documentId }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Shipment Date</label>
-            <input type="date" name="shipment_date" value={formData.shipment_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="shipment_date" value={formData.shipment_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Shipment Date"/>
           </div>
         </div>
       </FormSection>
@@ -266,11 +266,11 @@ export default function ExportDocumentForm({ documentId }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Invoice Date</label>
-            <input type="date" name="invoice_date" value={formData.invoice_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="invoice_date" value={formData.invoice_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Invoice Date"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Exporter&apos;s Ref</label>
-            <input type="text" name="exporter_ref" maxLength={255} value={formData.exporter_ref} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="exporter_ref" maxLength={255} value={formData.exporter_ref} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Exporter Ref"/>
           </div>
         </div>
       </FormSection>
@@ -279,23 +279,23 @@ export default function ExportDocumentForm({ documentId }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Buyer&apos;s Ref No.</label>
-            <input type="text" name="buyer_ref_no" maxLength={60} value={formData.buyer_ref_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="buyer_ref_no" maxLength={60} value={formData.buyer_ref_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Buyer Ref No"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Buyer&apos;s Ref Date</label>
-            <input type="date" name="buyer_ref_date" value={formData.buyer_ref_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="buyer_ref_date" value={formData.buyer_ref_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Buyer Ref Date"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Other Reference(s)</label>
-            <input type="text" name="other_reference" maxLength={255} value={formData.other_reference} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="other_reference" maxLength={255} value={formData.other_reference} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Other Reference"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Consignee Name <span className="text-gray-400 font-normal">(blank = Buyer)</span></label>
-            <input type="text" name="consignee_name" maxLength={200} value={formData.consignee_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="consignee_name" maxLength={200} value={formData.consignee_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Consignee Name"/>
           </div>
           <div className="md:col-span-2">
             <label className="block text-xs font-medium text-gray-700 mb-1">Consignee Address</label>
-            <input type="text" name="consignee_address" maxLength={1000} value={formData.consignee_address} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="consignee_address" maxLength={1000} value={formData.consignee_address} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Consignee Address"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Pre-Carriage By</label>
@@ -303,15 +303,15 @@ export default function ExportDocumentForm({ documentId }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Place of Receipt by Pre-Carrier</label>
-            <input type="text" name="place_of_receipt" maxLength={150} value={formData.place_of_receipt} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="place_of_receipt" maxLength={150} value={formData.place_of_receipt} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Place Of Receipt"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Vessel / Flight No.</label>
-            <input type="text" name="vessel_flight_no" maxLength={60} value={formData.vessel_flight_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="vessel_flight_no" maxLength={60} value={formData.vessel_flight_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Vessel Flight No"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Country of Origin</label>
-            <input type="text" name="country_of_origin" maxLength={60} value={formData.country_of_origin} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="country_of_origin" maxLength={60} value={formData.country_of_origin} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Country Of Origin"/>
             <p className="text-[11px] text-gray-500 mt-1">Country of Final Destination is read from the Buyer&apos;s own country automatically.</p>
           </div>
         </div>
@@ -321,19 +321,19 @@ export default function ExportDocumentForm({ documentId }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Forwarder / CHA Name</label>
-            <input type="text" name="forwarder_name" maxLength={150} value={formData.forwarder_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="forwarder_name" maxLength={150} value={formData.forwarder_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Forwarder Name"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Forwarder Address</label>
-            <input type="text" name="forwarder_address" maxLength={1000} value={formData.forwarder_address} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="forwarder_address" maxLength={1000} value={formData.forwarder_address} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Forwarder Address"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Vehicle / Tempo No.</label>
-            <input type="text" name="vehicle_no" maxLength={60} value={formData.vehicle_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="vehicle_no" maxLength={60} value={formData.vehicle_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Vehicle No"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Driver Cell No.</label>
-            <input type="text" name="driver_cell" maxLength={30} value={formData.driver_cell} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="driver_cell" maxLength={30} value={formData.driver_cell} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Driver Cell"/>
           </div>
         </div>
       </FormSection>
@@ -346,11 +346,11 @@ export default function ExportDocumentForm({ documentId }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Total Cartons</label>
-            <input type="number" min="0" name="total_cartons" value={formData.total_cartons} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="number" min="0" name="total_cartons" value={formData.total_cartons} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Total Cartons"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Package Kind</label>
-            <input type="text" name="package_kind" maxLength={40} value={formData.package_kind} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="package_kind" maxLength={40} value={formData.package_kind} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Package Kind"/>
           </div>
         </div>
       </FormSection>
@@ -359,27 +359,27 @@ export default function ExportDocumentForm({ documentId }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Booking No.</label>
-            <input type="text" name="booking_no" maxLength={60} value={formData.booking_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="booking_no" maxLength={60} value={formData.booking_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Booking No"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">B/L No.</label>
-            <input type="text" name="bl_no" maxLength={60} value={formData.bl_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="bl_no" maxLength={60} value={formData.bl_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Bl No"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Voy. No.</label>
-            <input type="text" name="voyage_no" maxLength={60} value={formData.voyage_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="voyage_no" maxLength={60} value={formData.voyage_no} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Voyage No"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">For Transshipment To</label>
-            <input type="text" name="transshipment_port" maxLength={150} value={formData.transshipment_port} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="transshipment_port" maxLength={150} value={formData.transshipment_port} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Transshipment Port"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Notify Party Name <span className="text-gray-400 font-normal">(blank = Consignee)</span></label>
-            <input type="text" name="notify_party_name" maxLength={200} value={formData.notify_party_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="notify_party_name" maxLength={200} value={formData.notify_party_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Notify Party Name"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Notify Party Address</label>
-            <input type="text" name="notify_party_address" maxLength={1000} value={formData.notify_party_address} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="notify_party_address" maxLength={1000} value={formData.notify_party_address} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Notify Party Address"/>
           </div>
           <div className="md:col-span-3">
             <label className="block text-xs font-medium text-gray-700 mb-1">Goods Description</label>
@@ -388,7 +388,7 @@ export default function ExportDocumentForm({ documentId }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Measurement (CBM)</label>
-            <input type="number" step="0.001" min="0" name="total_measurement" value={formData.total_measurement} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="number" step="0.001" min="0" name="total_measurement" value={formData.total_measurement} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Total Measurement"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Freight Terms</label>
@@ -400,19 +400,19 @@ export default function ExportDocumentForm({ documentId }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">EX. Rate</label>
-            <input type="text" name="ex_rate" maxLength={60} value={formData.ex_rate} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="ex_rate" maxLength={60} value={formData.ex_rate} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Ex Rate"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Freight Prepaid At</label>
-            <input type="text" name="freight_prepaid_at" maxLength={100} value={formData.freight_prepaid_at} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="freight_prepaid_at" maxLength={100} value={formData.freight_prepaid_at} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Freight Prepaid At"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Freight Payable At</label>
-            <input type="text" name="freight_payable_at" maxLength={100} value={formData.freight_payable_at} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="freight_payable_at" maxLength={100} value={formData.freight_payable_at} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Freight Payable At"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Total Prepaid In</label>
-            <input type="text" name="total_prepaid_in" maxLength={150} value={formData.total_prepaid_in} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="total_prepaid_in" maxLength={150} value={formData.total_prepaid_in} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Total Prepaid In"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">No. of Original B(s)/L</label>
@@ -420,11 +420,11 @@ export default function ExportDocumentForm({ documentId }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Place of Issue</label>
-            <input type="text" name="bl_place_of_issue" maxLength={100} value={formData.bl_place_of_issue} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="bl_place_of_issue" maxLength={100} value={formData.bl_place_of_issue} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Bl Place Of Issue"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Date of Issue</label>
-            <input type="date" name="bl_date_of_issue" value={formData.bl_date_of_issue} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="bl_date_of_issue" value={formData.bl_date_of_issue} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Bl Date Of Issue"/>
           </div>
         </div>
       </FormSection>
@@ -433,19 +433,19 @@ export default function ExportDocumentForm({ documentId }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Freight Amount</label>
-            <input type="number" step="0.01" min="0" name="freight_amount" value={formData.freight_amount} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="number" step="0.01" min="0" name="freight_amount" value={formData.freight_amount} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Freight Amount"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Insurance Amount</label>
-            <input type="number" step="0.01" min="0" name="insurance_amount" value={formData.insurance_amount} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="number" step="0.01" min="0" name="insurance_amount" value={formData.insurance_amount} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Insurance Amount"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Gross Weight (kg)</label>
-            <input type="number" step="0.001" min="0" name="gross_weight" value={formData.gross_weight} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="number" step="0.001" min="0" name="gross_weight" value={formData.gross_weight} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Gross Weight"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Net Weight (kg)</label>
-            <input type="number" step="0.001" min="0" name="net_weight" value={formData.net_weight} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="number" step="0.001" min="0" name="net_weight" value={formData.net_weight} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Net Weight"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Carton / Bale Dimension</label>
@@ -459,7 +459,7 @@ export default function ExportDocumentForm({ documentId }) {
       </FormSection>
 
       <FormSection title="Remarks" icon="bi-chat-left-text">
-        <textarea name="remarks" rows={2} maxLength={2000} value={formData.remarks} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+        <textarea name="remarks" rows={2} maxLength={2000} value={formData.remarks} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Remarks"></textarea>
       </FormSection>
 
       <div className="bg-white border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">

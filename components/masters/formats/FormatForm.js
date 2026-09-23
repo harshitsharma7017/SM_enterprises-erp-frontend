@@ -37,10 +37,10 @@ export default function FormatForm({ formatId }) {
 
 
 
-    const fetchFormat = async () => {
+  const fetchFormat = async () => {
     try {
       const res = await apiClient.get(`/masters/formats/${formatId}`);
-      const f = res.data.format;
+      const f = res.data?.format || res.data.data?.format || res.data;
       setFormData({
         name: f.name || '',
         description: f.description || '',
@@ -50,7 +50,7 @@ export default function FormatForm({ formatId }) {
         packing_details: f.packing_details || ''
       });
       setUnits(f.units || []);
-      if (f.columns) setColumns(f.columns);
+      if (f.columns) setColumns(Array.isArray(f.columns) ? f.columns : Object.values(f.columns));
       if (f.images) {
         setExistingImages(f.images);
         setKeepImages(f.images.map(img => img.id));
@@ -65,8 +65,22 @@ export default function FormatForm({ formatId }) {
   const fetchDefaults = async () => {
     try {
       const res = await apiClient.get('/masters/formats/defaults');
-      setColumns(res.data.columns || []);
-      setUnits(res.data.units || []);
+      // res.data could be { data: { columns, units } } or just { columns, units }
+      const payload = res.data?.data || res.data;
+      const rawCols = payload.columns || {};
+      
+      const colsArray = Array.isArray(rawCols) ? rawCols : Object.entries(rawCols).map(([key, val]) => ({
+        key,
+        label: val.label || '',
+        is_enabled: val.enabled ?? val.is_enabled ?? true,
+        is_mandatory: val.mandatory ?? val.is_mandatory ?? false,
+        is_custom: false,
+        print_only: val.print_only ?? false,
+        sub_columns: val.sub_columns || []
+      }));
+      
+      setColumns(colsArray);
+      setUnits(payload.units || []);
     } catch (e) {
       setError('Failed to load defaults: ' + e.message);
     } finally {
@@ -225,22 +239,23 @@ const handleChange = (e) => {
       formDataObj.append('delivery_details', formData.delivery_details || '');
       formDataObj.append('packing_details', formData.packing_details || '');
 
-      units.forEach((u, i) => formDataObj.append(`units[${i}]`, u));
+      formDataObj.append('units', JSON.stringify(units));
 
-      columns.forEach((c, i) => {
-        formDataObj.append(`column_order[${i}]`, c.key);
-        formDataObj.append(`columns[${c.key}][label]`, c.label || '');
-        if (c.is_enabled) formDataObj.append(`columns[${c.key}][enabled]`, '1');
-        if (c.is_mandatory) formDataObj.append(`columns[${c.key}][mandatory]`, '1');
-        formDataObj.append(`columns[${c.key}][sub_columns]`, (c.sub_columns || []).join(','));
+      const columnsObj = {};
+      columns.forEach(c => {
+        columnsObj[c.key] = {
+          label: c.label || '',
+          enabled: c.is_enabled,
+          mandatory: c.is_mandatory,
+          sub_columns: (c.sub_columns || []).join(',')
+        };
       });
 
+      formDataObj.append('columns', JSON.stringify(columnsObj));
+      formDataObj.append('column_order', JSON.stringify(columns.map(c => c.key)));
+
       if (formatId) {
-        if (keepImages.length === 0) {
-          formDataObj.append('keep_images[]', ''); // Empty string array triggers clear
-        } else {
-          keepImages.forEach(id => formDataObj.append('keep_images[]', id));
-        }
+        formDataObj.append('keep_images', JSON.stringify(keepImages));
       }
 
       newImages.forEach(img => {
@@ -322,7 +337,7 @@ const handleChange = (e) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <form onSubmit={handleSubmit}>
           
-          <div className="p-0">
+          <div className="p-6 space-y-2">
             {/* Identity */}
             <FormSection title="Format Identity" icon="bi-file-earmark-ruled" subtitle="Linked to categories from the Category Master; used by Purchase Orders.">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -369,7 +384,7 @@ const handleChange = (e) => {
                 ))}
               </div>
               <div className="flex gap-2 max-w-sm">
-                <input type="text" value={unitInput} onChange={e => setUnitInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addUnit())} placeholder="Add unit (e.g. DOZEN, BOX, KGS)" maxLength="20" className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
+                <input type="text" value={unitInput} onChange={e = placeholder="Enter UnitInput"> setUnitInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addUnit())} placeholder="Add unit (e.g. DOZEN, BOX, KGS)" maxLength="20" className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
                 <button type="button" onClick={addUnit} className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm whitespace-nowrap">
                   <i className="bi bi-plus-lg mr-1"></i>Add Unit
                 </button>

@@ -2,7 +2,7 @@
 
 import { use } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import Header from '@/components/layout/Header';
+
 import ProductForm from '@/components/masters/products/ProductForm';
 
 export default function EditProductPage({ params }) {
@@ -10,16 +10,11 @@ export default function EditProductPage({ params }) {
 
   return (
     <DashboardLayout>
-      <Header 
-        title="Edit Product" 
-        breadcrumbs={[
-          { label: 'Masters', href: '/masters' }, 
-          { label: 'Products', href: '/masters/products' }, 
-          { label: 'Edit' }
-        ]} 
-      />
+      <div className="mb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 m-0">Edit Product</h2>
+      </div>
       
-      <div className="p-6">
+      <div className="pt-2">
         <ProductForm productId={id} />
       </div>
     </DashboardLayout>

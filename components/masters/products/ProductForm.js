@@ -64,8 +64,8 @@ export default function ProductForm({ productId = null }) {
   async function fetchProduct() {
     try {
             const res = await apiClient.get(`/masters/products/${productId}/edit`);
-      if (res.data.success) {
-        const { product, categories, units, priceBands, gstRates, calculationBases } = res.data.data;
+      if (res.success) {
+        const { product, categories, units, priceBands, gstRates, calculationBases } = res.data;
         setCategories(categories || {});
         setUnits(units || {});
         setPriceBands(priceBands || {});
@@ -120,8 +120,8 @@ export default function ProductForm({ productId = null }) {
   async function fetchDefaults() {
     try {
             const res = await apiClient.get('/masters/products/create');
-      if (res.data.success) {
-        const { categories, units, priceBands, gstRates, calculationBases } = res.data.data;
+      if (res.success) {
+        const { categories, units, priceBands, gstRates, calculationBases } = res.data;
         setCategories(categories || {});
         setUnits(units || {});
         setPriceBands(priceBands || {});
@@ -244,7 +244,7 @@ export default function ProductForm({ productId = null }) {
         res = await apiClient.post('/masters/products', payload);
       }
 
-      if (res.data.success) {
+      if (res.success) {
         router.push('/masters/products');
       }
     } catch (err) {
@@ -284,7 +284,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.category_id} 
                 onChange={handleChange}
                 required
-                className={`form-select w-full rounded border-gray-300 text-sm ${errors.category_id ? 'border-red-500' : ''}`}
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.category_id ? 'border-red-500' : ''}`}
               >
                 <option value="">Search category...</option>
                 {Object.entries(categories).map(([id, name]) => (
@@ -306,7 +306,7 @@ export default function ProductForm({ productId = null }) {
                 required
                 maxLength="5"
                 placeholder="PRD01"
-                className={`form-input w-full rounded border-gray-300 text-sm uppercase ${errors.item_group_code ? 'border-red-500' : ''} ${codeAvailable === false ? 'border-red-500' : ''} ${codeAvailable === true ? 'border-green-500' : ''}`}
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase ${errors.item_group_code ? 'border-red-500' : ''} ${codeAvailable === false ? 'border-red-500' : ''} ${codeAvailable === true ? 'border-green-500' : ''}`}
               />
               {errors.item_group_code && <p className="text-xs text-red-500 mt-1">{errors.item_group_code[0]}</p>}
               <p className={`text-xs mt-1 ${codeAvailable === false ? 'text-red-500' : codeAvailable === true ? 'text-green-600' : 'text-gray-500'}`}>
@@ -326,7 +326,7 @@ export default function ProductForm({ productId = null }) {
                 required
                 maxLength="200"
                 placeholder="Cotton Casual Shirt"
-                className={`form-input w-full rounded border-gray-300 text-sm ${errors.name ? 'border-red-500' : ''} ${nameAvailable === false ? 'border-red-500' : ''} ${nameAvailable === true ? 'border-green-500' : ''}`}
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.name ? 'border-red-500' : ''} ${nameAvailable === false ? 'border-red-500' : ''} ${nameAvailable === true ? 'border-green-500' : ''}`}
               />
               {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name[0]}</p>}
               <p className={`text-xs mt-1 ${nameAvailable === false ? 'text-red-500' : nameAvailable === true ? 'text-green-600' : 'text-gray-500'}`}>
@@ -344,7 +344,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.name_on_export_document} 
                 onChange={handleChange}
                 placeholder="Exactly as it must print on the invoice"
-                className={`form-input w-full rounded border-gray-300 text-sm ${errors.name_on_export_document ? 'border-red-500' : ''}`}
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.name_on_export_document ? 'border-red-500' : ''}`}
               />
               {errors.name_on_export_document && <p className="text-xs text-red-500 mt-1">{errors.name_on_export_document[0]}</p>}
             </div>
@@ -359,7 +359,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.barcode} 
                 onChange={handleChange}
                 placeholder="Letters and numbers"
-                className={`form-input w-full rounded border-gray-300 text-sm ${errors.barcode ? 'border-red-500' : ''}`}
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.barcode ? 'border-red-500' : ''}`}
               />
               {errors.barcode && <p className="text-xs text-red-500 mt-1">{errors.barcode[0]}</p>}
             </div>
@@ -384,7 +384,7 @@ export default function ProductForm({ productId = null }) {
                 name="unit_po" 
                 value={formData.unit_po} 
                 onChange={handleChange}
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">Search unit...</option>
                 {Object.entries(units).map(([id, label]) => (
@@ -402,7 +402,7 @@ export default function ProductForm({ productId = null }) {
                 name="unit_export" 
                 value={formData.unit_export} 
                 onChange={handleChange}
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">Search unit...</option>
                 {Object.entries(units).map(([id, label]) => (
@@ -421,7 +421,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.hsn_code} 
                 onChange={handleChange}
                 placeholder="620520"
-                className="form-input w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               />
             </div>
           </div>
@@ -433,7 +433,7 @@ export default function ProductForm({ productId = null }) {
                 name="price_band_id" 
                 value={formData.price_band_id} 
                 onChange={handleChange}
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">Search band...</option>
                 {Object.entries(priceBands).map(([id, label]) => (
@@ -450,7 +450,7 @@ export default function ProductForm({ productId = null }) {
                 name="gst_rate_id" 
                 value={formData.gst_rate_id} 
                 onChange={handleChange}
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">Search or type a new rate...</option>
                 {Object.entries(gstRates).map(([id, label]) => (
@@ -469,7 +469,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.drawback_sr_no} 
                 onChange={handleChange}
                 placeholder="B001"
-                className="form-input w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               />
             </div>
           </div>
@@ -509,7 +509,7 @@ export default function ProductForm({ productId = null }) {
                         type="checkbox" 
                         checked={inc.enabled}
                         onChange={(e) => handleIncentiveChange(scheme, 'enabled', e.target.checked)}
-                        className="rounded border-gray-300"
+                        className="rounded border border-gray-300"
                       />
                     </td>
                     <td className="py-2 px-3 font-medium">{label}</td>
@@ -519,7 +519,7 @@ export default function ProductForm({ productId = null }) {
                         value={inc.percent_1}
                         disabled={!inc.enabled}
                         onChange={(e) => handleIncentiveChange(scheme, 'percent_1', e.target.value)}
-                        className="form-input w-24 rounded border-gray-300 text-sm p-1"
+                        className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-24 rounded border border-gray-300 text-sm p-1"
                       />
                     </td>
                     <td className="py-2 px-3">
@@ -529,7 +529,7 @@ export default function ProductForm({ productId = null }) {
                           value={inc.percent_2}
                           disabled={!inc.enabled}
                           onChange={(e) => handleIncentiveChange(scheme, 'percent_2', e.target.value)}
-                          className="form-input w-24 rounded border-gray-300 text-sm p-1"
+                          className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-24 rounded border border-gray-300 text-sm p-1"
                         />
                       ) : <span className="text-gray-400">—</span>}
                     </td>
@@ -539,7 +539,7 @@ export default function ProductForm({ productId = null }) {
                         value={inc.cap_value}
                         disabled={!inc.enabled}
                         onChange={(e) => handleIncentiveChange(scheme, 'cap_value', e.target.value)}
-                        className="form-input w-28 rounded border-gray-300 text-sm p-1"
+                        className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-28 rounded border border-gray-300 text-sm p-1"
                       />
                     </td>
                     <td className="py-2 px-3">
@@ -547,7 +547,7 @@ export default function ProductForm({ productId = null }) {
                         value={inc.calculation_basis_id}
                         disabled={!inc.enabled}
                         onChange={(e) => handleIncentiveChange(scheme, 'calculation_basis_id', e.target.value)}
-                        className="form-select w-40 rounded border-gray-300 text-sm p-1"
+                        className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-40 rounded border border-gray-300 text-sm p-1"
                       >
                         <option value="">— Select —</option>
                         {Object.entries(calculationBases).map(([id, basis]) => (
@@ -580,9 +580,9 @@ export default function ProductForm({ productId = null }) {
                 <input 
                   type="text" 
                   value={row.component_name} 
-                  onChange={(e) => handleBomChange(index, 'component_name', e.target.value)}
+                  onChange={(e) = placeholder="Enter Component Name"> handleBomChange(index, 'component_name', e.target.value)}
                   placeholder="e.g. Lining fabric"
-                  className="form-input w-full rounded border-gray-300 text-sm"
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                   maxLength="200"
                 />
               </div>
@@ -591,8 +591,8 @@ export default function ProductForm({ productId = null }) {
                 <input 
                   type="number" step="0.0001" min="0" 
                   value={row.qty} 
-                  onChange={(e) => handleBomChange(index, 'qty', e.target.value)}
-                  className="form-input w-full rounded border-gray-300 text-sm"
+                  onChange={(e) = placeholder="Enter Qty"> handleBomChange(index, 'qty', e.target.value)}
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 />
               </div>
               <div className="w-32">
@@ -600,7 +600,7 @@ export default function ProductForm({ productId = null }) {
                 <select 
                   value={row.unit} 
                   onChange={(e) => handleBomChange(index, 'unit', e.target.value)}
-                  className="form-select w-full rounded border-gray-300 text-sm"
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 >
                   <option value="">—</option>
                   {Object.entries(units).map(([uId, label]) => (
@@ -613,8 +613,8 @@ export default function ProductForm({ productId = null }) {
                 <input 
                   type="text" 
                   value={row.remarks} 
-                  onChange={(e) => handleBomChange(index, 'remarks', e.target.value)}
-                  className="form-input w-full rounded border-gray-300 text-sm"
+                  onChange={(e) = placeholder="Enter Remarks"> handleBomChange(index, 'remarks', e.target.value)}
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                   maxLength="500"
                 />
               </div>
@@ -650,7 +650,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.fabric_length_mtr} 
                 onChange={handleChange}
                 placeholder="0.000"
-                className="form-input w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               />
             </div>
           </div>
@@ -663,7 +663,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.fabric_width_inch} 
                 onChange={handleChange}
                 placeholder="0.000"
-                className="form-input w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               />
             </div>
           </div>
@@ -671,7 +671,7 @@ export default function ProductForm({ productId = null }) {
             <label className="md:col-span-1 font-medium text-sm text-gray-700">Sq. Mtrs / Unit</label>
             <div className="md:col-span-3">
               <div className="flex">
-                <span className="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-100 rounded-l text-gray-500">
+                <span className="inline-flex items-center px-3 border border-r-0 border border-gray-300 bg-gray-100 rounded-l text-gray-500">
                   <i className="bi bi-calculator"></i>
                 </span>
                 <input 
@@ -679,7 +679,7 @@ export default function ProductForm({ productId = null }) {
                   readOnly
                   value={sqmPreview}
                   placeholder="Calculated"
-                  className="form-input flex-1 rounded-r border-gray-300 text-sm bg-gray-50"
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 flex-1 rounded-r border border-gray-300 text-sm bg-gray-50"
                 />
               </div>
             </div>
@@ -702,7 +702,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.status} 
                 onChange={handleChange}
                 required
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -718,7 +718,7 @@ export default function ProductForm({ productId = null }) {
                 onChange={handleChange}
                 rows="2"
                 placeholder="100% Cotton, 180 GSM"
-                className="form-textarea w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               ></textarea>
             </div>
           </div>
@@ -731,7 +731,7 @@ export default function ProductForm({ productId = null }) {
                 onChange={handleChange}
                 rows="2"
                 placeholder="Optional notes"
-                className="form-textarea w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               ></textarea>
             </div>
           </div>
@@ -744,7 +744,7 @@ export default function ProductForm({ productId = null }) {
                 onChange={handleChange}
                 rows="2"
                 placeholder="Optional comments"
-                className="form-textarea w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               ></textarea>
             </div>
           </div>

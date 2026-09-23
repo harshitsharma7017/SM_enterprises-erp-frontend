@@ -36,13 +36,16 @@ export default function FormatIndex() {
 
       const res = await apiClient.get(`/masters/formats?${query.toString()}`);
       if (res.success && res.data) {
-        setFormats(res.data.rows || []);
+        const rows = res.data.data || res.data.rows || [];
+        const count = res.data.total || res.data.count || 0;
+        
+        setFormats(rows);
         setPagination({
           current_page: filters.page,
-          last_page: Math.ceil(res.data.count / limit),
-          total: res.data.count,
-          from: res.data.count > 0 ? offset + 1 : 0,
-          to: Math.min(offset + limit, res.data.count),
+          last_page: Math.ceil(count / limit),
+          total: count,
+          from: count > 0 ? offset + 1 : 0,
+          to: Math.min(offset + limit, count),
         });
       }
     } catch (err) {

@@ -262,7 +262,7 @@ export default function InquiryForm({ inquiryId = null }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Date <span className="text-red-500">*</span></label>
-            <input type="date" name="inquiry_date" required value={formData.inquiry_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="inquiry_date" required value={formData.inquiry_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Inquiry Date"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Buyer&apos;s Ref / Season</label>
@@ -340,7 +340,7 @@ export default function InquiryForm({ inquiryId = null }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Expected Shipment Date</label>
-            <input type="date" name="expected_shipment_date" value={formData.expected_shipment_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="expected_shipment_date" value={formData.expected_shipment_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Expected Shipment Date"/>
           </div>
           <div className="md:col-span-3">
             <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
@@ -371,7 +371,7 @@ export default function InquiryForm({ inquiryId = null }) {
           <div className="space-y-2">
             {followups.map((f, i) => (
               <div key={f.id || i} className="flex gap-2 items-center">
-                <input type="date" value={f.date} onChange={(e) => updateFollowup(i, { date: e.target.value })} className="form-input rounded border-gray-300 text-sm w-44" />
+                <input type="date" value={f.date} onChange={(e) = placeholder="Enter Date"> updateFollowup(i, { date: e.target.value })} className="form-input rounded border-gray-300 text-sm w-44" />
                 <input type="text" placeholder="Comment" value={f.comment} onChange={(e) => updateFollowup(i, { comment: e.target.value })} className="form-input flex-1 rounded border-gray-300 text-sm" />
                 <button type="button" onClick={() => removeFollowup(i)} className="text-red-500 hover:text-red-700 px-1"><i className="bi bi-trash"></i></button>
               </div>
@@ -385,11 +385,11 @@ export default function InquiryForm({ inquiryId = null }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Details</label>
-            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Delivery Details"></textarea>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Packing Details</label>
-            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Packing Details"></textarea>
           </div>
         </div>
       </FormSection>

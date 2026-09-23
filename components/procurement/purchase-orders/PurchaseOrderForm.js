@@ -177,7 +177,7 @@ export default function PurchaseOrderForm({ poId = null }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">PO Date <span className="text-red-500">*</span></label>
-            <input type="date" name="po_date" required value={formData.po_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="po_date" required value={formData.po_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Po Date"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Buyer</label>
@@ -207,11 +207,11 @@ export default function PurchaseOrderForm({ poId = null }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Dispatch Date</label>
-            <input type="date" name="dispatch_date" value={formData.dispatch_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="dispatch_date" value={formData.dispatch_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Dispatch Date"/>
           </div>
           <div className="md:col-span-3">
             <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-            <input type="text" name="remarks" maxLength={1000} value={formData.remarks} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="remarks" maxLength={1000} value={formData.remarks} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Remarks"/>
           </div>
         </div>
       </FormSection>
@@ -224,11 +224,11 @@ export default function PurchaseOrderForm({ poId = null }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Details</label>
-            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Delivery Details"></textarea>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Packing Details</label>
-            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Packing Details"></textarea>
           </div>
         </div>
       </FormSection>

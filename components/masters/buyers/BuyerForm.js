@@ -88,8 +88,8 @@ export default function BuyerForm({ buyerId = null }) {
   async function fetchBuyer() {
     try {
             const res = await apiClient.get(`/masters/buyers/${buyerId}/edit`);
-      if (res.data.success) {
-        const { buyer, categories, countries, ports, designations, paymentTerms, incoterms, currencies, shipmentMethods, agents } = res.data.data;
+      if (res.success) {
+        const { buyer, categories, countries, ports, designations, paymentTerms, incoterms, currencies, shipmentMethods, agents } = res.data;
         
         setCategories(categories || {});
         setCountries(countries || {});
@@ -149,8 +149,8 @@ export default function BuyerForm({ buyerId = null }) {
   async function fetchDefaults() {
     try {
             const res = await apiClient.get('/masters/buyers/create');
-      if (res.data.success) {
-        const data = res.data.data;
+      if (res.success) {
+        const data = res.data;
         setCategories(data.categories || {});
         setCountries(data.countries || {});
         setPorts(data.ports || {});
@@ -292,7 +292,7 @@ export default function BuyerForm({ buyerId = null }) {
         res = await apiClient.post('/masters/buyers', payload);
       }
 
-      if (res.data.success) {
+      if (res.success) {
         router.push('/masters/buyers');
       }
     } catch (err) {
@@ -331,8 +331,8 @@ export default function BuyerForm({ buyerId = null }) {
                 onChange={handleChange}
                 required
                 maxLength="200"
-                className={`form-input w-full rounded border-gray-300 text-sm ${errors.company_name ? 'border-red-500' : ''}`}
-              />
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.company_name ? 'border-red-500' : ''}`}
+               placeholder="Enter Company Name"/>
               {errors.company_name && <p className="text-xs text-red-500 mt-1">{errors.company_name[0]}</p>}
             </div>
           </div>
@@ -346,7 +346,7 @@ export default function BuyerForm({ buyerId = null }) {
                 value={formData.category_ids} 
                 onChange={handleChange}
                 required
-                className={`form-select w-full rounded border-gray-300 text-sm h-24 ${errors.category_ids ? 'border-red-500' : ''}`}
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm h-24 ${errors.category_ids ? 'border-red-500' : ''}`}
               >
                 {Object.entries(categories).map(([id, name]) => (
                   <option key={id} value={id}>{name}</option>
@@ -366,7 +366,7 @@ export default function BuyerForm({ buyerId = null }) {
                   name="is_overseas" 
                   checked={formData.is_overseas} 
                   onChange={handleChange}
-                  className="rounded border-gray-300 text-blue-600" 
+                  className="rounded border border-gray-300 text-blue-600" 
                 />
                 <span className="ml-2 text-sm">Yes, overseas buyer</span>
               </label>
@@ -390,8 +390,8 @@ export default function BuyerForm({ buyerId = null }) {
                 name="mobile" 
                 value={formData.mobile} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Mobile"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
@@ -400,8 +400,8 @@ export default function BuyerForm({ buyerId = null }) {
                 name="email" 
                 value={formData.email} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Email"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Website</label>
@@ -410,8 +410,8 @@ export default function BuyerForm({ buyerId = null }) {
                 name="website" 
                 value={formData.website} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Website"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Fax</label>
@@ -420,8 +420,8 @@ export default function BuyerForm({ buyerId = null }) {
                 name="fax" 
                 value={formData.fax} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Fax"/>
             </div>
           </div>
         </div>
@@ -446,8 +446,8 @@ export default function BuyerForm({ buyerId = null }) {
                 <input 
                   type="text" 
                   value={contact.name} 
-                  onChange={(e) => handleContactChange(index, 'name', e.target.value)}
-                  className="form-input w-full rounded border-gray-300 text-sm"
+                  onChange={(e) = placeholder="Enter Name"> handleContactChange(index, 'name', e.target.value)}
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 />
               </div>
               <div className="flex-1">
@@ -455,7 +455,7 @@ export default function BuyerForm({ buyerId = null }) {
                 <select 
                   value={contact.designation_id} 
                   onChange={(e) => handleContactChange(index, 'designation_id', e.target.value)}
-                  className="form-select w-full rounded border-gray-300 text-sm"
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 >
                   <option value="">— Select —</option>
                   {Object.entries(designations).map(([id, name]) => (
@@ -468,8 +468,8 @@ export default function BuyerForm({ buyerId = null }) {
                 <input 
                   type="text" 
                   value={contact.mobile} 
-                  onChange={(e) => handleContactChange(index, 'mobile', e.target.value)}
-                  className="form-input w-full rounded border-gray-300 text-sm"
+                  onChange={(e) = placeholder="Enter Mobile"> handleContactChange(index, 'mobile', e.target.value)}
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 />
               </div>
               <div className="flex-1">
@@ -477,8 +477,8 @@ export default function BuyerForm({ buyerId = null }) {
                 <input 
                   type="email" 
                   value={contact.email} 
-                  onChange={(e) => handleContactChange(index, 'email', e.target.value)}
-                  className="form-input w-full rounded border-gray-300 text-sm"
+                  onChange={(e) = placeholder="Enter Email"> handleContactChange(index, 'email', e.target.value)}
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 />
               </div>
               <div>
@@ -504,16 +504,16 @@ export default function BuyerForm({ buyerId = null }) {
               <h4 className="text-sm font-medium border-b pb-1">Billing Address</h4>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Address Line 1</label>
-                <input type="text" name="address_line_1" value={formData.address_line_1} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+                <input type="text" name="address_line_1" value={formData.address_line_1} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Address Line 1"/>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Address Line 2</label>
-                <input type="text" name="address_line_2" value={formData.address_line_2} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+                <input type="text" name="address_line_2" value={formData.address_line_2} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Address Line 2"/>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Country</label>
-                  <select name="country_id" value={formData.country_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+                  <select name="country_id" value={formData.country_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                     <option value="">— Select —</option>
                     {Object.entries(countries).map(([id, name]) => (
                       <option key={id} value={id}>{name}</option>
@@ -525,31 +525,31 @@ export default function BuyerForm({ buyerId = null }) {
                     State 
                     <i className="bi bi-info-circle text-gray-400" title="State cascade requires backend support (Not currently available)"></i>
                   </label>
-                  <select name="state_id" value={formData.state_id} onChange={handleChange} disabled={true} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-100">
+                  <select name="state_id" value={formData.state_id} onChange={handleChange} disabled={true} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-100">
                     <option value="">—</option>
                     {/* States not fetched due to backend gap */}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">City</label>
-                  <select name="city_id" value={formData.city_id} onChange={handleChange} disabled={true} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-100">
+                  <select name="city_id" value={formData.city_id} onChange={handleChange} disabled={true} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-100">
                     <option value="">—</option>
                     {/* Cities not fetched due to backend gap */}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Pincode</label>
-                  <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+                  <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Pincode"/>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">GST Number</label>
-                  <input type="text" name="gst_number" value={formData.gst_number} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm uppercase" />
+                  <input type="text" name="gst_number" value={formData.gst_number} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"  placeholder="Enter Gst Number"/>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">PAN Number</label>
-                  <input type="text" name="pan_number" value={formData.pan_number} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm uppercase" />
+                  <input type="text" name="pan_number" value={formData.pan_number} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"  placeholder="Enter Pan Number"/>
                 </div>
               </div>
             </div>
@@ -558,7 +558,7 @@ export default function BuyerForm({ buyerId = null }) {
               <h4 className="text-sm font-medium border-b pb-1">Destination Details</h4>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Port</label>
-                <select name="port_id" value={formData.port_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+                <select name="port_id" value={formData.port_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                   <option value="">— Select —</option>
                   {Object.entries(ports).map(([id, name]) => (
                     <option key={id} value={id}>{name}</option>
@@ -567,11 +567,11 @@ export default function BuyerForm({ buyerId = null }) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Destination (City/Place)</label>
-                <input type="text" name="destination" value={formData.destination} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+                <input type="text" name="destination" value={formData.destination} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Destination"/>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Incoterm</label>
-                <select name="incoterm_id" value={formData.incoterm_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+                <select name="incoterm_id" value={formData.incoterm_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                   <option value="">— Select —</option>
                   {Object.entries(incoterms).map(([id, name]) => (
                     <option key={id} value={id}>{name}</option>
@@ -580,7 +580,7 @@ export default function BuyerForm({ buyerId = null }) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Shipment Method</label>
-                <select name="shipment_method_id" value={formData.shipment_method_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+                <select name="shipment_method_id" value={formData.shipment_method_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                   <option value="">— Select —</option>
                   {Object.entries(shipmentMethods).map(([id, name]) => (
                     <option key={id} value={id}>{name}</option>
@@ -602,7 +602,7 @@ export default function BuyerForm({ buyerId = null }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Agent</label>
-              <select name="agent_id" value={formData.agent_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+              <select name="agent_id" value={formData.agent_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                 <option value="">— Select —</option>
                 {agents.map(a => (
                   <option key={a.id} value={a.id}>{a.name}</option>
@@ -611,7 +611,7 @@ export default function BuyerForm({ buyerId = null }) {
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Commission %</label>
-              <input type="number" step="0.01" min="0" max="100" name="commission_percent" value={formData.commission_percent} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+              <input type="number" step="0.01" min="0" max="100" name="commission_percent" value={formData.commission_percent} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Commission Percent"/>
             </div>
           </div>
         </div>
@@ -627,7 +627,7 @@ export default function BuyerForm({ buyerId = null }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Payment Term</label>
-              <select name="payment_term_id" value={formData.payment_term_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+              <select name="payment_term_id" value={formData.payment_term_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                 <option value="">— Select —</option>
                 {Object.entries(paymentTerms).map(([id, name]) => (
                   <option key={id} value={id}>{name}</option>
@@ -636,7 +636,7 @@ export default function BuyerForm({ buyerId = null }) {
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Currency</label>
-              <select name="currency_id" value={formData.currency_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+              <select name="currency_id" value={formData.currency_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                 <option value="">— Select —</option>
                 {Object.entries(currencies).map(([id, name]) => (
                   <option key={id} value={id}>{name}</option>
@@ -645,11 +645,11 @@ export default function BuyerForm({ buyerId = null }) {
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Advance %</label>
-              <input type="number" step="0.01" min="0" max="100" name="advance_percent" value={formData.advance_percent} onChange={handleChange} className={`form-input w-full rounded border-gray-300 text-sm ${advanceSightError ? 'border-red-500' : ''}`} />
+              <input type="number" step="0.01" min="0" max="100" name="advance_percent" value={formData.advance_percent} onChange={handleChange} className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${advanceSightError ? 'border-red-500' : ''}`}  placeholder="Enter Advance Percent"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Sight %</label>
-              <input type="number" step="0.01" min="0" max="100" name="sight_percent" value={formData.sight_percent} onChange={handleChange} className={`form-input w-full rounded border-gray-300 text-sm ${advanceSightError ? 'border-red-500' : ''}`} />
+              <input type="number" step="0.01" min="0" max="100" name="sight_percent" value={formData.sight_percent} onChange={handleChange} className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${advanceSightError ? 'border-red-500' : ''}`}  placeholder="Enter Sight Percent"/>
             </div>
           </div>
           {advanceSightError && <p className="text-sm text-red-600">{advanceSightError}</p>}
@@ -666,24 +666,24 @@ export default function BuyerForm({ buyerId = null }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Bank Name</label>
-              <input type="text" name="bank_name" value={formData.bank_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+              <input type="text" name="bank_name" value={formData.bank_name} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Bank Name"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Branch</label>
-              <input type="text" name="branch_name" value={formData.branch_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+              <input type="text" name="branch_name" value={formData.branch_name} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Branch Name"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Account Number</label>
-              <input type="text" name="account_number" value={formData.account_number} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+              <input type="text" name="account_number" value={formData.account_number} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Account Number"/>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">IFSC Code</label>
-                <input type="text" name="ifsc_code" value={formData.ifsc_code} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm uppercase" />
+                <input type="text" name="ifsc_code" value={formData.ifsc_code} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"  placeholder="Enter Ifsc Code"/>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">SWIFT Code</label>
-                <input type="text" name="swift_code" value={formData.swift_code} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm uppercase" />
+                <input type="text" name="swift_code" value={formData.swift_code} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"  placeholder="Enter Swift Code"/>
               </div>
             </div>
           </div>
@@ -709,8 +709,8 @@ export default function BuyerForm({ buyerId = null }) {
                   <input 
                     type="text" 
                     value={marking.label} 
-                    onChange={(e) => handleCartonChange(index, 'label', e.target.value)}
-                    className="form-input w-full rounded border-gray-300 text-sm bg-gray-50"
+                    onChange={(e) = placeholder="Enter Label"> handleCartonChange(index, 'label', e.target.value)}
+                    className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm bg-gray-50"
                     placeholder="Label"
                   />
                 </div>
@@ -718,8 +718,8 @@ export default function BuyerForm({ buyerId = null }) {
                   <input 
                     type="text" 
                     value={marking.value} 
-                    onChange={(e) => handleCartonChange(index, 'value', e.target.value)}
-                    className="form-input w-full rounded border-gray-300 text-sm"
+                    onChange={(e) = placeholder="Enter Value"> handleCartonChange(index, 'value', e.target.value)}
+                    className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                     placeholder="Value (e.g. Mens Shirt)"
                   />
                 </div>

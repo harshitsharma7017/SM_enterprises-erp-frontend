@@ -25,7 +25,7 @@ export default function CategoryForm({ categoryId }) {
     // Fetch formats for the multiselect
     apiClient.get('/masters/formats?limit=100').then(res => {
       if (res.success && res.data) {
-        setFormats(res.data.rows || []);
+        setFormats(res.data.data || res.data.rows || []);
       }
     }).catch(console.error);
 
@@ -129,7 +129,7 @@ export default function CategoryForm({ categoryId }) {
                         readOnly
                         value={formData.code}
                         className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 bg-gray-50 text-gray-500 font-mono sm:text-sm"
-                      />
+                       placeholder="Enter Code"/>
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
                       {categoryId ? 'Codes never change — they appear on documents already sent.' : 'Assigned automatically when you save.'}

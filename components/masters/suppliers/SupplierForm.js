@@ -74,8 +74,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
   async function fetchSupplier() {
     try {
             const res = await apiClient.get(`/masters/suppliers/${supplierId}/edit`);
-      if (res.data.success) {
-        const { supplier, countries, states, cities, supplierTypes, designations, paymentTerms, agents } = res.data.data;
+      if (res.success) {
+        const { supplier, countries, states, cities, supplierTypes, designations, paymentTerms, agents } = res.data;
         setCountries(countries || {});
         setStates(states || {});
         setCities(cities || {});
@@ -137,8 +137,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
         : `/masters/suppliers/create?${params.toString()}`;
 
       const res = await apiClient.get(url);
-      if (res.data.success) {
-        const data = res.data.data;
+      if (res.success) {
+        const data = res.data;
         setCountries(data.countries || {});
         setStates(data.states || {});
         setCities(data.cities || {});
@@ -151,6 +151,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -250,7 +252,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
         res = await apiClient.post('/masters/suppliers', payload);
       }
 
-      if (res.data.success) {
+      if (res.success) {
         router.push('/masters/suppliers');
       }
     } catch (err) {
@@ -316,8 +318,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 onChange={handleChange}
                 required
                 maxLength="200"
-                className={`form-input w-full rounded border-gray-300 text-sm ${errors.name ? 'border-red-500' : ''} ${nameAvailable === false ? 'border-red-500' : ''} ${nameAvailable === true ? 'border-green-500' : ''}`}
-              />
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.name ? 'border-red-500' : ''} ${nameAvailable === false ? 'border-red-500' : ''} ${nameAvailable === true ? 'border-green-500' : ''}`}
+               placeholder="Enter Name"/>
               {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name[0]}</p>}
               <p className={`text-xs mt-1 ${nameAvailable === false ? 'text-red-500' : nameAvailable === true ? 'text-green-600' : 'text-gray-500'}`}>
                 {nameAvailable === false ? 'Already taken — choose another.' : nameAvailable === true ? 'Available.' : 'Must be unique.'}
@@ -333,7 +335,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 value={formData.supplier_type_id} 
                 onChange={handleChange}
                 required
-                className={`form-select w-full rounded border-gray-300 text-sm ${errors.supplier_type_id ? 'border-red-500' : ''}`}
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.supplier_type_id ? 'border-red-500' : ''}`}
               >
                 <option value="">Search type...</option>
                 {Object.entries(supplierTypes).map(([id, name]) => (
@@ -362,8 +364,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 value={formData.pan_number} 
                 onChange={handleChange}
                 maxLength="10"
-                className={`form-input w-full rounded border-gray-300 text-sm uppercase ${errors.pan_number ? 'border-red-500' : ''}`}
-              />
+                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase ${errors.pan_number ? 'border-red-500' : ''}`}
+               placeholder="Enter Pan Number"/>
               {errors.pan_number && <p className="text-xs text-red-500 mt-1">{errors.pan_number[0]}</p>}
             </div>
           </div>
@@ -378,8 +380,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                   value={formData.gst_number} 
                   onChange={handleChange}
                   maxLength="15"
-                  className={`form-input w-full rounded border-gray-300 text-sm uppercase ${errors.gst_number ? 'border-red-500' : ''}`}
-                />
+                  className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase ${errors.gst_number ? 'border-red-500' : ''}`}
+                 placeholder="Enter Gst Number"/>
                 {errors.gst_number && <p className="text-xs text-red-500 mt-1">{errors.gst_number[0]}</p>}
               </div>
             </div>
@@ -394,8 +396,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 value={formData.cin_number} 
                 onChange={handleChange}
                 maxLength="21"
-                className="form-input w-full rounded border-gray-300 text-sm uppercase"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"
+               placeholder="Enter Cin Number"/>
             </div>
           </div>
 
@@ -408,7 +410,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                   name="is_msme" 
                   checked={formData.is_msme} 
                   onChange={handleChange}
-                  className="rounded border-gray-300" 
+                  className="rounded border border-gray-300" 
                 />
                 <span className="ml-2 text-sm text-gray-600">Yes, registered under MSME</span>
               </label>
@@ -424,8 +426,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                   name="msme_reg_number" 
                   value={formData.msme_reg_number} 
                   onChange={handleChange}
-                  className="form-input w-full rounded border-gray-300 text-sm"
-                />
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                 placeholder="Enter Msme Reg Number"/>
               </div>
             </div>
           )}
@@ -447,8 +449,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="contact_person" 
                 value={formData.contact_person} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Contact Person"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Designation</label>
@@ -456,7 +458,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="designation_id" 
                 value={formData.designation_id} 
                 onChange={handleChange}
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">— Select —</option>
                 {Object.entries(designations).map(([id, name]) => (
@@ -471,8 +473,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="mobile" 
                 value={formData.mobile} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Mobile"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
@@ -481,8 +483,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="email" 
                 value={formData.email} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Email"/>
             </div>
           </div>
         </div>
@@ -502,8 +504,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
               name="address_line_1" 
               value={formData.address_line_1} 
               onChange={handleChange}
-              className="form-input w-full rounded border-gray-300 text-sm"
-            />
+              className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+             placeholder="Enter Address Line 1"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Address Line 2</label>
@@ -512,8 +514,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
               name="address_line_2" 
               value={formData.address_line_2} 
               onChange={handleChange}
-              className="form-input w-full rounded border-gray-300 text-sm"
-            />
+              className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+             placeholder="Enter Address Line 2"/>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
@@ -522,7 +524,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="country_id" 
                 value={formData.country_id} 
                 onChange={handleChange}
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">— Select —</option>
                 {Object.entries(countries).map(([id, name]) => (
@@ -537,7 +539,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 value={formData.state_id} 
                 onChange={handleChange}
                 disabled={!formData.country_id}
-                className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-100"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-100"
               >
                 <option value="">— Select —</option>
                 {Object.entries(states).map(([id, name]) => (
@@ -552,7 +554,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 value={formData.city_id} 
                 onChange={handleChange}
                 disabled={!formData.state_id}
-                className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-100"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-100"
               >
                 <option value="">— Select —</option>
                 {Object.entries(cities).map(([id, name]) => (
@@ -567,8 +569,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="pincode" 
                 value={formData.pincode} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Pincode"/>
             </div>
           </div>
         </div>
@@ -588,7 +590,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="payment_term_id" 
                 value={formData.payment_term_id} 
                 onChange={handleChange}
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">— Select —</option>
                 {Object.entries(paymentTerms).map(([id, name]) => (
@@ -602,7 +604,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="agent_id" 
                 value={formData.agent_id} 
                 onChange={handleChange}
-                className="form-select w-full rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">— Select —</option>
                 {agents.map((a) => (
@@ -629,7 +631,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                   name="jobwork_type" 
                   value={formData.jobwork_type} 
                   onChange={handleChange}
-                  className="form-select w-full rounded border-gray-300 text-sm"
+                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 >
                   <option value="">— Select —</option>
                   <option value="cutting">Cutting</option>
@@ -649,7 +651,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                     name="is_tds_applicable" 
                     checked={formData.is_tds_applicable} 
                     onChange={handleChange}
-                    className="rounded border-gray-300" 
+                    className="rounded border border-gray-300" 
                   />
                   <span className="ml-2 text-sm text-gray-700">TDS Applicable</span>
                 </label>
@@ -674,8 +676,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="beneficiary_name" 
                 value={formData.beneficiary_name} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Beneficiary Name"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Bank Name</label>
@@ -684,8 +686,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="bank_name" 
                 value={formData.bank_name} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Bank Name"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Branch</label>
@@ -694,8 +696,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="branch_name" 
                 value={formData.branch_name} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Branch Name"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Account Number</label>
@@ -704,8 +706,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="account_number" 
                 value={formData.account_number} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Account Number"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">IFSC Code</label>
@@ -714,8 +716,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="ifsc_code" 
                 value={formData.ifsc_code} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm uppercase"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"
+               placeholder="Enter Ifsc Code"/>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">SWIFT Code</label>
@@ -724,8 +726,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 name="swift_code" 
                 value={formData.swift_code} 
                 onChange={handleChange}
-                className="form-input w-full rounded border-gray-300 text-sm uppercase"
-              />
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"
+               placeholder="Enter Swift Code"/>
             </div>
           </div>
         </div>
@@ -746,7 +748,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 value={formData.status} 
                 onChange={handleChange}
                 required
-                className="form-select w-full md:w-1/3 rounded border-gray-300 text-sm"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full md:w-1/3 rounded border border-gray-300 text-sm"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -761,8 +763,8 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 value={formData.remarks} 
                 onChange={handleChange}
                 rows="2"
-                className="form-textarea w-full rounded border-gray-300 text-sm"
-              ></textarea>
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+               placeholder="Enter Remarks"></textarea>
             </div>
           </div>
         </div>

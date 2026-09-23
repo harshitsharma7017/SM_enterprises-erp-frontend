@@ -209,7 +209,7 @@ export default function JobberForm({ jobberId = null }) {
               <label className="md:col-span-1 font-medium text-sm text-gray-700">Name <span className="text-red-500">*</span></label>
               <div className="md:col-span-3">
                 <input type="text" name="name" value={formData.name} onChange={handleChange} required maxLength="200"
-                  className={`form-input w-full rounded border-gray-300 text-sm ${nameAvailable === false ? 'border-red-500' : nameAvailable === true ? 'border-green-500' : ''}`} />
+                  className={`form-input w-full rounded border-gray-300 text-sm ${nameAvailable === false ? 'border-red-500' : nameAvailable === true ? 'border-green-500' : ''}`}  placeholder="Enter Name"/>
                 <p className={`text-xs mt-1 ${nameAvailable === false ? 'text-red-500' : nameAvailable === true ? 'text-green-600' : 'text-gray-500'}`}>
                   {nameAvailable === false ? 'Already taken — choose another.' : nameAvailable === true ? 'Available.' : 'Must be unique.'}
                 </p>
@@ -237,17 +237,17 @@ export default function JobberForm({ jobberId = null }) {
           <div className="p-4 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
               <label className="md:col-span-1 font-medium text-sm text-gray-700">PAN Number</label>
-              <div className="md:col-span-3"><input type="text" name="pan_number" value={formData.pan_number} onChange={handleChange} maxLength="10" className="form-input w-full rounded border-gray-300 text-sm uppercase" /></div>
+              <div className="md:col-span-3"><input type="text" name="pan_number" value={formData.pan_number} onChange={handleChange} maxLength="10" className="form-input w-full rounded border-gray-300 text-sm uppercase"  placeholder="Enter Pan Number"/></div>
             </div>
             {!isUnregistered && (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                 <label className="md:col-span-1 font-medium text-sm text-gray-700">GST Number</label>
-                <div className="md:col-span-3"><input type="text" name="gst_number" value={formData.gst_number} onChange={handleChange} maxLength="15" className="form-input w-full rounded border-gray-300 text-sm uppercase" /></div>
+                <div className="md:col-span-3"><input type="text" name="gst_number" value={formData.gst_number} onChange={handleChange} maxLength="15" className="form-input w-full rounded border-gray-300 text-sm uppercase"  placeholder="Enter Gst Number"/></div>
               </div>
             )}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
               <label className="md:col-span-1 font-medium text-sm text-gray-700">CIN Number</label>
-              <div className="md:col-span-3"><input type="text" name="cin_number" value={formData.cin_number} onChange={handleChange} maxLength="21" className="form-input w-full rounded border-gray-300 text-sm uppercase" /></div>
+              <div className="md:col-span-3"><input type="text" name="cin_number" value={formData.cin_number} onChange={handleChange} maxLength="21" className="form-input w-full rounded border-gray-300 text-sm uppercase"  placeholder="Enter Cin Number"/></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
               <label className="md:col-span-1 font-medium text-sm text-gray-700">Is MSME?</label>
@@ -261,7 +261,7 @@ export default function JobberForm({ jobberId = null }) {
             {formData.is_msme && (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                 <label className="md:col-span-1 font-medium text-sm text-gray-700">MSME Reg No</label>
-                <div className="md:col-span-3"><input type="text" name="msme_reg_number" value={formData.msme_reg_number} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" /></div>
+                <div className="md:col-span-3"><input type="text" name="msme_reg_number" value={formData.msme_reg_number} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Msme Reg Number"/></div>
               </div>
             )}
           </div>
@@ -277,7 +277,7 @@ export default function JobberForm({ jobberId = null }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Contact Person</label>
-                <input type="text" name="contact_person" value={formData.contact_person} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+                <input type="text" name="contact_person" value={formData.contact_person} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Contact Person"/>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Designation</label>
@@ -288,11 +288,11 @@ export default function JobberForm({ jobberId = null }) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Mobile</label>
-                <input type="text" name="mobile" value={formData.mobile} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+                <input type="text" name="mobile" value={formData.mobile} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Mobile"/>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+                <input type="email" name="email" value={formData.email} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Email"/>
               </div>
             </div>
           </div>
@@ -305,8 +305,8 @@ export default function JobberForm({ jobberId = null }) {
             <h3 className="text-base font-semibold">Address</h3>
           </div>
           <div className="p-4 space-y-4">
-            <div><label className="block text-xs font-medium text-gray-700 mb-1">Address Line 1</label><input type="text" name="address_line_1" value={formData.address_line_1} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" /></div>
-            <div><label className="block text-xs font-medium text-gray-700 mb-1">Address Line 2</label><input type="text" name="address_line_2" value={formData.address_line_2} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" /></div>
+            <div><label className="block text-xs font-medium text-gray-700 mb-1">Address Line 1</label><input type="text" name="address_line_1" value={formData.address_line_1} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Address Line 1"/></div>
+            <div><label className="block text-xs font-medium text-gray-700 mb-1">Address Line 2</label><input type="text" name="address_line_2" value={formData.address_line_2} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Address Line 2"/></div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Country</label>
@@ -331,7 +331,7 @@ export default function JobberForm({ jobberId = null }) {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Pincode</label>
-                <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+                <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Pincode"/>
               </div>
             </div>
           </div>
@@ -403,12 +403,12 @@ export default function JobberForm({ jobberId = null }) {
           </div>
           <div className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label className="block text-xs font-medium text-gray-700 mb-1">Beneficiary Name</label><input type="text" name="beneficiary_name" value={formData.beneficiary_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" /></div>
-              <div><label className="block text-xs font-medium text-gray-700 mb-1">Bank Name</label><input type="text" name="bank_name" value={formData.bank_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" /></div>
-              <div><label className="block text-xs font-medium text-gray-700 mb-1">Branch</label><input type="text" name="branch_name" value={formData.branch_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" /></div>
-              <div><label className="block text-xs font-medium text-gray-700 mb-1">Account Number</label><input type="text" name="account_number" value={formData.account_number} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" /></div>
-              <div><label className="block text-xs font-medium text-gray-700 mb-1">IFSC Code</label><input type="text" name="ifsc_code" value={formData.ifsc_code} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm uppercase" /></div>
-              <div><label className="block text-xs font-medium text-gray-700 mb-1">SWIFT Code</label><input type="text" name="swift_code" value={formData.swift_code} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm uppercase" /></div>
+              <div><label className="block text-xs font-medium text-gray-700 mb-1">Beneficiary Name</label><input type="text" name="beneficiary_name" value={formData.beneficiary_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Beneficiary Name"/></div>
+              <div><label className="block text-xs font-medium text-gray-700 mb-1">Bank Name</label><input type="text" name="bank_name" value={formData.bank_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Bank Name"/></div>
+              <div><label className="block text-xs font-medium text-gray-700 mb-1">Branch</label><input type="text" name="branch_name" value={formData.branch_name} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Branch Name"/></div>
+              <div><label className="block text-xs font-medium text-gray-700 mb-1">Account Number</label><input type="text" name="account_number" value={formData.account_number} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Account Number"/></div>
+              <div><label className="block text-xs font-medium text-gray-700 mb-1">IFSC Code</label><input type="text" name="ifsc_code" value={formData.ifsc_code} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm uppercase"  placeholder="Enter Ifsc Code"/></div>
+              <div><label className="block text-xs font-medium text-gray-700 mb-1">SWIFT Code</label><input type="text" name="swift_code" value={formData.swift_code} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm uppercase"  placeholder="Enter Swift Code"/></div>
             </div>
           </div>
         </div>
@@ -431,7 +431,7 @@ export default function JobberForm({ jobberId = null }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
               <label className="md:col-span-1 font-medium text-sm text-gray-700 pt-2">Remarks</label>
-              <div className="md:col-span-3"><textarea name="remarks" value={formData.remarks} onChange={handleChange} rows="2" className="form-textarea w-full rounded border-gray-300 text-sm"></textarea></div>
+              <div className="md:col-span-3"><textarea name="remarks" value={formData.remarks} onChange={handleChange} rows="2" className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Remarks"></textarea></div>
             </div>
           </div>
         </div>

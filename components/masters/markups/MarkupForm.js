@@ -226,7 +226,7 @@ export default function MarkupForm({ markupId = null }) {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
                   <label className="md:col-span-1 font-medium text-sm text-gray-700 pt-2">Remarks</label>
                   <div className="md:col-span-3">
-                    <textarea name="remarks" value={formData.remarks} onChange={handleChange} rows="2" className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+                    <textarea name="remarks" value={formData.remarks} onChange={handleChange} rows="2" className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Remarks"></textarea>
                   </div>
                 </div>
               </div>

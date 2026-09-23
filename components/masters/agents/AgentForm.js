@@ -197,7 +197,7 @@ export default function AgentForm({ agentId = null }) {
               <label className="md:col-span-1 font-medium text-sm text-gray-700">Display Code <span className="text-red-500">*</span></label>
               <div className="md:col-span-3">
                 <input type="text" name="display_code" value={formData.display_code} onChange={handleChange} required maxLength="5"
-                  className={`form-input w-full md:w-1/2 rounded border-gray-300 text-sm uppercase ${codeAvailable === false ? 'border-red-500' : codeAvailable === true ? 'border-green-500' : ''}`} />
+                  className={`form-input w-full md:w-1/2 rounded border-gray-300 text-sm uppercase ${codeAvailable === false ? 'border-red-500' : codeAvailable === true ? 'border-green-500' : ''}`}  placeholder="Enter Display Code"/>
                 <p className={`text-xs mt-1 ${codeAvailable === false ? 'text-red-500' : codeAvailable === true ? 'text-green-600' : 'text-gray-500'}`}>
                   {codeAvailable === false ? 'Already taken.' : codeAvailable === true ? 'Available.' : 'Max 5 alphanumeric chars. Must be unique.'}
                 </p>
@@ -207,7 +207,7 @@ export default function AgentForm({ agentId = null }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
               <label className="md:col-span-1 font-medium text-sm text-gray-700">Name <span className="text-red-500">*</span></label>
               <div className="md:col-span-3">
-                <input type="text" name="name" value={formData.name} onChange={handleChange} required maxLength="200" className="form-input w-full rounded border-gray-300 text-sm" />
+                <input type="text" name="name" value={formData.name} onChange={handleChange} required maxLength="200" className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Name"/>
               </div>
             </div>
 
@@ -254,7 +254,7 @@ export default function AgentForm({ agentId = null }) {
                     </div>
                     <div className="flex-1 min-w-[120px]">
                       <label className="block text-xs text-gray-500 mb-1">Amount</label>
-                      <input type="number" step="0.0001" min="0" value={comm.amount} onChange={e => handleCommissionChange(idx, 'amount', e.target.value)} required className="form-input w-full rounded border-gray-300 text-sm py-1.5" />
+                      <input type="number" step="0.0001" min="0" value={comm.amount} onChange={e = placeholder="Enter Amount"> handleCommissionChange(idx, 'amount', e.target.value)} required className="form-input w-full rounded border-gray-300 text-sm py-1.5" />
                     </div>
                     {!isDomestic && (
                       <div className="flex-1 min-w-[120px]">
@@ -299,7 +299,7 @@ export default function AgentForm({ agentId = null }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
               <label className="md:col-span-1 font-medium text-sm text-gray-700 pt-2">Remarks</label>
               <div className="md:col-span-3">
-                <textarea name="remarks" value={formData.remarks} onChange={handleChange} rows="2" className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+                <textarea name="remarks" value={formData.remarks} onChange={handleChange} rows="2" className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Remarks"></textarea>
               </div>
             </div>
           </div>

@@ -270,7 +270,7 @@ export default function OcForm({ ocId = null }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">OC Date <span className="text-red-500">*</span></label>
-            <input type="date" name="oc_date" required value={formData.oc_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="date" name="oc_date" required value={formData.oc_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Oc Date"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Buyer&apos;s Ref</label>
@@ -318,7 +318,7 @@ export default function OcForm({ ocId = null }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Commission</label>
-            <input type="number" step="0.01" min="0" name="agent_commission_value" value={formData.agent_commission_value} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="number" step="0.01" min="0" name="agent_commission_value" value={formData.agent_commission_value} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Agent Commission Value"/>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Currency <span className="text-red-500">*</span></label>
@@ -362,7 +362,7 @@ export default function OcForm({ ocId = null }) {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-            <input type="text" name="remarks" value={formData.remarks} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <input type="text" name="remarks" value={formData.remarks} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Remarks"/>
           </div>
         </div>
       </FormSection>
@@ -391,11 +391,11 @@ export default function OcForm({ ocId = null }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Details</label>
-            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Delivery Details"></textarea>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Packing Details</label>
-            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Packing Details"></textarea>
           </div>
         </div>
       </FormSection>

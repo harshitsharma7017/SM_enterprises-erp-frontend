@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import Header from '@/components/layout/Header';
+
 import SupplierForm from '@/components/masters/suppliers/SupplierForm';
 
 function CreateSupplierForm() {
@@ -20,16 +20,11 @@ export default function CreateSupplierPage() {
   
   return (
     <DashboardLayout>
-      <Header 
-        title="Add Party" 
-        breadcrumbs={[
-          { label: 'Masters', href: '/masters' }, 
-          { label: 'Suppliers & Jobbers', href: '/masters/suppliers' }, 
-          { label: 'Create' }
-        ]} 
-      />
+      <div className="mb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 m-0">Add Supplier</h2>
+      </div>
       
-      <div className="p-6">
+      <div className="pt-2">
         <Suspense fallback={<div className="p-4">Loading form...</div>}>
           <CreateSupplierForm />
         </Suspense>

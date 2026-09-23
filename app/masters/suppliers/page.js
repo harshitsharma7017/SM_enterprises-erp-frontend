@@ -58,91 +58,114 @@ export default function SuppliersPage() {
     }
   };
 
+  const Actions = (
+    <Link href={`/masters/suppliers/create?party_type=${partyTypeFilter || 'supplier'}`} className="btn btn-sm btn-primary bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+      <i className="bi bi-plus-lg mr-1"></i> Add Party
+    </Link>
+  );
+
   return (
     <DashboardLayout>
-      <Header title="Suppliers & Jobbers" breadcrumbs={[{ label: 'Masters', href: '/masters' }, { label: 'Suppliers & Jobbers' }]} />
-      
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2">
-            <form onSubmit={handleSearch} className="flex gap-2">
-              <input 
-                type="text" 
-                placeholder="Search name, GST..." 
-                className="form-input rounded border-gray-300 text-sm"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-              <button type="submit" className="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded px-3 py-1.5 text-sm">
-                <i className="bi bi-search"></i>
-              </button>
-            </form>
-            <select 
-              value={partyTypeFilter} 
-              onChange={e => setPartyTypeFilter(e.target.value)} 
-              className="form-select rounded border-gray-300 text-sm"
-            >
-              <option value="">All Party Types</option>
-              <option value="supplier">Supplier</option>
-              <option value="jobber">Jobber</option>
-              <option value="both">Both</option>
-            </select>
-            <select 
-              value={statusFilter} 
-              onChange={e => setStatusFilter(e.target.value)} 
-              className="form-select rounded border-gray-300 text-sm"
-            >
-              <option value="">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
-          <Link href={`/masters/suppliers/create?party_type=${partyTypeFilter || 'supplier'}`} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium">
-            <i className="bi bi-plus-lg me-1"></i> Add Party
-          </Link>
+      <div className="mb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 m-0">Suppliers</h2>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+          <h3 className="text-lg font-semibold text-gray-800 m-0">Supplier Master</h3>
+          {Actions}
         </div>
+        
+        <div className="p-6">
+          {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+          <div className="flex flex-wrap items-end gap-3 mb-4">
+            <form onSubmit={handleSearch} className="flex-1 min-w-[200px] flex gap-2">
+              <div className="flex-1">
+                <label className="block text-xs text-gray-500 mb-1">Search name, GST...</label>
+                <div className="flex">
+                  <input 
+                    type="text" 
+                    placeholder="Search..." 
+                    className="w-full px-3 py-1.5 border border-gray-300 rounded-l text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                  <button type="submit" className="bg-gray-100 hover:bg-gray-200 border border-gray-300 border-l-0 rounded-r px-3 py-1.5 text-sm text-gray-600">
+                    <i className="bi bi-search"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+            
+            <div className="w-36">
+              <label className="block text-xs text-gray-500 mb-1">Party Type</label>
+              <select 
+                value={partyTypeFilter} 
+                onChange={e => setPartyTypeFilter(e.target.value)} 
+                className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All</option>
+                <option value="supplier">Supplier</option>
+                <option value="jobber">Jobber</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+            
+            <div className="w-36">
+              <label className="block text-xs text-gray-500 mb-1">Status</label>
+              <select 
+                value={statusFilter} 
+                onChange={e => setStatusFilter(e.target.value)} 
+                className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
 
-        <div className="bg-white border rounded shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto border border-gray-200 rounded-md">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 text-gray-700">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Party Code</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Party Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Party Code</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Party Type</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Name</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Type</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">City</th>
+                  <th className="px-4 py-2 text-center text-sm font-medium">Status</th>
+                  <th className="px-4 py-2 text-center text-sm font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
-                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">Loading...</td></tr>
+                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">Loading parties...</td></tr>
                 ) : suppliers.length === 0 ? (
                   <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">No parties found.</td></tr>
                 ) : (
                   suppliers.map(s => (
-                    <tr key={s.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{s.display_code}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 capitalize">{s.party_type}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{s.name}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.supplier_type_name || '-'}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{s.city_name || '-'}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-center">
+                    <tr key={s.id} className="hover:bg-gray-50 text-sm">
+                      <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{s.display_code}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-gray-500 capitalize">{s.party_type}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-gray-900">{s.name}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-gray-500">{s.supplier_type_name || '-'}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-gray-500">{s.city_name || '-'}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-center">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${s.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {s.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-center">
-                        <Link href={`/masters/suppliers/${s.id}`} className="text-blue-600 hover:text-blue-900 mx-2" title="Edit">
-                          <i className="bi bi-pencil-square"></i>
-                        </Link>
-                        <button onClick={() => deleteSupplier(s.id, s.name)} className="text-red-600 hover:text-red-900 mx-2" title="Delete">
-                          <i className="bi bi-trash"></i>
-                        </button>
+                      <td className="px-4 py-3 whitespace-nowrap text-center">
+                        <div className="inline-flex rounded-md shadow-sm" role="group">
+                          <Link href={`/masters/suppliers/${s.id}`} className="px-2 py-1 text-sm bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 rounded-l-md border-r-0" title="Edit">
+                            <i className="bi bi-pencil-square"></i>
+                          </Link>
+                          <button onClick={() => deleteSupplier(s.id, s.name)} className="px-2 py-1 text-sm bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-r-md" title="Delete">
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

@@ -2,7 +2,7 @@
 
 import { use } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import Header from '@/components/layout/Header';
+
 import SupplierForm from '@/components/masters/suppliers/SupplierForm';
 
 export default function EditSupplierPage({ params }) {
@@ -10,16 +10,11 @@ export default function EditSupplierPage({ params }) {
 
   return (
     <DashboardLayout>
-      <Header 
-        title="Edit Party" 
-        breadcrumbs={[
-          { label: 'Masters', href: '/masters' }, 
-          { label: 'Suppliers & Jobbers', href: '/masters/suppliers' }, 
-          { label: 'Edit' }
-        ]} 
-      />
+      <div className="mb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 m-0">Edit Supplier</h2>
+      </div>
       
-      <div className="p-6">
+      <div className="pt-2">
         <SupplierForm supplierId={id} />
       </div>
     </DashboardLayout>
