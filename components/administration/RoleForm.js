@@ -84,7 +84,7 @@ export default function RoleForm({ mode, role }) {
         <input
           type="text"
           value={name}
-          onChange={(e) = placeholder="Enter Name"> setName(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
           required
           disabled={isSystem}
           className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.name ? 'border-red-400' : 'border-gray-300'} ${isSystem ? 'bg-gray-50 text-gray-500' : ''}`}

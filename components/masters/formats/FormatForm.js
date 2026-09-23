@@ -384,7 +384,7 @@ const handleChange = (e) => {
                 ))}
               </div>
               <div className="flex gap-2 max-w-sm">
-                <input type="text" value={unitInput} onChange={e = placeholder="Enter UnitInput"> setUnitInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addUnit())} placeholder="Add unit (e.g. DOZEN, BOX, KGS)" maxLength="20" className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
+                <input type="text" value={unitInput} onChange={e => setUnitInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addUnit())} placeholder="Add unit (e.g. DOZEN, BOX, KGS)" maxLength="20" className="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
                 <button type="button" onClick={addUnit} className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm whitespace-nowrap">
                   <i className="bi bi-plus-lg mr-1"></i>Add Unit
                 </button>

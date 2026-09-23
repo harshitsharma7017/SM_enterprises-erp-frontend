@@ -100,7 +100,7 @@ export default function PoItemsEditor({ items, onChange, format, products }) {
                 {designCol.enabled && (
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">{designCol.label}{designCol.mandatory && <span className="text-red-500"> *</span>}</label>
-                    <input type="text" maxLength={150} value={item.design_no} onChange={(e) = placeholder="Enter Design No"> updateItem(index, { design_no: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                    <input type="text" maxLength={150} value={item.design_no} onChange={(e) => updateItem(index, { design_no: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                   </div>
                 )}
                 {productCol.enabled && (
@@ -126,7 +126,7 @@ export default function PoItemsEditor({ items, onChange, format, products }) {
                     <label className="block text-xs font-medium text-gray-700 mb-1">
                       ₹ / Unit{item.unit ? ` (${item.unit})` : ''}{priceCol.mandatory && <span className="text-red-500"> *</span>}
                     </label>
-                    <input type="number" step="0.01" min="0" value={item.cost_price} onChange={(e) = placeholder="Enter Cost Price"> updateItem(index, { cost_price: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                    <input type="number" step="0.01" min="0" value={item.cost_price} onChange={(e) => updateItem(index, { cost_price: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                   </div>
                 )}
               </div>
@@ -134,11 +134,11 @@ export default function PoItemsEditor({ items, onChange, format, products }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                  <input type="text" maxLength={1000} value={item.description} onChange={(e) = placeholder="Enter Description"> updateItem(index, { description: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                  <input type="text" maxLength={1000} value={item.description} onChange={(e) => updateItem(index, { description: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-                  <input type="text" maxLength={1000} value={item.remarks} onChange={(e) = placeholder="Enter Remarks"> updateItem(index, { remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                  <input type="text" maxLength={1000} value={item.remarks} onChange={(e) => updateItem(index, { remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                 </div>
               </div>
 

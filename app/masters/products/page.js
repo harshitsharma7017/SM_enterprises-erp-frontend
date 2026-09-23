@@ -25,8 +25,8 @@ export default function ProductsPage() {
       if (categoryFilter) params.append('category_id', categoryFilter);
 
       const res = await apiClient.get(`/masters/products?${params.toString()}`);
-      if (res.data.success) {
-        setProducts(res.data.data.data || []);
+      if (res.success) {
+        setProducts(res.data?.data || []);
       }
 
       // Also grab categories just for the filter if we don't have them

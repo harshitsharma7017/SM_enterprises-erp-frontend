@@ -371,7 +371,7 @@ export default function InquiryForm({ inquiryId = null }) {
           <div className="space-y-2">
             {followups.map((f, i) => (
               <div key={f.id || i} className="flex gap-2 items-center">
-                <input type="date" value={f.date} onChange={(e) = placeholder="Enter Date"> updateFollowup(i, { date: e.target.value })} className="form-input rounded border-gray-300 text-sm w-44" />
+                <input type="date" value={f.date} onChange={(e) => updateFollowup(i, { date: e.target.value })} className="form-input rounded border-gray-300 text-sm w-44" />
                 <input type="text" placeholder="Comment" value={f.comment} onChange={(e) => updateFollowup(i, { comment: e.target.value })} className="form-input flex-1 rounded border-gray-300 text-sm" />
                 <button type="button" onClick={() => removeFollowup(i)} className="text-red-500 hover:text-red-700 px-1"><i className="bi bi-trash"></i></button>
               </div>

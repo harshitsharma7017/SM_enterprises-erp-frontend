@@ -44,7 +44,7 @@ export default function AgentForm({ agentId = null }) {
           setAgentTypes(d.agentTypes || {});
           setCommissionTypes(d.commissionTypes || {});
           setCategories(d.categories || {});
-          setCalculationBases(d.calculationBases || {});
+          setCalculationBases(d.calculationBases || d.calculation_bases || {});
           setCurrencies(d.currencies || {});
 
           if (isEdit && d.agent) {
@@ -188,7 +188,7 @@ export default function AgentForm({ agentId = null }) {
               <label className="md:col-span-1 font-medium text-sm text-gray-700">Agent Type <span className="text-red-500">*</span></label>
               <div className="md:col-span-3">
                 <select name="agent_type" value={formData.agent_type} onChange={handleChange} required className="form-select w-full md:w-1/2 rounded border-gray-300 text-sm">
-                  {Object.entries(agentTypes).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(agentTypes) ? agentTypes : Object.entries(agentTypes || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
               </div>
             </div>
@@ -215,7 +215,7 @@ export default function AgentForm({ agentId = null }) {
               <label className="md:col-span-1 font-medium text-sm text-gray-700 pt-2">Categories <span className="text-red-500">*</span></label>
               <div className="md:col-span-3">
                 <select name="categories" multiple value={formData.categories} onChange={handleChange} required className="form-multiselect w-full rounded border-gray-300 text-sm min-h-[120px]">
-                  {Object.entries(categories).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(categories) ? categories : Object.entries(categories || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
                 <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple. Filters agents in other forms.</p>
               </div>
@@ -235,7 +235,7 @@ export default function AgentForm({ agentId = null }) {
               <div className="md:col-span-3">
                 <select name="calculation_basis_id" value={formData.calculation_basis_id} onChange={handleChange} required className="form-select w-full md:w-1/2 rounded border-gray-300 text-sm">
                   <option value="">— Select —</option>
-                  {Object.entries(calculationBases).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(calculationBases) ? calculationBases : Object.entries(calculationBases || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
               </div>
             </div>
@@ -249,19 +249,19 @@ export default function AgentForm({ agentId = null }) {
                     <div className="flex-1 min-w-[120px]">
                       <label className="block text-xs text-gray-500 mb-1">Type</label>
                       <select value={comm.commission_type} onChange={e => handleCommissionChange(idx, 'commission_type', e.target.value)} required className="form-select w-full rounded border-gray-300 text-sm py-1.5">
-                        {Object.entries(commissionTypes).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                        {(Array.isArray(commissionTypes) ? commissionTypes : Object.entries(commissionTypes || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                       </select>
                     </div>
                     <div className="flex-1 min-w-[120px]">
                       <label className="block text-xs text-gray-500 mb-1">Amount</label>
-                      <input type="number" step="0.0001" min="0" value={comm.amount} onChange={e = placeholder="Enter Amount"> handleCommissionChange(idx, 'amount', e.target.value)} required className="form-input w-full rounded border-gray-300 text-sm py-1.5" />
+                      <input type="number" step="0.0001" min="0" value={comm.amount} onChange={e => handleCommissionChange(idx, 'amount', e.target.value)} required className="form-input w-full rounded border-gray-300 text-sm py-1.5" />
                     </div>
                     {!isDomestic && (
                       <div className="flex-1 min-w-[120px]">
                         <label className="block text-xs text-gray-500 mb-1">Currency (Optional)</label>
                         <select value={comm.currency_id} onChange={e => handleCommissionChange(idx, 'currency_id', e.target.value)} className="form-select w-full rounded border-gray-300 text-sm py-1.5">
                           <option value="">— Select —</option>
-                          {Object.entries(currencies).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                          {(Array.isArray(currencies) ? currencies : Object.entries(currencies || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                         </select>
                       </div>
                     )}

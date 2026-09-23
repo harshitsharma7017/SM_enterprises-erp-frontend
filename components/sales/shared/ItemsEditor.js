@@ -166,7 +166,7 @@ export default function ItemsEditor({
                 {designCol.enabled && (
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">{designCol.label}{designCol.mandatory && <span className="text-red-500"> *</span>}</label>
-                    <input type="text" maxLength={150} value={item.design_no} onChange={(e) = placeholder="Enter Design No"> updateItem(index, { design_no: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                    <input type="text" maxLength={150} value={item.design_no} onChange={(e) => updateItem(index, { design_no: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                   </div>
                 )}
                 {productCol.enabled && (
@@ -201,14 +201,14 @@ export default function ItemsEditor({
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="md:col-span-3">
                   <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                  <input type="text" maxLength={2000} value={item.description} onChange={(e) = placeholder="Enter Description"> updateItem(index, { description: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                  <input type="text" maxLength={2000} value={item.description} onChange={(e) => updateItem(index, { description: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                 </div>
                 {priceCol.enabled && (
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">
                       {priceCol.label}{item.unit ? ` / ${item.unit}` : ''}{priceCol.mandatory && <span className="text-red-500"> *</span>}
                     </label>
-                    <input type="number" step="0.01" min="0" value={item.price} onChange={(e) = placeholder="Enter Price"> updateItem(index, { price: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                    <input type="number" step="0.01" min="0" value={item.price} onChange={(e) => updateItem(index, { price: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                   </div>
                 )}
               </div>
@@ -241,12 +241,12 @@ export default function ItemsEditor({
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">Cost Price / Unit</label>
-                        <input type="number" step="0.01" min="0" value={item.cost_price} onChange={(e) = placeholder="Enter Cost Price"> updateItem(index, { cost_price: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                        <input type="number" step="0.01" min="0" value={item.cost_price} onChange={(e) => updateItem(index, { cost_price: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                         <p className="text-[11px] text-gray-500 mt-0.5">Internal — not shown to buyer</p>
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">Item Remarks</label>
-                        <input type="text" maxLength={500} value={item.remarks} onChange={(e) = placeholder="Enter Remarks"> updateItem(index, { remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                        <input type="text" maxLength={500} value={item.remarks} onChange={(e) => updateItem(index, { remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
                       </div>
                     </div>
 

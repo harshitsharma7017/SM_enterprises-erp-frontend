@@ -348,9 +348,7 @@ export default function BuyerForm({ buyerId = null }) {
                 required
                 className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm h-24 ${errors.category_ids ? 'border-red-500' : ''}`}
               >
-                {Object.entries(categories).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(categories) ? categories : Object.entries(categories || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
               <p className="text-xs text-gray-500 mt-1">Hold CMD/Ctrl to select multiple.</p>
               {errors.category_ids && <p className="text-xs text-red-500 mt-1">{errors.category_ids[0]}</p>}
@@ -446,7 +444,7 @@ export default function BuyerForm({ buyerId = null }) {
                 <input 
                   type="text" 
                   value={contact.name} 
-                  onChange={(e) = placeholder="Enter Name"> handleContactChange(index, 'name', e.target.value)}
+                  onChange={(e) => handleContactChange(index, 'name', e.target.value)}
                   className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 />
               </div>
@@ -458,9 +456,7 @@ export default function BuyerForm({ buyerId = null }) {
                   className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 >
                   <option value="">— Select —</option>
-                  {Object.entries(designations).map(([id, name]) => (
-                    <option key={id} value={id}>{name}</option>
-                  ))}
+                  {(Array.isArray(designations) ? designations : Object.entries(designations || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
                 </select>
               </div>
               <div className="flex-1">
@@ -468,7 +464,7 @@ export default function BuyerForm({ buyerId = null }) {
                 <input 
                   type="text" 
                   value={contact.mobile} 
-                  onChange={(e) = placeholder="Enter Mobile"> handleContactChange(index, 'mobile', e.target.value)}
+                  onChange={(e) => handleContactChange(index, 'mobile', e.target.value)}
                   className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 />
               </div>
@@ -477,7 +473,7 @@ export default function BuyerForm({ buyerId = null }) {
                 <input 
                   type="email" 
                   value={contact.email} 
-                  onChange={(e) = placeholder="Enter Email"> handleContactChange(index, 'email', e.target.value)}
+                  onChange={(e) => handleContactChange(index, 'email', e.target.value)}
                   className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 />
               </div>
@@ -515,9 +511,7 @@ export default function BuyerForm({ buyerId = null }) {
                   <label className="block text-xs font-medium text-gray-700 mb-1">Country</label>
                   <select name="country_id" value={formData.country_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                     <option value="">— Select —</option>
-                    {Object.entries(countries).map(([id, name]) => (
-                      <option key={id} value={id}>{name}</option>
-                    ))}
+                    {(Array.isArray(countries) ? countries : Object.entries(countries || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
                   </select>
                 </div>
                 <div>
@@ -560,9 +554,7 @@ export default function BuyerForm({ buyerId = null }) {
                 <label className="block text-xs font-medium text-gray-700 mb-1">Port</label>
                 <select name="port_id" value={formData.port_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                   <option value="">— Select —</option>
-                  {Object.entries(ports).map(([id, name]) => (
-                    <option key={id} value={id}>{name}</option>
-                  ))}
+                  {(Array.isArray(ports) ? ports : Object.entries(ports || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
                 </select>
               </div>
               <div>
@@ -573,18 +565,14 @@ export default function BuyerForm({ buyerId = null }) {
                 <label className="block text-xs font-medium text-gray-700 mb-1">Incoterm</label>
                 <select name="incoterm_id" value={formData.incoterm_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                   <option value="">— Select —</option>
-                  {Object.entries(incoterms).map(([id, name]) => (
-                    <option key={id} value={id}>{name}</option>
-                  ))}
+                  {(Array.isArray(incoterms) ? incoterms : Object.entries(incoterms || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
                 </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Shipment Method</label>
                 <select name="shipment_method_id" value={formData.shipment_method_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                   <option value="">— Select —</option>
-                  {Object.entries(shipmentMethods).map(([id, name]) => (
-                    <option key={id} value={id}>{name}</option>
-                  ))}
+                  {(Array.isArray(shipmentMethods) ? shipmentMethods : Object.entries(shipmentMethods || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
                 </select>
               </div>
             </div>
@@ -629,18 +617,14 @@ export default function BuyerForm({ buyerId = null }) {
               <label className="block text-xs font-medium text-gray-700 mb-1">Payment Term</label>
               <select name="payment_term_id" value={formData.payment_term_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                 <option value="">— Select —</option>
-                {Object.entries(paymentTerms).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(paymentTerms) ? paymentTerms : Object.entries(paymentTerms || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Currency</label>
               <select name="currency_id" value={formData.currency_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
                 <option value="">— Select —</option>
-                {Object.entries(currencies).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(currencies) ? currencies : Object.entries(currencies || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
             </div>
             <div>
@@ -709,7 +693,7 @@ export default function BuyerForm({ buyerId = null }) {
                   <input 
                     type="text" 
                     value={marking.label} 
-                    onChange={(e) = placeholder="Enter Label"> handleCartonChange(index, 'label', e.target.value)}
+                    onChange={(e) => handleCartonChange(index, 'label', e.target.value)}
                     className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm bg-gray-50"
                     placeholder="Label"
                   />
@@ -718,7 +702,7 @@ export default function BuyerForm({ buyerId = null }) {
                   <input 
                     type="text" 
                     value={marking.value} 
-                    onChange={(e) = placeholder="Enter Value"> handleCartonChange(index, 'value', e.target.value)}
+                    onChange={(e) => handleCartonChange(index, 'value', e.target.value)}
                     className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                     placeholder="Value (e.g. Mens Shirt)"
                   />

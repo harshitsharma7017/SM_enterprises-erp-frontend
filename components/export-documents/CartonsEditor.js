@@ -38,19 +38,19 @@ export default function CartonsEditor({ cartons, onChange }) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Carton / Bale No.</label>
-              <input type="text" maxLength={40} value={carton.carton_no} onChange={(e) = placeholder="Enter Carton No"> updateCarton(cartonIndex, { carton_no: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+              <input type="text" maxLength={40} value={carton.carton_no} onChange={(e) => updateCarton(cartonIndex, { carton_no: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Net Weight</label>
-              <input type="number" step="0.001" min="0" value={carton.net_weight} onChange={(e) = placeholder="Enter Net Weight"> updateCarton(cartonIndex, { net_weight: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+              <input type="number" step="0.001" min="0" value={carton.net_weight} onChange={(e) => updateCarton(cartonIndex, { net_weight: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Gross Weight</label>
-              <input type="number" step="0.001" min="0" value={carton.gross_weight} onChange={(e) = placeholder="Enter Gross Weight"> updateCarton(cartonIndex, { gross_weight: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+              <input type="number" step="0.001" min="0" value={carton.gross_weight} onChange={(e) => updateCarton(cartonIndex, { gross_weight: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Dimensions</label>
-              <input type="text" maxLength={60} value={carton.dimensions} onChange={(e) = placeholder="Enter Dimensions"> updateCarton(cartonIndex, { dimensions: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+              <input type="text" maxLength={60} value={carton.dimensions} onChange={(e) => updateCarton(cartonIndex, { dimensions: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
             </div>
           </div>
 

@@ -221,7 +221,7 @@ export default function JobberForm({ jobberId = null }) {
                 <select name="supplier_type_id" value={formData.supplier_type_id} onChange={handleChange} required
                   className="form-select w-full rounded border-gray-300 text-sm">
                   <option value="">— Select —</option>
-                  {Object.entries(supplierTypes).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(supplierTypes) ? supplierTypes : Object.entries(supplierTypes || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
               </div>
             </div>
@@ -283,7 +283,7 @@ export default function JobberForm({ jobberId = null }) {
                 <label className="block text-xs font-medium text-gray-700 mb-1">Designation</label>
                 <select name="designation_id" value={formData.designation_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
                   <option value="">— Select —</option>
-                  {Object.entries(designations).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(designations) ? designations : Object.entries(designations || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
               </div>
               <div>
@@ -312,21 +312,21 @@ export default function JobberForm({ jobberId = null }) {
                 <label className="block text-xs font-medium text-gray-700 mb-1">Country</label>
                 <select name="country_id" value={formData.country_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
                   <option value="">— Select —</option>
-                  {Object.entries(countries).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(countries) ? countries : Object.entries(countries || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">State</label>
                 <select name="state_id" value={formData.state_id} onChange={handleChange} disabled={!formData.country_id} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-100">
                   <option value="">— Select —</option>
-                  {Object.entries(states).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(states) ? states : Object.entries(states || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">City</label>
                 <select name="city_id" value={formData.city_id} onChange={handleChange} disabled={!formData.state_id} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-100">
                   <option value="">— Select —</option>
-                  {Object.entries(cities).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(cities) ? cities : Object.entries(cities || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
               </div>
               <div>
@@ -349,7 +349,7 @@ export default function JobberForm({ jobberId = null }) {
                 <label className="block text-xs font-medium text-gray-700 mb-1">Payment Term</label>
                 <select name="payment_term_id" value={formData.payment_term_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
                   <option value="">— Select —</option>
-                  {Object.entries(paymentTerms).map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                  {(Array.isArray(paymentTerms) ? paymentTerms : Object.entries(paymentTerms || {}).map(([id, name]) => ({id, name}))).map(item => <option key={item.id ?? item} value={item.id ?? item}>{item.name ?? item}</option>)}
                 </select>
               </div>
               <div>

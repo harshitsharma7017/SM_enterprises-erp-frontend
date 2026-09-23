@@ -287,9 +287,7 @@ export default function ProductForm({ productId = null }) {
                 className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.category_id ? 'border-red-500' : ''}`}
               >
                 <option value="">Search category...</option>
-                {Object.entries(categories).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(categories) ? categories : Object.entries(categories || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
               {errors.category_id && <p className="text-xs text-red-500 mt-1">{errors.category_id[0]}</p>}
             </div>
@@ -387,9 +385,7 @@ export default function ProductForm({ productId = null }) {
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">Search unit...</option>
-                {Object.entries(units).map(([id, label]) => (
-                  <option key={id} value={id}>{label}</option>
-                ))}
+                {(Array.isArray(units) ? units : Object.entries(units || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
               </select>
               <p className="text-xs text-gray-500 mt-1">From the Units defined on the Order Format master.</p>
             </div>
@@ -405,9 +401,7 @@ export default function ProductForm({ productId = null }) {
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">Search unit...</option>
-                {Object.entries(units).map(([id, label]) => (
-                  <option key={id} value={id}>{label}</option>
-                ))}
+                {(Array.isArray(units) ? units : Object.entries(units || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
               </select>
             </div>
           </div>
@@ -436,9 +430,7 @@ export default function ProductForm({ productId = null }) {
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">Search band...</option>
-                {Object.entries(priceBands).map(([id, label]) => (
-                  <option key={id} value={id}>{label}</option>
-                ))}
+                {(Array.isArray(priceBands) ? priceBands : Object.entries(priceBands || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
               </select>
             </div>
           </div>
@@ -453,9 +445,7 @@ export default function ProductForm({ productId = null }) {
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">Search or type a new rate...</option>
-                {Object.entries(gstRates).map(([id, label]) => (
-                  <option key={id} value={id}>{label}</option>
-                ))}
+                {(Array.isArray(gstRates) ? gstRates : Object.entries(gstRates || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
               </select>
             </div>
           </div>
@@ -550,9 +540,7 @@ export default function ProductForm({ productId = null }) {
                         className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-40 rounded border border-gray-300 text-sm p-1"
                       >
                         <option value="">— Select —</option>
-                        {Object.entries(calculationBases).map(([id, basis]) => (
-                          <option key={id} value={id}>{basis}</option>
-                        ))}
+                        {(Array.isArray(calculationBases) ? calculationBases : Object.entries(calculationBases || {}).map(([id, basis]) => ({id, basis}))).map(item => { const id = item.id ?? item; const basis = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{basis}</option>; })}
                       </select>
                     </td>
                   </tr>
@@ -580,7 +568,7 @@ export default function ProductForm({ productId = null }) {
                 <input 
                   type="text" 
                   value={row.component_name} 
-                  onChange={(e) = placeholder="Enter Component Name"> handleBomChange(index, 'component_name', e.target.value)}
+                  onChange={(e) => handleBomChange(index, 'component_name', e.target.value)}
                   placeholder="e.g. Lining fabric"
                   className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                   maxLength="200"
@@ -591,7 +579,7 @@ export default function ProductForm({ productId = null }) {
                 <input 
                   type="number" step="0.0001" min="0" 
                   value={row.qty} 
-                  onChange={(e) = placeholder="Enter Qty"> handleBomChange(index, 'qty', e.target.value)}
+                  onChange={(e) => handleBomChange(index, 'qty', e.target.value)}
                   className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 />
               </div>
@@ -603,9 +591,7 @@ export default function ProductForm({ productId = null }) {
                   className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                 >
                   <option value="">—</option>
-                  {Object.entries(units).map(([uId, label]) => (
-                    <option key={uId} value={uId}>{label}</option>
-                  ))}
+                  {(Array.isArray(units) ? units : Object.entries(units || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
                 </select>
               </div>
               <div className="flex-1 min-w-[200px]">
@@ -613,7 +599,7 @@ export default function ProductForm({ productId = null }) {
                 <input 
                   type="text" 
                   value={row.remarks} 
-                  onChange={(e) = placeholder="Enter Remarks"> handleBomChange(index, 'remarks', e.target.value)}
+                  onChange={(e) => handleBomChange(index, 'remarks', e.target.value)}
                   className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
                   maxLength="500"
                 />

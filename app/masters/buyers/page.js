@@ -25,8 +25,8 @@ export default function BuyersPage() {
       if (categoryFilter) params.append('category_id', categoryFilter);
 
       const res = await apiClient.get(`/masters/buyers?${params.toString()}`);
-      if (res.data.success) {
-        setBuyers(res.data.data.data || []);
+      if (res.success) {
+        setBuyers(res.data?.data || []);
       }
 
       // Also grab categories just for the filter if we don't have them

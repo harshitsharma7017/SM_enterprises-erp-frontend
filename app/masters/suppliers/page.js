@@ -26,8 +26,8 @@ export default function SuppliersPage() {
       if (partyTypeFilter) params.append('party_type', partyTypeFilter);
 
       const res = await apiClient.get(`/masters/suppliers?${params.toString()}`);
-      if (res.data.success) {
-        setSuppliers(res.data.data.data || []);
+      if (res.success) {
+        setSuppliers(res.data?.data || []);
       }
     } catch (err) {
       console.error(err);

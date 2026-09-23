@@ -338,9 +338,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.supplier_type_id ? 'border-red-500' : ''}`}
               >
                 <option value="">Search type...</option>
-                {Object.entries(supplierTypes).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(supplierTypes) ? supplierTypes : Object.entries(supplierTypes || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
               {errors.supplier_type_id && <p className="text-xs text-red-500 mt-1">{errors.supplier_type_id[0]}</p>}
             </div>
@@ -461,9 +459,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">— Select —</option>
-                {Object.entries(designations).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(designations) ? designations : Object.entries(designations || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
             </div>
             <div>
@@ -527,9 +523,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">— Select —</option>
-                {Object.entries(countries).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(countries) ? countries : Object.entries(countries || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
             </div>
             <div>
@@ -542,9 +536,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-100"
               >
                 <option value="">— Select —</option>
-                {Object.entries(states).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(states) ? states : Object.entries(states || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
             </div>
             <div>
@@ -557,9 +549,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-100"
               >
                 <option value="">— Select —</option>
-                {Object.entries(cities).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(cities) ? cities : Object.entries(cities || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
             </div>
             <div>
@@ -593,9 +583,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               >
                 <option value="">— Select —</option>
-                {Object.entries(paymentTerms).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
+                {(Array.isArray(paymentTerms) ? paymentTerms : Object.entries(paymentTerms || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
             </div>
             <div>
