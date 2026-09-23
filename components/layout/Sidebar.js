@@ -136,11 +136,14 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           )}
 
           {/* ═══════ PROCUREMENT ═══════ */}
-          {canAny(['purchase-order.view', 'inward-entry.view']) && (
+          {canAny(['purchase-order.view', 'inward-entry.view', 'supplier-return.view']) && (
             <>
               {!collapsed && <li className="nav-header">Procurement</li>}
               <NavItem href="/procurement/purchase-orders" icon="bi-cart-check" label="Purchase Orders" permission="purchase-order.view" can={can} collapsed={collapsed} isActive={isActive} />
-              <NavItem href="/procurement/inward-entries" icon="bi-box-arrow-in-down" label="Goods Inward" permission="inward-entry.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/procurement/grn" icon="bi-box-arrow-in-down" label="Goods Receipts (GRN)" permission="inward-entry.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/procurement/lots" icon="bi-stack" label="Lots" permission="inward-entry.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/quality-control" icon="bi-clipboard-check" label="Quality Control" permission="inward-entry.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/procurement/returns" icon="bi-box-arrow-up" label="Supplier Returns" permission="supplier-return.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 

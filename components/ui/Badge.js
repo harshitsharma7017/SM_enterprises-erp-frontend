@@ -53,6 +53,35 @@ export const PO_STATUS_BADGES = {
   cancelled: { label: 'Cancelled', color: 'red' },
 };
 
+// Goods receipt (GRN) workflow — inward_entries.receipt_status.
+export const GRN_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  posted: { label: 'Posted', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+
+export const LOT_STATUS_BADGES = {
+  received: { label: 'Received', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+
+// Quality inspection: a draft is still pending; a completed one shows its result.
+export const QC_STATUS_BADGES = {
+  draft: { label: 'Pending', color: 'gray' },
+  accepted: { label: 'Accepted', color: 'green' },
+  partially_accepted: { label: 'Partially Accepted', color: 'amber' },
+  rejected: { label: 'Rejected', color: 'red' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+export const qcBadgeStatus = (qc) => (qc.status === 'completed' ? qc.result : qc.status);
+
+// Supplier returns and debit notes: draft → posted, or cancelled.
+export const POSTING_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  posted: { label: 'Posted', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+
 // Where a purchase order came from (purchase_orders.origin).
 export const PO_ORIGIN_LABELS = {
   order_confirmation: 'Order Confirmation',

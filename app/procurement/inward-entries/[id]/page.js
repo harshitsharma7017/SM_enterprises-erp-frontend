@@ -2,6 +2,7 @@
 
 import { use, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import PageHeading from '@/components/sales/shared/PageHeading';
 import { WorkflowBadge, INWARD_STATUS_BADGES, PO_STATUS_BADGES } from '@/components/ui/Badge';
@@ -12,6 +13,7 @@ import { formatDate, formatDateTime } from '@/components/sales/shared/format';
 
 export default function InwardEntryShowPage({ params }) {
   const { id } = use(params);
+  const router = useRouter();
   const { can } = useAuth(true);
   const [entry, setEntry] = useState(null);
   const [po, setPo] = useState(null);
@@ -22,6 +24,11 @@ export default function InwardEntryShowPage({ params }) {
     try {
       setLoading(true);
       const res = await apiClient.get(`/procurement/inward-entries/${id}`);
+      // This page is kept for legacy inward entries; goods receipts have their own page.
+      if (res.success && res.data?.entry_type === 'grn') {
+        router.replace(`/procurement/grn/${id}`);
+        return;
+      }
       if (res.success) {
         setEntry(res.data);
         if (res.data.purchase_order_id) {
@@ -37,7 +44,7 @@ export default function InwardEntryShowPage({ params }) {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, router]);
 
   useEffect(() => {
     queueMicrotask(fetchEntry);
@@ -63,15 +70,10 @@ export default function InwardEntryShowPage({ params }) {
     <DashboardLayout>
       <PageHeading
         title={entry.inward_no}
-        breadcrumbs={[{ label: 'Goods Inward', href: '/procurement/inward-entries' }, { label: entry.inward_no }]}
+        breadcrumbs={[{ label: 'Goods Receipts', href: '/procurement/grn' }, { label: `${entry.inward_no} (legacy inward)` }]}
         actions={(
           <>
-            {can('inward-entry.edit') && entry.status === 'pending' && (
-              <Link href={`/procurement/inward-entries/${id}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium">
-                <i className="bi bi-pencil me-1"></i> Edit Receipt
-              </Link>
-            )}
-            <Link href="/procurement/inward-entries" className="border border-gray-300 px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
+            <Link href="/procurement/grn" className="border border-gray-300 px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
               Back
             </Link>
           </>

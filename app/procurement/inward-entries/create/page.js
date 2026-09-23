@@ -1,17 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import PageHeading from '@/components/sales/shared/PageHeading';
-import InwardEntryForm from '@/components/procurement/inward-entries/InwardEntryForm';
-
+// New receipts are recorded as goods receipts (GRN) for every purchase order origin.
 export default function CreateInwardEntryPage() {
-  return (
-    <DashboardLayout>
-      <PageHeading
-        title="New Goods Inward Receipt"
-        breadcrumbs={[{ label: 'Goods Inward', href: '/procurement/inward-entries' }, { label: 'New' }]}
-      />
-      <InwardEntryForm />
-    </DashboardLayout>
-  );
+  redirect('/procurement/grn/create');
 }

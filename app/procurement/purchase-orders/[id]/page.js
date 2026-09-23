@@ -4,7 +4,7 @@ import { use, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, PO_STATUS_BADGES, PO_ORIGIN_LABELS } from '@/components/ui/Badge';
+import { WorkflowBadge, PO_STATUS_BADGES, PO_ORIGIN_LABELS, GRN_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
@@ -174,6 +174,8 @@ export default function PurchaseOrderShowPage({ params }) {
                   {po.origin === 'material_plan' && <th className="px-3 py-2 font-medium">Plan</th>}
                   <th className="px-3 py-2 font-medium text-right">₹/Unit</th>
                   <th className="px-3 py-2 font-medium text-right">Ordered Qty</th>
+                  <th className="px-3 py-2 font-medium text-right">Received</th>
+                  <th className="px-3 py-2 font-medium text-right">Pending</th>
                   <th className="px-3 py-2 font-medium">UOM</th>
                   <th className="px-3 py-2 font-medium text-right">Amount</th>
                 </tr>
@@ -199,6 +201,8 @@ export default function PurchaseOrderShowPage({ params }) {
                     {po.origin === 'material_plan' && <td className="px-3 py-2 font-mono text-gray-700">{item.trace?.plan_no || '—'}</td>}
                     <td className="px-3 py-2 text-right text-gray-900">{item.cost_price == null ? '—' : formatAmount(item.cost_price)}</td>
                     <td className="px-3 py-2 text-right font-medium text-gray-900">{formatQuantity(item.ordered_quantity, item.trace?.uom_decimal_places)}</td>
+                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.received_quantity, item.trace?.uom_decimal_places)}</td>
+                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.pending_quantity, item.trace?.uom_decimal_places)}</td>
                     <td className="px-3 py-2 font-mono text-gray-700">{item.unit}</td>
                     <td className="px-3 py-2 text-right text-gray-900 font-medium">{formatAmount(item.amount)}</td>
                   </tr>
@@ -206,7 +210,7 @@ export default function PurchaseOrderShowPage({ params }) {
               </tbody>
               <tfoot>
                 <tr className="border-t bg-gray-50">
-                  <td colSpan={po.origin === 'material_plan' ? 8 : 7} className="px-3 py-2 text-right font-semibold text-gray-700">Total</td>
+                  <td colSpan={po.origin === 'material_plan' ? 10 : 9} className="px-3 py-2 text-right font-semibold text-gray-700">Total</td>
                   <td className="px-3 py-2 text-right font-semibold text-gray-900">{formatAmount(totalAmount)}</td>
                 </tr>
               </tfoot>
@@ -224,6 +228,7 @@ export default function PurchaseOrderShowPage({ params }) {
                   <th className="px-3 py-2 font-medium">Unit</th>
                   <th className="px-3 py-2 font-medium text-right">₹/Unit</th>
                   <th className="px-3 py-2 font-medium text-right">Qty</th>
+                  <th className="px-3 py-2 font-medium text-right">Received</th>
                   <th className="px-3 py-2 font-medium text-right">Amount</th>
                 </tr>
               </thead>
@@ -244,6 +249,7 @@ export default function PurchaseOrderShowPage({ params }) {
                     <td className="px-3 py-2 text-gray-700">{item.unit || '—'}</td>
                     <td className="px-3 py-2 text-right text-gray-900">{formatAmount(item.cost_price)}</td>
                     <td className="px-3 py-2 text-right text-gray-900">{item.qty}</td>
+                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.received_quantity, 3)}</td>
                     <td className="px-3 py-2 text-right text-gray-900 font-medium">{formatAmount(item.amount)}</td>
                   </tr>
                 ))}
@@ -252,11 +258,36 @@ export default function PurchaseOrderShowPage({ params }) {
                 <tr className="border-t bg-gray-50">
                   <td colSpan="6" className="px-3 py-2 text-right font-semibold text-gray-700">Total</td>
                   <td className="px-3 py-2 text-right font-semibold text-gray-900">{totalQty}</td>
+                  <td></td>
                   <td className="px-3 py-2 text-right font-semibold text-gray-900">{formatAmount(totalAmount)}</td>
                 </tr>
               </tfoot>
             </table>
           </div>
+        )}
+      </div>
+
+      <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
+        <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700 flex items-center justify-between">
+          <span>Goods Receipts</span>
+          {can('inward-entry.create') && ['raised', 'partial'].includes(po.status) && (
+            <Link href="/procurement/grn/create" className="text-xs font-medium text-blue-600 hover:underline">Receive goods</Link>
+          )}
+        </div>
+        {(po.receipts || []).length === 0 ? (
+          <div className="p-4 text-sm text-gray-500">No goods received against this purchase order yet.</div>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {po.receipts.map((g) => (
+              <li key={g.id} className="px-4 py-2 text-sm flex items-center justify-between gap-2">
+                <span>
+                  <Link href={g.entry_type === 'legacy_inward' ? `/procurement/inward-entries/${g.id}` : `/procurement/grn/${g.id}`} className="font-mono text-blue-600 hover:underline">{g.inward_no}</Link>
+                  <span className="text-gray-500"> · {formatDate(g.inward_date)}{g.entry_type === 'legacy_inward' ? ' · legacy inward' : ''} · {g.lots_count} lot(s)</span>
+                </span>
+                <WorkflowBadge status={g.receipt_status} config={GRN_STATUS_BADGES} />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
