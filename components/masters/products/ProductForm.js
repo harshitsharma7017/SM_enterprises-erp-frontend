@@ -21,6 +21,8 @@ export default function ProductForm({ productId = null }) {
   // Reference data
   const [categories, setCategories] = useState({});
   const [units, setUnits] = useState({});
+  const [uoms, setUoms] = useState([]);
+  const [materialTypes, setMaterialTypes] = useState([]);
   const [priceBands, setPriceBands] = useState({});
   const [gstRates, setGstRates] = useState({});
   const [calculationBases, setCalculationBases] = useState({});
@@ -29,6 +31,8 @@ export default function ProductForm({ productId = null }) {
   const [formData, setFormData] = useState({
     company_id: '',
     category_id: '',
+    material_type_id: '',
+    uom_id: '',
     item_group_code: '',
     name: '',
     name_on_export_document: '',
@@ -67,9 +71,11 @@ export default function ProductForm({ productId = null }) {
     try {
             const res = await apiClient.get(`/masters/products/${productId}/edit`);
       if (res.success) {
-        const { product, categories, units, priceBands, gstRates, calculationBases } = res.data;
+        const { product, categories, units, uoms, materialTypes, priceBands, gstRates, calculationBases } = res.data;
         setCategories(categories || {});
         setUnits(units || {});
+        setUoms(uoms || []);
+        setMaterialTypes(materialTypes || []);
         setPriceBands(priceBands || {});
         setGstRates(gstRates || {});
         setCalculationBases(calculationBases || {});
@@ -92,6 +98,8 @@ export default function ProductForm({ productId = null }) {
         setFormData({
           company_id: product.company_id || '',
           category_id: product.category_id || '',
+          material_type_id: product.material_type_id || '',
+          uom_id: product.uom_id || '',
           item_group_code: product.item_group_code || '',
           name: product.name || '',
           name_on_export_document: product.name_on_export_document || '',
@@ -124,9 +132,11 @@ export default function ProductForm({ productId = null }) {
     try {
             const res = await apiClient.get('/masters/products/create');
       if (res.success) {
-        const { categories, units, priceBands, gstRates, calculationBases } = res.data;
+        const { categories, units, uoms, materialTypes, priceBands, gstRates, calculationBases } = res.data;
         setCategories(categories || {});
         setUnits(units || {});
+        setUoms(uoms || []);
+        setMaterialTypes(materialTypes || []);
         setPriceBands(priceBands || {});
         setGstRates(gstRates || {});
         setCalculationBases(calculationBases || {});
@@ -147,6 +157,18 @@ export default function ProductForm({ productId = null }) {
     }
   }, [productId]);
 
+
+  // A material type belongs to one company, so changing the company clears a mismatched type.
+  const handleCompanyChange = (e) => {
+    const companyId = e.target.value;
+    setFormData(prev => {
+      const type = materialTypes.find(m => String(m.id) === String(prev.material_type_id));
+      const keepType = type && String(type.company_id) === String(companyId);
+      return { ...prev, company_id: companyId, material_type_id: keepType ? prev.material_type_id : '' };
+    });
+  };
+
+  const companyMaterialTypes = materialTypes.filter(m => String(m.company_id) === String(formData.company_id));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -252,7 +274,10 @@ export default function ProductForm({ productId = null }) {
       }
     } catch (err) {
       console.error(err);
-      if (err.response?.data?.errors) {
+      if (Array.isArray(err.response?.data?.errors)) {
+        // The product validator returns a flat list of messages.
+        alert(err.response.data.errors.join('\n'));
+      } else if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       } else {
         alert(err.response?.data?.message || 'Error saving product');
@@ -284,7 +309,7 @@ export default function ProductForm({ productId = null }) {
             <div className="md:col-span-3">
               <CompanySelect
                 value={formData.company_id}
-                onChange={handleChange}
+                onChange={handleCompanyChange}
                 required
                 className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               />
@@ -310,6 +335,44 @@ export default function ProductForm({ productId = null }) {
                 {(Array.isArray(categories) ? categories : Object.entries(categories || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
               {errors.category_id && <p className="text-xs text-red-500 mt-1">{errors.category_id[0]}</p>}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+            <label className="md:col-span-1 font-medium text-sm text-gray-700">Material Type</label>
+            <div className="md:col-span-3">
+              <select
+                name="material_type_id"
+                value={formData.material_type_id}
+                onChange={handleChange}
+                disabled={!formData.company_id}
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-50"
+              >
+                <option value="">{formData.company_id ? '— None —' : 'Select a company first'}</option>
+                {companyMaterialTypes.map(m => (
+                  <option key={m.id} value={m.id}>{m.name}{m.status === 'active' ? '' : ' (inactive)'}</option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Optional. Only the selected company&apos;s material types are listed.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+            <label className="md:col-span-1 font-medium text-sm text-gray-700">UOM <span className="text-red-500">*</span></label>
+            <div className="md:col-span-3">
+              <select
+                name="uom_id"
+                value={formData.uom_id}
+                onChange={handleChange}
+                required
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+              >
+                <option value="">Select unit...</option>
+                {uoms.map(u => (
+                  <option key={u.id} value={u.id}>{u.code} — {u.name}{u.status === 'active' ? '' : ' (inactive)'}</option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">The unit this product&apos;s quantities are kept in, e.g. MTR for pocketing and elastic.</p>
             </div>
           </div>
 

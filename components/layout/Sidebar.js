@@ -96,13 +96,16 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           </li>
 
           {/* ═══════ MASTERS ═══════ */}
-          {canAny(['category.view', 'po-format.view', 'product.view', 'buyer.view', 'supplier.view', 'jobber.view', 'agent.view', 'fob-value.view', 'markup.view']) && (
+          {canAny(['category.view', 'po-format.view', 'product.view', 'material-type.view', 'uom.view', 'buyer.view', 'brand.view', 'supplier.view', 'jobber.view', 'agent.view', 'fob-value.view', 'markup.view']) && (
             <>
               {!collapsed && <li className="nav-header">Masters</li>}
               <NavItem href="/masters/categories" icon="bi-tags" label="Categories" permission="category.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/masters/formats" icon="bi-file-earmark-ruled" label="Order Formats" permission="po-format.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/masters/products" icon="bi-box-seam" label="Products" permission="product.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/material-types" icon="bi-diagram-3" label="Material Types" permission="material-type.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/uoms" icon="bi-rulers" label="UOM" permission="uom.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/masters/buyers" icon="bi-globe-asia-australia" label="Buyers" permission="buyer.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/masters/brands" icon="bi-award" label="Brands" permission="brand.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/masters/suppliers" icon="bi-truck" label="Suppliers" permission="supplier.view" can={can} collapsed={collapsed} isActive={isActive} />
               {(can('jobber.view') || can('supplier.view')) && (
                 <NavItem href="/masters/jobbers" icon="bi-tools" label="Jobbers" can={can} collapsed={collapsed} isActive={isActive} />

@@ -18,6 +18,8 @@ export default function ProductsPage() {
   const [companyFilter, setCompanyFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [categories, setCategories] = useState({});
+  const [materialTypeFilter, setMaterialTypeFilter] = useState('');
+  const [materialTypes, setMaterialTypes] = useState([]);
 
   const fetchProducts = async () => {
     try {
@@ -27,6 +29,7 @@ export default function ProductsPage() {
       if (statusFilter) params.append('status', statusFilter);
       if (companyFilter) params.append('company_id', companyFilter);
       if (categoryFilter) params.append('category_id', categoryFilter);
+      if (materialTypeFilter) params.append('material_type_id', materialTypeFilter);
 
       const res = await apiClient.get(`/masters/products?${params.toString()}`);
       if (res.success) {
@@ -36,8 +39,9 @@ export default function ProductsPage() {
       // Also grab categories just for the filter if we don't have them
       if (Object.keys(categories).length === 0) {
         const catRes = await apiClient.get('/masters/products/create');
-        if (catRes.data.success && catRes.data.data.categories) {
-          setCategories(catRes.data.data.categories);
+        if (catRes.success && catRes.data?.categories) {
+          setCategories(catRes.data.categories);
+          setMaterialTypes(catRes.data.materialTypes || []);
         }
       }
     } catch (err) {
@@ -50,7 +54,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     queueMicrotask(fetchProducts);
-  }, [statusFilter, companyFilter, categoryFilter]);
+  }, [statusFilter, companyFilter, categoryFilter, materialTypeFilter]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -123,9 +127,23 @@ export default function ProductsPage() {
               </select>
             </div>
             
+            <div className="w-48">
+              <label className="block text-xs text-gray-500 mb-1">Material Type</label>
+              <select
+                value={materialTypeFilter}
+                onChange={e => setMaterialTypeFilter(e.target.value)}
+                className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All Material Types</option>
+                {materialTypes
+                  .filter(m => !companyFilter || companyFilter === 'unassigned' || String(m.company_id) === String(companyFilter))
+                  .map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+              </select>
+            </div>
+
             <CompanyFilter
               value={companyFilter}
-              onChange={e => setCompanyFilter(e.target.value)}
+              onChange={e => { setCompanyFilter(e.target.value); setMaterialTypeFilter(''); }}
               emptyOptionLabel="Unassigned"
               className="w-56"
             />
@@ -151,6 +169,8 @@ export default function ProductsPage() {
                   <th className="px-4 py-2 text-left text-sm font-medium">Item Group Code</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Company</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Category</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Material Type</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">UOM</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Product Name</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">HSN Code</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Unit</th>
@@ -160,15 +180,17 @@ export default function ProductsPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
-                  <tr><td colSpan="8" className="px-4 py-8 text-center text-gray-500">Loading products...</td></tr>
+                  <tr><td colSpan="10" className="px-4 py-8 text-center text-gray-500">Loading products...</td></tr>
                 ) : products.length === 0 ? (
-                  <tr><td colSpan="8" className="px-4 py-8 text-center text-gray-500">No products found.</td></tr>
+                  <tr><td colSpan="10" className="px-4 py-8 text-center text-gray-500">No products found.</td></tr>
                 ) : (
                   products.map(product => (
                     <tr key={product.id} className="hover:bg-gray-50 text-sm">
                       <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{product.item_group_code}</td>
                       <td className="px-4 py-3 whitespace-nowrap"><CompanyBadge label={product.company_label} code={product.company_code} emptyLabel="Unassigned" /></td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500">{product.category_name}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-gray-500">{product.material_type_name || '-'}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-gray-500 font-mono">{product.uom_code || '-'}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-900">{product.name}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500">{product.hsn_code || '-'}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500">{product.unit_po_name || '-'}</td>
