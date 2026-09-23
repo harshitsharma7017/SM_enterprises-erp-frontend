@@ -91,13 +91,14 @@ export default function LotStockPage({ params }) {
       {notice && <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded mb-4 text-sm">{notice}</div>}
 
       <Card title="Receipt → Quality → Stock" variant="primary">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
           <Figure label="Received (GRN)" value={q(lot.quantity)} />
           <Figure label="QC inspected" value={q(lot.qc_inspected_quantity)} />
           <Figure label="QC accepted" value={q(lot.qc_accepted_quantity)} tone="text-green-700" />
           <Figure label="QC rejected" value={q(lot.qc_rejected_quantity)} tone="text-red-700" />
           <Figure label="Returned to supplier" value={q(lot.returned_quantity)} />
           <Figure label="Accepted posted to stock" value={q(lot.stock_received_quantity)} />
+          <Figure label="Issued to production" value={q(lot.stock_issued_quantity)} />
           <Figure label="Usable stock now" value={q(lot.stock_quantity)} tone="text-blue-800" />
         </div>
         <p className="text-xs text-gray-500 mt-2 mb-0">Only QC-accepted quantity enters usable stock. Rejected material stays outside stock and is tracked through QC and supplier returns.</p>
@@ -156,7 +157,7 @@ export default function LotStockPage({ params }) {
                   <td className="py-1.5 text-gray-600 whitespace-nowrap">{formatDate(m.movement_date)}</td>
                   <td className="py-1.5">{STOCK_MOVEMENT_LABELS[m.movement_type]}</td>
                   <td className="py-1.5 font-mono text-xs">{m.location_code}</td>
-                  <td className="py-1.5 text-gray-700">{m.qc_no ? <Link href={`/quality-control/${m.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{m.qc_no}</Link> : m.reason}</td>
+                  <td className="py-1.5 text-gray-700">{m.qc_no ? <Link href={`/quality-control/${m.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{m.qc_no}</Link> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{m.issue_no}</Link> : m.reason}</td>
                   <td className="py-1.5 text-right text-green-700">{Number(m.quantity_in) > 0 ? formatQuantity(m.quantity_in, dp) : ''}</td>
                   <td className="py-1.5 text-right text-red-700">{Number(m.quantity_out) > 0 ? formatQuantity(m.quantity_out, dp) : ''}</td>
                   <td className="py-1.5 text-right font-medium">{formatQuantity(m.balance_after, dp)}</td>

@@ -86,6 +86,18 @@ export const POSTING_STATUS_BADGES = {
 export const STOCK_MOVEMENT_LABELS = {
   QC_ACCEPTED_RECEIPT: 'QC Accepted Receipt',
   STOCK_ADJUSTMENT: 'Stock Adjustment',
+  MATERIAL_ISSUE: 'Material Issue',
+};
+
+// Material issue (store → supervisor/cutting) and its processing record.
+export const MATERIAL_ISSUE_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  issued: { label: 'Issued', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+export const PROCESSING_STATUS_BADGES = {
+  in_process: { label: 'In Process', color: 'amber' },
+  completed: { label: 'Completed', color: 'green' },
 };
 export const STOCK_STATUS_BADGES = {
   available: { label: 'Available', color: 'green' },

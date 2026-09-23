@@ -5,7 +5,7 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, LOT_STATUS_BADGES, PO_ORIGIN_LABELS, QC_STATUS_BADGES, qcBadgeStatus } from '@/components/ui/Badge';
+import { WorkflowBadge, LOT_STATUS_BADGES, PO_ORIGIN_LABELS, QC_STATUS_BADGES, qcBadgeStatus, MATERIAL_ISSUE_STATUS_BADGES, PROCESSING_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
@@ -83,7 +83,7 @@ export default function LotShowPage({ params }) {
         </div>
         <div className="flex flex-wrap items-center gap-3 rounded border border-blue-200 bg-blue-50 p-2 text-sm mb-3">
           <span className="text-blue-800">Usable stock now: <span className="font-semibold">{formatQuantity(lot.stock_quantity, dp)} {lot.unit}</span></span>
-          <span className="text-blue-700 text-xs">(accepted posted to stock {formatQuantity(lot.stock_received_quantity, dp)})</span>
+          <span className="text-blue-700 text-xs">(accepted posted to stock {formatQuantity(lot.stock_received_quantity, dp)} · issued to production {formatQuantity(lot.stock_issued_quantity, dp)})</span>
           {can('stock.view') && <Link href={`/inventory/stock/${lot.id}`} className="ml-auto text-blue-700 hover:underline text-xs">Stock movements →</Link>}
         </div>
         {lot.inspections.length === 0 ? <p className="text-sm text-gray-500 m-0">Not inspected yet.</p> : (
@@ -106,6 +106,33 @@ export default function LotShowPage({ params }) {
           </table>
         )}
       </Card>
+
+      {lot.material_issues.length > 0 && (
+        <Card title="Material Issues & Processing" variant="info">
+          <table className="min-w-full text-sm">
+            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Issue</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium">Job Ref.</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium">Status</th><th className="py-1.5 font-medium">Processing</th></tr></thead>
+            <tbody className="divide-y divide-gray-100">
+              {lot.material_issues.map((mi) => (
+                <tr key={mi.material_issue_item_id}>
+                  <td className="py-1.5">{can('material-issue.view') ? <Link href={`/production/material-issues/${mi.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{mi.issue_no}</Link> : <span className="font-mono">{mi.issue_no}</span>}</td>
+                  <td className="py-1.5 text-gray-600">{formatDate(mi.issue_date)}</td>
+                  <td className="py-1.5 text-gray-700">{mi.job_reference || '—'}</td>
+                  <td className="py-1.5 text-right">{formatQuantity(mi.quantity, dp)} {lot.unit}</td>
+                  <td className="py-1.5"><WorkflowBadge status={mi.status} config={MATERIAL_ISSUE_STATUS_BADGES} /></td>
+                  <td className="py-1.5">
+                    {mi.processing_record_id ? (
+                      <span className="inline-flex items-center gap-1">
+                        {can('processing.view') ? <Link href={`/production/processing/${mi.processing_record_id}`} className="font-mono text-xs text-blue-600 hover:underline">{mi.processing_no}</Link> : <span className="font-mono text-xs">{mi.processing_no}</span>}
+                        <WorkflowBadge status={mi.processing_status} config={PROCESSING_STATUS_BADGES} />
+                      </span>
+                    ) : '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      )}
 
       <Card title="Traceability" variant="info">
         <ol className="list-none p-0 m-0 space-y-3">

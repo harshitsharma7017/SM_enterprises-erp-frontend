@@ -9,12 +9,13 @@ import { useAuth } from '@/hooks/useAuth';
 const INPUT = 'w-full px-3 py-1.5 border border-gray-300 rounded text-sm';
 
 /**
- * Filters for the stock and ledger lists. Filtering happens on the server.
- * Option lists that need a master permission (products, material types,
- * suppliers) are only shown to users holding it.
- * `fields` picks which filters to show.
+ * Filters for the stock, ledger and production lists. Filtering happens on
+ * the server. Option lists that need a master permission (products, material
+ * types, suppliers) are only shown to users holding it.
+ * `fields` picks which filters to show; `statuses` ([[value, label], ...])
+ * adds a status filter.
  */
-export default function InventoryFilters({ filters, setFilter, onReset, fields, searchPlaceholder }) {
+export default function InventoryFilters({ filters, setFilter, onReset, fields, searchPlaceholder, statuses = null }) {
   const { can } = useAuth(true);
   const [products, setProducts] = useState([]);
   const [materialTypes, setMaterialTypes] = useState([]);
@@ -107,6 +108,15 @@ export default function InventoryFilters({ filters, setFilter, onReset, fields, 
         <div className="w-36">
           <label className="block text-xs text-gray-500 mb-1">Source (QC / GRN / PO)</label>
           <input type="text" value={filters.source} onChange={(e) => setFilter('source', e.target.value)} className={INPUT} />
+        </div>
+      )}
+      {statuses && (
+        <div className="w-36">
+          <label className="block text-xs text-gray-500 mb-1">Status</label>
+          <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className={INPUT}>
+            <option value="">All</option>
+            {statuses.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
         </div>
       )}
       {show('stock_status') && (

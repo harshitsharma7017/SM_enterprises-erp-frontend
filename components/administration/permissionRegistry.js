@@ -40,6 +40,10 @@ export const GROUPS = {
     stock: { label: 'Stock', actions: ['view', 'ledger', 'post', 'adjust'] },
     'stock-location': { label: 'Stock Locations', actions: ['view', 'create', 'edit'] },
   },
+  Production: {
+    'material-issue': { label: 'Material Issues', actions: ['view', 'create', 'edit', 'post', 'cancel'] },
+    processing: { label: 'Processing', actions: ['view', 'create', 'edit', 'complete'] },
+  },
   Export: {
     packing: { label: 'Packing' },
     'export-document': { label: 'Export Documents', actions: ['view', 'create', 'edit', 'delete', 'generate', 'export'] },
@@ -74,6 +78,7 @@ export const ACTION_LABELS = {
   cancel: 'Cancel',
   ledger: 'Ledger',
   adjust: 'Adjust',
+  complete: 'Complete',
   export: 'Export',
   generate: 'Generate',
   sync: 'Sync',
@@ -81,7 +86,7 @@ export const ACTION_LABELS = {
 
 // Column order for the matrix — every action actually used by any module,
 // in config/permissions.php's declared order.
-export const ALL_ACTIONS = ['view', 'create', 'edit', 'delete', 'post', 'cancel', 'approve', 'ledger', 'adjust', 'export', 'generate', 'sync'];
+export const ALL_ACTIONS = ['view', 'create', 'edit', 'delete', 'post', 'cancel', 'approve', 'complete', 'ledger', 'adjust', 'export', 'generate', 'sync'];
 
 export function moduleActions(group, moduleKey) {
   return GROUPS[group]?.[moduleKey]?.actions || DEFAULT_ACTIONS;

@@ -7,7 +7,7 @@ import { useState } from 'react';
  * Sidebar — faithful reproduction of the original Guru Traders ERP sidebar.
  *
  * Sections match config/permissions.php groups, in the same order:
- *   Masters → Sales → Planning → Procurement → Inventory → Export → Finance → Reports → Administration
+ *   Masters → Sales → Planning → Procurement → Inventory → Production → Export → Finance → Reports → Administration
  *
  * Every entry is permission-gated. A section header only renders when the user
  * can see at least one of its children.
@@ -154,6 +154,15 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
               <NavItem href="/inventory/stock" icon="bi-boxes" label="Stock" permission="stock.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/inventory/ledger" icon="bi-journal-text" label="Stock Ledger" permission="stock.ledger" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/inventory/locations" icon="bi-geo-alt" label="Stock Locations" permission="stock-location.view" can={can} collapsed={collapsed} isActive={isActive} />
+            </>
+          )}
+
+          {/* ═══════ PRODUCTION ═══════ */}
+          {canAny(['material-issue.view', 'processing.view']) && (
+            <>
+              {!collapsed && <li className="nav-header">Production</li>}
+              <NavItem href="/production/material-issues" icon="bi-box-arrow-right" label="Material Issues" permission="material-issue.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/production/processing" icon="bi-gear-wide-connected" label="Processing" permission="processing.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 

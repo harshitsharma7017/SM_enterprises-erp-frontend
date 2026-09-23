@@ -51,6 +51,8 @@ export default function StockMovementPage({ params }) {
             <dd className="mt-1 text-gray-900">
               {movement.quality_inspection_id ? (
                 <>Inspection <Link href={`/quality-control/${movement.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{movement.qc_no}</Link></>
+              ) : movement.material_issue_id ? (
+                <>Material issue <Link href={`/production/material-issues/${movement.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{movement.issue_no}</Link>{movement.job_reference ? ` · job ${movement.job_reference}` : ''}</>
               ) : 'Stock adjustment'}
             </dd>
           </div>
