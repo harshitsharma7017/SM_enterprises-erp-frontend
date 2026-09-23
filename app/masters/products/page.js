@@ -5,6 +5,8 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Header from '@/components/layout/Header';
 import { apiClient } from '@/lib/api-client';
+import CompanyFilter from '@/components/company/CompanyFilter';
+import CompanyBadge from '@/components/company/CompanyBadge';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -13,6 +15,7 @@ export default function ProductsPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [companyFilter, setCompanyFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [categories, setCategories] = useState({});
 
@@ -22,6 +25,7 @@ export default function ProductsPage() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      if (companyFilter) params.append('company_id', companyFilter);
       if (categoryFilter) params.append('category_id', categoryFilter);
 
       const res = await apiClient.get(`/masters/products?${params.toString()}`);
@@ -46,7 +50,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     queueMicrotask(fetchProducts);
-  }, [statusFilter, categoryFilter]);
+  }, [statusFilter, companyFilter, categoryFilter]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -119,6 +123,13 @@ export default function ProductsPage() {
               </select>
             </div>
             
+            <CompanyFilter
+              value={companyFilter}
+              onChange={e => setCompanyFilter(e.target.value)}
+              emptyOptionLabel="Unassigned"
+              className="w-56"
+            />
+
             <div className="w-48">
               <label className="block text-xs text-gray-500 mb-1">Status</label>
               <select 
@@ -138,6 +149,7 @@ export default function ProductsPage() {
               <thead className="bg-gray-50 text-gray-700">
                 <tr>
                   <th className="px-4 py-2 text-left text-sm font-medium">Item Group Code</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Company</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Category</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Product Name</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">HSN Code</th>
@@ -148,13 +160,14 @@ export default function ProductsPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
-                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">Loading products...</td></tr>
+                  <tr><td colSpan="8" className="px-4 py-8 text-center text-gray-500">Loading products...</td></tr>
                 ) : products.length === 0 ? (
-                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">No products found.</td></tr>
+                  <tr><td colSpan="8" className="px-4 py-8 text-center text-gray-500">No products found.</td></tr>
                 ) : (
                   products.map(product => (
                     <tr key={product.id} className="hover:bg-gray-50 text-sm">
                       <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{product.item_group_code}</td>
+                      <td className="px-4 py-3 whitespace-nowrap"><CompanyBadge label={product.company_label} code={product.company_code} emptyLabel="Unassigned" /></td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500">{product.category_name}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-900">{product.name}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500">{product.hsn_code || '-'}</td>

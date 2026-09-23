@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
+import CompanySelect from '@/components/company/CompanySelect';
 
 export default function SupplierForm({ supplierId = null, initialPartyType = 'supplier' }) {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
 
   // Form State
   const [formData, setFormData] = useState({
+    company_id: '',
     party_type: initialPartyType,
     name: '',
     supplier_type_id: '',
@@ -85,6 +87,7 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
         setAgents(agents || []);
 
         setFormData({
+          company_id: supplier.company_id || '',
           party_type: supplier.party_type || 'supplier',
           name: supplier.name || '',
           supplier_type_id: supplier.supplier_type_id || '',
@@ -288,6 +291,19 @@ export default function SupplierForm({ supplierId = null, initialPartyType = 'su
           <h3 className="text-base font-semibold">Identification</h3>
         </div>
         <div className="p-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+            <label className="md:col-span-1 font-medium text-sm text-gray-700">Our Company</label>
+            <div className="md:col-span-3">
+              <CompanySelect
+                value={formData.company_id}
+                onChange={handleChange}
+                emptyLabel="Shared (both companies)"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">Leave as Shared when this party deals with both SM Enterprises and Mahindra Gupta &amp; Company.</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
             <label className="md:col-span-1 font-medium text-sm text-gray-700">Party Type <span className="text-red-500">*</span></label>
             <div className="md:col-span-3">

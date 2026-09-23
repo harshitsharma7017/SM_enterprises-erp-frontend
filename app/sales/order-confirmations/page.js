@@ -8,6 +8,8 @@ import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import { WorkflowBadge, OC_STATUS_BADGES, StandardBadge } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
+import CompanyFilter from '@/components/company/CompanyFilter';
+import CompanyBadge from '@/components/company/CompanyBadge';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate } from '@/components/sales/shared/format';
 import { toPaginationFromMeta } from '@/components/sales/shared/pagination';
@@ -26,6 +28,7 @@ export default function OrderConfirmationsPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [companyFilter, setCompanyFilter] = useState('');
   const [buyerFilter, setBuyerFilter] = useState('');
   const [page, setPage] = useState(1);
 
@@ -36,6 +39,7 @@ export default function OrderConfirmationsPage() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      if (companyFilter) params.append('company_id', companyFilter);
       if (buyerFilter) params.append('buyer_id', buyerFilter);
       params.append('page', page);
 
@@ -50,11 +54,11 @@ export default function OrderConfirmationsPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, statusFilter, buyerFilter, page]);
+  }, [searchTerm, statusFilter, companyFilter, buyerFilter, page]);
 
   useEffect(() => {
     queueMicrotask(fetchOcs);
-  }, [statusFilter, buyerFilter, page]);
+  }, [statusFilter, companyFilter, buyerFilter, page]);
 
   useEffect(() => {
     queueMicrotask(async () => {
@@ -76,6 +80,7 @@ export default function OrderConfirmationsPage() {
   const handleReset = () => {
     setSearchTerm('');
     setStatusFilter('');
+    setCompanyFilter('');
     setBuyerFilter('');
     setPage(1);
   };
@@ -123,6 +128,12 @@ export default function OrderConfirmationsPage() {
               {buyers.map((b) => <option key={b.id} value={b.id}>{b.company_name}</option>)}
             </select>
           </div>
+          <CompanyFilter
+            value={companyFilter}
+            onChange={(e) => { setCompanyFilter(e.target.value); setPage(1); }}
+            emptyOptionLabel="Unassigned"
+            className="w-56"
+          />
           <div className="w-48">
             <label className="block text-xs text-gray-500 mb-1">Status</label>
             <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
@@ -147,6 +158,7 @@ export default function OrderConfirmationsPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-4 py-2 font-medium">Contract No.</th>
+                <th className="px-4 py-2 font-medium">Company</th>
                 <th className="px-4 py-2 font-medium">Date</th>
                 <th className="px-4 py-2 font-medium">Buyer</th>
                 <th className="px-4 py-2 font-medium">Type</th>
@@ -157,13 +169,14 @@ export default function OrderConfirmationsPage() {
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {loading ? (
-                <tr><td colSpan="7" className="text-center py-8 text-gray-500">Loading Order Confirmations...</td></tr>
+                <tr><td colSpan="8" className="text-center py-8 text-gray-500">Loading Order Confirmations...</td></tr>
               ) : rows.length === 0 ? (
-                <EmptyState colspan={7} icon="bi-check2-square" title="No Order Confirmations yet" message="Convert a confirmed inquiry, or raise a direct buyer contract." />
+                <EmptyState colspan={8} icon="bi-check2-square" title="No Order Confirmations yet" message="Convert a confirmed inquiry, or raise a direct buyer contract." />
               ) : (
                 rows.map((oc) => (
                   <tr key={oc.id} className="hover:bg-gray-50">
                     <td className="px-4 py-2 font-mono font-semibold text-gray-900">{oc.oc_num}</td>
+                    <td className="px-4 py-2"><CompanyBadge label={oc.company_label} code={oc.company_code} /></td>
                     <td className="px-4 py-2 text-gray-500">{formatDate(oc.oc_date)}</td>
                     <td className="px-4 py-2">
                       <div className="text-gray-900">{oc.buyer_company_name || '—'}</div>

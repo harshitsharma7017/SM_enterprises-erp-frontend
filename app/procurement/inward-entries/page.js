@@ -8,6 +8,8 @@ import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import { WorkflowBadge, INWARD_STATUS_BADGES } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
+import CompanyFilter from '@/components/company/CompanyFilter';
+import CompanyBadge from '@/components/company/CompanyBadge';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate } from '@/components/sales/shared/format';
 import { toPaginationFromMeta } from '@/components/sales/shared/pagination';
@@ -24,6 +26,7 @@ export default function InwardEntriesPage() {
   const [pos, setPos] = useState([]);
 
   const [statusFilter, setStatusFilter] = useState('');
+  const [companyFilter, setCompanyFilter] = useState('');
   const [poFilter, setPoFilter] = useState('');
   const [page, setPage] = useState(1);
 
@@ -36,6 +39,7 @@ export default function InwardEntriesPage() {
       setError(null);
       const params = new URLSearchParams();
       if (statusFilter) params.append('status', statusFilter);
+      if (companyFilter) params.append('company_id', companyFilter);
       if (poFilter) params.append('purchase_order_id', poFilter);
       params.append('page', page);
 
@@ -50,11 +54,11 @@ export default function InwardEntriesPage() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, poFilter, page]);
+  }, [statusFilter, companyFilter, poFilter, page]);
 
   useEffect(() => {
     queueMicrotask(fetchEntries);
-  }, [statusFilter, poFilter, page]);
+  }, [statusFilter, companyFilter, poFilter, page]);
 
   useEffect(() => {
     queueMicrotask(async () => {
@@ -69,6 +73,7 @@ export default function InwardEntriesPage() {
 
   const handleReset = () => {
     setStatusFilter('');
+    setCompanyFilter('');
     setPoFilter('');
     setPage(1);
   };
@@ -106,6 +111,12 @@ export default function InwardEntriesPage() {
               {pos.map((p) => <option key={p.id} value={p.id}>{p.po_num}</option>)}
             </select>
           </div>
+          <CompanyFilter
+            value={companyFilter}
+            onChange={(e) => { setCompanyFilter(e.target.value); setPage(1); }}
+            emptyOptionLabel="Unassigned"
+            className="w-56"
+          />
           <div className="w-48">
             <label className="block text-xs text-gray-500 mb-1">Status</label>
             <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
@@ -125,6 +136,7 @@ export default function InwardEntriesPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-4 py-2 font-medium">Inward No.</th>
+                <th className="px-4 py-2 font-medium">Company</th>
                 <th className="px-4 py-2 font-medium">Date</th>
                 <th className="px-4 py-2 font-medium">PO Reference</th>
                 <th className="px-4 py-2 font-medium">Supplier</th>
@@ -135,13 +147,14 @@ export default function InwardEntriesPage() {
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {loading ? (
-                <tr><td colSpan="7" className="text-center py-8 text-gray-500">Loading Goods Inward entries...</td></tr>
+                <tr><td colSpan="8" className="text-center py-8 text-gray-500">Loading Goods Inward entries...</td></tr>
               ) : rows.length === 0 ? (
-                <EmptyState colspan={7} icon="bi-box-arrow-in-down" title="No Goods Inward receipts recorded" message="Record incoming goods delivered by suppliers against a Purchase Order." />
+                <EmptyState colspan={8} icon="bi-box-arrow-in-down" title="No Goods Inward receipts recorded" message="Record incoming goods delivered by suppliers against a Purchase Order." />
               ) : (
                 rows.map((entry) => (
                   <tr key={entry.id} className="hover:bg-gray-50">
                     <td className="px-4 py-2 font-mono font-semibold text-gray-900">{entry.inward_no}</td>
+                    <td className="px-4 py-2"><CompanyBadge label={entry.company_label} code={entry.company_code} /></td>
                     <td className="px-4 py-2 text-gray-500">{formatDate(entry.inward_date)}</td>
                     <td className="px-4 py-2 text-gray-700">
                       {entry.purchase_order_id ? (

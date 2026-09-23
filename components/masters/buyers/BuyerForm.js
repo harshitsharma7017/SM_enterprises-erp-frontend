@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
+import CompanySelect from '@/components/company/CompanySelect';
 
 export default function BuyerForm({ buyerId = null }) {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function BuyerForm({ buyerId = null }) {
 
   // Form State
   const [formData, setFormData] = useState({
+    company_id: '',
     company_name: '',
     category_ids: [],
     is_overseas: false,
@@ -102,6 +104,7 @@ export default function BuyerForm({ buyerId = null }) {
         setAgents(agents || []);
 
         setFormData({
+          company_id: buyer.company_id || '',
           company_name: buyer.company_name || '',
           category_ids: buyer.category_ids || [],
           is_overseas: !!buyer.is_overseas,
@@ -321,6 +324,19 @@ export default function BuyerForm({ buyerId = null }) {
           <h3 className="text-base font-semibold">Identification</h3>
         </div>
         <div className="p-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+            <label className="md:col-span-1 font-medium text-sm text-gray-700">Our Company</label>
+            <div className="md:col-span-3">
+              <CompanySelect
+                value={formData.company_id}
+                onChange={handleChange}
+                emptyLabel="Shared (both companies)"
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">Leave as Shared when this buyer deals with both SM Enterprises and Mahindra Gupta &amp; Company.</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
             <label className="md:col-span-1 font-medium text-sm text-gray-700">Company Name <span className="text-red-500">*</span></label>
             <div className="md:col-span-3">

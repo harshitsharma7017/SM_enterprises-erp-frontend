@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
+import CompanySelect from '@/components/company/CompanySelect';
+import CompanyBadge from '@/components/company/CompanyBadge';
 import FormSection from '@/components/ui/FormSection';
 import ItemsEditor from '@/components/sales/shared/ItemsEditor';
 import { itemFromServer, itemToPayload, blankItem } from '@/components/sales/shared/itemsHelpers';
@@ -19,6 +21,7 @@ const STATUS_LABELS = {
 };
 
 const emptyHeader = {
+  company_id: '',
   inquiry_date: todayDateInputValue(),
   buyer_ref: '',
   source_id: '',
@@ -62,6 +65,8 @@ export default function InquiryForm({ inquiryId = null }) {
   const [formData, setFormData] = useState(emptyHeader);
   const [items, setItems] = useState([blankItem('draft')]);
   const [followups, setFollowups] = useState([]);
+  // Set once the saved inquiry has a company — ownership never changes after that.
+  const [lockedCompany, setLockedCompany] = useState(null);
 
   const applyBundle = (bundle) => {
     setBuyers(bundle.buyers || []);
@@ -76,9 +81,12 @@ export default function InquiryForm({ inquiryId = null }) {
     setNumberPreview(bundle.numberPreview || '');
   };
 
-  const fetchCascade = useCallback(async (categoryId) => {
+  const fetchCascade = useCallback(async (categoryId, companyId) => {
     try {
-      const params = categoryId ? `?category_id=${categoryId}` : '';
+      const query = new URLSearchParams();
+      if (categoryId) query.set('category_id', categoryId);
+      if (companyId) query.set('company_id', companyId);
+      const params = query.toString() ? `?${query.toString()}` : '';
       const [productsRes, suppliersRes] = await Promise.all([
         apiClient.get(`/inquiries/products${params}`),
         apiClient.get(`/inquiries/suppliers${params}`),
@@ -97,7 +105,9 @@ export default function InquiryForm({ inquiryId = null }) {
         applyBundle(res.data);
         const inq = res.data.inquiry;
         setInquiryNo(inq.inquiry_no);
+        setLockedCompany(inq.company_id ? { label: inq.company_label, code: inq.company_code } : null);
         setFormData({
+          company_id: inq.company_id || '',
           inquiry_date: toDateInputValue(inq.inquiry_date),
           buyer_ref: inq.buyer_ref || '',
           source_id: inq.source_id || '',
@@ -117,7 +127,7 @@ export default function InquiryForm({ inquiryId = null }) {
         });
         setItems(inq.items && inq.items.length > 0 ? inq.items.map((it) => itemFromServer(it)) : [blankItem('draft')]);
         setFollowups((inq.follow_ups || []).map((f) => ({ id: f.id, date: toDateInputValue(f.follow_up_date), comment: f.comment })));
-        if (inq.category_id) await fetchCascade(inq.category_id);
+        if (inq.category_id) await fetchCascade(inq.category_id, inq.company_id);
       }
     } catch (err) {
       console.error(err);
@@ -166,7 +176,24 @@ export default function InquiryForm({ inquiryId = null }) {
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
     setFormData((prev) => ({ ...prev, category_id: categoryId }));
-    fetchCascade(categoryId);
+    fetchCascade(categoryId, formData.company_id);
+  };
+
+  // Buyers owned by another company are hidden; shared buyers are always offered.
+  const buyerFitsCompany = (buyer, companyId) =>
+    !companyId || !buyer.company_id || String(buyer.company_id) === String(companyId);
+
+  const handleCompanyChange = (e) => {
+    const companyId = e.target.value;
+    setFormData((prev) => {
+      const buyer = buyers.find((b) => String(b.id) === String(prev.buyer_id));
+      return {
+        ...prev,
+        company_id: companyId,
+        buyer_id: buyer && !buyerFitsCompany(buyer, companyId) ? '' : prev.buyer_id,
+      };
+    });
+    if (formData.category_id) fetchCascade(formData.category_id, companyId);
   };
 
   const handleFormatChange = (e) => {
@@ -256,6 +283,24 @@ export default function InquiryForm({ inquiryId = null }) {
       <FormSection title="Inquiry Identity" icon="bi-chat-square-text" subtitle="→ Buyer Master · Agent Master · OC on confirmation">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Company {!inquiryId && <span className="text-red-500">*</span>}
+            </label>
+            {lockedCompany ? (
+              <div className="py-1.5"><CompanyBadge label={lockedCompany.label} code={lockedCompany.code} /></div>
+            ) : (
+              <>
+                <CompanySelect
+                  value={formData.company_id}
+                  onChange={handleCompanyChange}
+                  required={!inquiryId}
+                  className="form-select w-full rounded border-gray-300 text-sm"
+                />
+                {inquiryId && <p className="text-[11px] text-gray-500 mt-1">Created before multi-company support — assign its company (cannot be changed later).</p>}
+              </>
+            )}
+          </div>
+          <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Inquiry No.</label>
             <input type="text" readOnly value={inquiryId ? inquiryNo : `${numberPreview} (auto)`} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
             <p className="text-[11px] text-gray-500 mt-1">FY {financialYear}</p>
@@ -282,7 +327,7 @@ export default function InquiryForm({ inquiryId = null }) {
             <label className="block text-xs font-medium text-gray-700 mb-1">Buyer</label>
             <select name="buyer_id" value={formData.buyer_id} onChange={handleBuyerChange} className="form-select w-full rounded border-gray-300 text-sm">
               <option value="">— Select —</option>
-              {buyers.map((b) => <option key={b.id} value={b.id}>{b.company_name}{b.display_code ? ` (${b.display_code})` : ''}</option>)}
+              {buyers.filter((b) => buyerFitsCompany(b, formData.company_id) || String(b.id) === String(formData.buyer_id)).map((b) => <option key={b.id} value={b.id}>{b.company_name}{b.display_code ? ` (${b.display_code})` : ''}</option>)}
             </select>
           </div>
           <div>

@@ -162,10 +162,11 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           )}
 
           {/* ═══════ ADMINISTRATION ═══════ */}
-          {canAny(['user.view', 'role.view', 'permission.view', 'company-profile.view']) && (
+          {canAny(['user.view', 'role.view', 'permission.view', 'company-profile.view', 'company.view']) && (
             <>
               {!collapsed && <li className="nav-header">Administration</li>}
               <NavItem href="/administration/company-profile" icon="bi-buildings" label="Company Profile" permission="company-profile.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/administration/companies" icon="bi-building" label="Companies" permission="company.view" can={can} collapsed={collapsed} isActive={isActive} />
 
               {/* User Management treeview */}
               {canAny(['user.view', 'role.view', 'permission.view']) && (

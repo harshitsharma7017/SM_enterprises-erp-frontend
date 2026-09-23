@@ -8,6 +8,8 @@ import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import { WorkflowBadge, PO_STATUS_BADGES } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
+import CompanyFilter from '@/components/company/CompanyFilter';
+import CompanyBadge from '@/components/company/CompanyBadge';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate } from '@/components/sales/shared/format';
 import { toPaginationFromMeta } from '@/components/sales/shared/pagination';
@@ -25,6 +27,7 @@ export default function PurchaseOrdersPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [companyFilter, setCompanyFilter] = useState('');
   const [supplierFilter, setSupplierFilter] = useState('');
   const [page, setPage] = useState(1);
 
@@ -35,6 +38,7 @@ export default function PurchaseOrdersPage() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      if (companyFilter) params.append('company_id', companyFilter);
       if (supplierFilter) params.append('supplier_id', supplierFilter);
       params.append('page', page);
 
@@ -49,11 +53,11 @@ export default function PurchaseOrdersPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, statusFilter, supplierFilter, page]);
+  }, [searchTerm, statusFilter, companyFilter, supplierFilter, page]);
 
   useEffect(() => {
     queueMicrotask(fetchPos);
-  }, [statusFilter, supplierFilter, page]);
+  }, [statusFilter, companyFilter, supplierFilter, page]);
 
   useEffect(() => {
     queueMicrotask(async () => {
@@ -75,6 +79,7 @@ export default function PurchaseOrdersPage() {
   const handleReset = () => {
     setSearchTerm('');
     setStatusFilter('');
+    setCompanyFilter('');
     setSupplierFilter('');
     setPage(1);
   };
@@ -122,6 +127,12 @@ export default function PurchaseOrdersPage() {
               {suppliers.map((s) => <option key={s.id} value={s.id}>{s.company_name}</option>)}
             </select>
           </div>
+          <CompanyFilter
+            value={companyFilter}
+            onChange={(e) => { setCompanyFilter(e.target.value); setPage(1); }}
+            emptyOptionLabel="Unassigned"
+            className="w-56"
+          />
           <div className="w-48">
             <label className="block text-xs text-gray-500 mb-1">Status</label>
             <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
@@ -146,6 +157,7 @@ export default function PurchaseOrdersPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-4 py-2 font-medium">PO No.</th>
+                <th className="px-4 py-2 font-medium">Company</th>
                 <th className="px-4 py-2 font-medium">Date</th>
                 <th className="px-4 py-2 font-medium">Contract No.</th>
                 <th className="px-4 py-2 font-medium">Supplier</th>
@@ -155,13 +167,14 @@ export default function PurchaseOrdersPage() {
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {loading ? (
-                <tr><td colSpan="6" className="text-center py-8 text-gray-500">Loading Purchase Orders...</td></tr>
+                <tr><td colSpan="7" className="text-center py-8 text-gray-500">Loading Purchase Orders...</td></tr>
               ) : rows.length === 0 ? (
-                <EmptyState colspan={6} icon="bi-cart-check" title="No Purchase Orders yet" message="Raise a PO from a confirmed Order Confirmation, or create one directly." />
+                <EmptyState colspan={7} icon="bi-cart-check" title="No Purchase Orders yet" message="Raise a PO from a confirmed Order Confirmation, or create one directly." />
               ) : (
                 rows.map((po) => (
                   <tr key={po.id} className="hover:bg-gray-50">
                     <td className="px-4 py-2 font-mono font-semibold text-gray-900">{po.po_num}</td>
+                    <td className="px-4 py-2"><CompanyBadge label={po.company_label} code={po.company_code} /></td>
                     <td className="px-4 py-2 text-gray-500">{formatDate(po.po_date)}</td>
                     <td className="px-4 py-2 text-gray-700">{po.oc_num || '—'}</td>
                     <td className="px-4 py-2">

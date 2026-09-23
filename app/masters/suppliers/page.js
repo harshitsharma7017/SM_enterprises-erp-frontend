@@ -5,6 +5,8 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Header from '@/components/layout/Header';
 import { apiClient } from '@/lib/api-client';
+import CompanyFilter from '@/components/company/CompanyFilter';
+import CompanyBadge from '@/components/company/CompanyBadge';
 
 export default function SuppliersPage() {
   const [suppliers, setSuppliers] = useState([]);
@@ -13,6 +15,7 @@ export default function SuppliersPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [companyFilter, setCompanyFilter] = useState('');
   const [partyTypeFilter, setPartyTypeFilter] = useState('supplier');
   const [categoryFilter, setCategoryFilter] = useState('');
 
@@ -22,6 +25,7 @@ export default function SuppliersPage() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      if (companyFilter) params.append('company_id', companyFilter);
       if (categoryFilter) params.append('category_id', categoryFilter);
       if (partyTypeFilter) params.append('party_type', partyTypeFilter);
 
@@ -39,7 +43,7 @@ export default function SuppliersPage() {
 
   useEffect(() => {
     queueMicrotask(fetchSuppliers);
-  }, [statusFilter, categoryFilter, partyTypeFilter]);
+  }, [statusFilter, companyFilter, categoryFilter, partyTypeFilter]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -112,6 +116,13 @@ export default function SuppliersPage() {
               </select>
             </div>
             
+            <CompanyFilter
+              value={companyFilter}
+              onChange={e => setCompanyFilter(e.target.value)}
+              emptyOptionLabel="Shared only"
+              className="w-56"
+            />
+
             <div className="w-36">
               <label className="block text-xs text-gray-500 mb-1">Status</label>
               <select 
@@ -131,6 +142,7 @@ export default function SuppliersPage() {
               <thead className="bg-gray-50 text-gray-700">
                 <tr>
                   <th className="px-4 py-2 text-left text-sm font-medium">Party Code</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Our Company</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Party Type</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Name</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Type</th>
@@ -141,13 +153,14 @@ export default function SuppliersPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
-                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">Loading parties...</td></tr>
+                  <tr><td colSpan="8" className="px-4 py-8 text-center text-gray-500">Loading parties...</td></tr>
                 ) : suppliers.length === 0 ? (
-                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">No parties found.</td></tr>
+                  <tr><td colSpan="8" className="px-4 py-8 text-center text-gray-500">No parties found.</td></tr>
                 ) : (
                   suppliers.map(s => (
                     <tr key={s.id} className="hover:bg-gray-50 text-sm">
                       <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{s.display_code}</td>
+                      <td className="px-4 py-3 whitespace-nowrap"><CompanyBadge label={s.company_label} code={s.company_code} emptyLabel="Shared" /></td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500 capitalize">{s.party_type}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-900">{s.name}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500">{s.supplier_type_name || '-'}</td>

@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
+import CompanySelect from '@/components/company/CompanySelect';
 
 const INCENTIVE_SCHEMES = {
   drawback: 'Drawback',
@@ -26,6 +27,7 @@ export default function ProductForm({ productId = null }) {
 
   // Form State
   const [formData, setFormData] = useState({
+    company_id: '',
     category_id: '',
     item_group_code: '',
     name: '',
@@ -88,6 +90,7 @@ export default function ProductForm({ productId = null }) {
         }
 
         setFormData({
+          company_id: product.company_id || '',
           category_id: product.category_id || '',
           item_group_code: product.item_group_code || '',
           name: product.name || '',
@@ -276,6 +279,23 @@ export default function ProductForm({ productId = null }) {
           </div>
         </div>
         <div className="p-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+            <label className="md:col-span-1 font-medium text-sm text-gray-700">Company <span className="text-red-500">*</span></label>
+            <div className="md:col-span-3">
+              <CompanySelect
+                value={formData.company_id}
+                onChange={handleChange}
+                required
+                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {productId && !formData.company_id
+                  ? 'This product predates multi-company support — choose the company that owns it.'
+                  : 'The company that sells this product. Only its own transactions can use it.'}
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
             <label className="md:col-span-1 font-medium text-sm text-gray-700">Category <span className="text-red-500">*</span></label>
             <div className="md:col-span-3">

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
+import CompanyBadge from '@/components/company/CompanyBadge';
 import FormSection from '@/components/ui/FormSection';
 import { PO_STATUS_BADGES } from '@/components/ui/Badge';
 import { toDateInputValue, todayDateInputValue } from '@/components/sales/shared/format';
@@ -16,6 +17,8 @@ export default function InwardEntryForm({ entryId = null }) {
   const [errors, setErrors] = useState([]);
 
   const [pos, setPos] = useState([]);
+  // Company is inherited from the Purchase Order — shown, never selected.
+  const [entryCompany, setEntryCompany] = useState(null);
   const [poItemsLoading, setPoItemsLoading] = useState(false);
 
   const [inwardNo, setInwardNo] = useState('');
@@ -67,6 +70,7 @@ export default function InwardEntryForm({ entryId = null }) {
       if (res.success) {
         const entry = res.data;
         setInwardNo(entry.inward_no);
+        setEntryCompany({ label: entry.company_label, code: entry.company_code });
         setPurchaseOrderId(entry.purchase_order_id);
         setInwardDate(toDateInputValue(entry.inward_date));
         setChallanNo(entry.challan_no || '');
@@ -113,6 +117,9 @@ export default function InwardEntryForm({ entryId = null }) {
   };
 
   const selectedPo = pos.find((p) => String(p.id) === String(purchaseOrderId)) || null;
+  const company = entryId
+    ? entryCompany
+    : (selectedPo ? { label: selectedPo.company_label, code: selectedPo.company_code } : null);
 
   const updateItem = (index, patch) => {
     const next = items.slice();
@@ -226,6 +233,12 @@ export default function InwardEntryForm({ entryId = null }) {
                 {pos.map((p) => <option key={p.id} value={p.id}>{p.po_num} — {p.supplier_company_name} ({PO_STATUS_BADGES[p.status]?.label || p.status})</option>)}
               </select>
             )}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Company</label>
+            <div className="py-1.5">
+              {company ? <CompanyBadge label={company.label} code={company.code} /> : <span className="text-sm text-gray-400">From the selected purchase order</span>}
+            </div>
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Inward Date <span className="text-red-500">*</span></label>

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Header from '@/components/layout/Header';
 import { apiClient } from '@/lib/api-client';
+import CompanyFilter from '@/components/company/CompanyFilter';
+import CompanyBadge from '@/components/company/CompanyBadge';
 
 export default function BuyersPage() {
   const [buyers, setBuyers] = useState([]);
@@ -13,6 +15,7 @@ export default function BuyersPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [companyFilter, setCompanyFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [categories, setCategories] = useState({});
 
@@ -22,6 +25,7 @@ export default function BuyersPage() {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
       if (statusFilter) params.append('status', statusFilter);
+      if (companyFilter) params.append('company_id', companyFilter);
       if (categoryFilter) params.append('category_id', categoryFilter);
 
       const res = await apiClient.get(`/masters/buyers?${params.toString()}`);
@@ -46,7 +50,7 @@ export default function BuyersPage() {
 
   useEffect(() => {
     queueMicrotask(fetchBuyers);
-  }, [statusFilter, categoryFilter]);
+  }, [statusFilter, companyFilter, categoryFilter]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -119,6 +123,13 @@ export default function BuyersPage() {
               </select>
             </div>
             
+            <CompanyFilter
+              value={companyFilter}
+              onChange={e => setCompanyFilter(e.target.value)}
+              emptyOptionLabel="Shared only"
+              className="w-56"
+            />
+
             <div className="w-48">
               <label className="block text-xs text-gray-500 mb-1">Status</label>
               <select 
@@ -138,6 +149,7 @@ export default function BuyersPage() {
               <thead className="bg-gray-50 text-gray-700">
                 <tr>
                   <th className="px-4 py-2 text-left text-sm font-medium">Buyer Code</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Our Company</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Company Name</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Destination</th>
                   <th className="px-4 py-2 text-left text-sm font-medium">Port</th>
@@ -147,13 +159,14 @@ export default function BuyersPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
-                  <tr><td colSpan="6" className="px-4 py-8 text-center text-gray-500">Loading buyers...</td></tr>
+                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">Loading buyers...</td></tr>
                 ) : buyers.length === 0 ? (
-                  <tr><td colSpan="6" className="px-4 py-8 text-center text-gray-500">No buyers found.</td></tr>
+                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">No buyers found.</td></tr>
                 ) : (
                   buyers.map(b => (
                     <tr key={b.id} className="hover:bg-gray-50 text-sm">
                       <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{b.display_code}</td>
+                      <td className="px-4 py-3 whitespace-nowrap"><CompanyBadge label={b.company_label} code={b.company_code} emptyLabel="Shared" /></td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-900">{b.company_name}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500">{b.destination || '-'}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-gray-500">{b.port_name || '-'}</td>

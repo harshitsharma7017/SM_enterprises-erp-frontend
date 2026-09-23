@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
+import CompanyBadge from '@/components/company/CompanyBadge';
 import FormSection from '@/components/ui/FormSection';
 import PoItemsEditor from '@/components/procurement/shared/PoItemsEditor';
 import { blankPoItem, poItemFromServer, poItemToPayload } from '@/components/sales/shared/itemsHelpers';
@@ -34,6 +35,8 @@ export default function PurchaseOrderForm({ poId = null }) {
   const [formData, setFormData] = useState(emptyHeader);
   const [items, setItems] = useState([blankPoItem()]);
   const [poNum, setPoNum] = useState('');
+  // Company is inherited from the Order Confirmation — shown, never selected.
+  const [poCompany, setPoCompany] = useState(null);
 
   const fetchLookups = useCallback(async () => {
     try {
@@ -50,9 +53,12 @@ export default function PurchaseOrderForm({ poId = null }) {
     }
   }, []);
 
-  const fetchCascade = useCallback(async (categoryId) => {
+  const fetchCascade = useCallback(async (categoryId, companyId) => {
     try {
-      const params = categoryId ? `?category_id=${categoryId}` : '';
+      const query = new URLSearchParams();
+      if (categoryId) query.set('category_id', categoryId);
+      if (companyId) query.set('company_id', companyId);
+      const params = query.toString() ? `?${query.toString()}` : '';
       const productsRes = await apiClient.get(`/inquiries/products${params}`);
       setProducts(Array.isArray(productsRes) ? productsRes : []);
     } catch (err) {
@@ -66,6 +72,7 @@ export default function PurchaseOrderForm({ poId = null }) {
       if (res.success) {
         const po = res.data;
         setPoNum(po.po_num);
+        setPoCompany({ id: po.company_id, label: po.company_label, code: po.company_code });
         setFormData({
           order_confirmation_id: po.order_confirmation_id || '',
           supplier_id: po.supplier_id || '',
@@ -77,7 +84,7 @@ export default function PurchaseOrderForm({ poId = null }) {
         });
         setItems(po.items && po.items.length > 0 ? po.items.map((it) => poItemFromServer(it)) : [blankPoItem()]);
         const oc = ocs.find((o) => String(o.id) === String(po.order_confirmation_id));
-        if (oc?.category_id) await fetchCascade(oc.category_id);
+        if (oc?.category_id) await fetchCascade(oc.category_id, po.company_id);
       }
     } catch (err) {
       console.error(err);
@@ -101,18 +108,28 @@ export default function PurchaseOrderForm({ poId = null }) {
   }, [poId, ocs, fetchPo]);
 
   const selectedOc = ocs.find((o) => String(o.id) === String(formData.order_confirmation_id)) || null;
+  const company = poId
+    ? poCompany
+    : (selectedOc ? { id: selectedOc.company_id, label: selectedOc.company_label, code: selectedOc.company_code } : null);
+  // Suppliers owned by another company are hidden; shared suppliers are always offered.
+  const supplierOptions = suppliers.filter((s) => !company?.id || !s.company_id || String(s.company_id) === String(company.id));
   const selectedFormat = formats.find((f) => String(f.id) === String(selectedOc?.document_format_id)) || null;
 
   const handleOcChange = (e) => {
     const ocId = e.target.value;
     const oc = ocs.find((o) => String(o.id) === String(ocId));
-    setFormData((prev) => ({
-      ...prev,
-      order_confirmation_id: ocId,
-      delivery_details: prev.delivery_details || oc?.delivery_details || '',
-      packing_details: prev.packing_details || oc?.packing_details || '',
-    }));
-    if (oc?.category_id) fetchCascade(oc.category_id);
+    setFormData((prev) => {
+      const supplier = suppliers.find((s) => String(s.id) === String(prev.supplier_id));
+      const supplierClashes = supplier?.company_id && oc?.company_id && String(supplier.company_id) !== String(oc.company_id);
+      return {
+        ...prev,
+        order_confirmation_id: ocId,
+        supplier_id: supplierClashes ? '' : prev.supplier_id,
+        delivery_details: prev.delivery_details || oc?.delivery_details || '',
+        packing_details: prev.packing_details || oc?.packing_details || '',
+      };
+    });
+    if (oc?.category_id) fetchCascade(oc.category_id, oc.company_id);
   };
 
   const handleChange = (e) => {
@@ -180,6 +197,12 @@ export default function PurchaseOrderForm({ poId = null }) {
             <input type="date" name="po_date" required value={formData.po_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Po Date"/>
           </div>
           <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Company</label>
+            <div className="py-1.5">
+              {company ? <CompanyBadge label={company.label} code={company.code} /> : <span className="text-sm text-gray-400">From the selected contract</span>}
+            </div>
+          </div>
+          <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Buyer</label>
             <input type="text" readOnly value={selectedOc?.buyer_company_name || ''} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
           </div>
@@ -201,7 +224,7 @@ export default function PurchaseOrderForm({ poId = null }) {
             ) : (
               <select name="supplier_id" required value={formData.supplier_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
                 <option value="">— Select —</option>
-                {suppliers.map((s) => <option key={s.id} value={s.id}>{s.company_name}{s.display_code ? ` (${s.display_code})` : ''}</option>)}
+                {supplierOptions.map((s) => <option key={s.id} value={s.id}>{s.company_name}{s.display_code ? ` (${s.display_code})` : ''}</option>)}
               </select>
             )}
           </div>

@@ -8,6 +8,8 @@ import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import { WorkflowBadge, EXPORT_DOC_STATUS_BADGES } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
+import CompanyFilter from '@/components/company/CompanyFilter';
+import CompanyBadge from '@/components/company/CompanyBadge';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate } from '@/components/sales/shared/format';
 import { toPaginationFromMeta } from '@/components/sales/shared/pagination';
@@ -24,6 +26,7 @@ export default function ExportDocumentsPage() {
   const [buyers, setBuyers] = useState([]);
 
   const [statusFilter, setStatusFilter] = useState('');
+  const [companyFilter, setCompanyFilter] = useState('');
   const [buyerFilter, setBuyerFilter] = useState('');
   const [page, setPage] = useState(1);
 
@@ -35,6 +38,7 @@ export default function ExportDocumentsPage() {
       setError(null);
       const params = new URLSearchParams();
       if (statusFilter) params.append('status', statusFilter);
+      if (companyFilter) params.append('company_id', companyFilter);
       if (buyerFilter) params.append('buyer_id', buyerFilter);
       params.append('page', page);
 
@@ -49,11 +53,11 @@ export default function ExportDocumentsPage() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, buyerFilter, page]);
+  }, [statusFilter, companyFilter, buyerFilter, page]);
 
   useEffect(() => {
     queueMicrotask(fetchDocs);
-  }, [statusFilter, buyerFilter, page]);
+  }, [statusFilter, companyFilter, buyerFilter, page]);
 
   useEffect(() => {
     queueMicrotask(async () => {
@@ -68,6 +72,7 @@ export default function ExportDocumentsPage() {
 
   const handleReset = () => {
     setStatusFilter('');
+    setCompanyFilter('');
     setBuyerFilter('');
     setPage(1);
   };
@@ -87,6 +92,12 @@ export default function ExportDocumentsPage() {
               {buyers.map((b) => <option key={b.id} value={b.id}>{b.company_name}</option>)}
             </select>
           </div>
+          <CompanyFilter
+            value={companyFilter}
+            onChange={(e) => { setCompanyFilter(e.target.value); setPage(1); }}
+            emptyOptionLabel="Unassigned"
+            className="w-56"
+          />
           <div className="w-48">
             <label className="block text-xs text-gray-500 mb-1">Status</label>
             <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
@@ -106,6 +117,7 @@ export default function ExportDocumentsPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-4 py-2 font-medium">Doc No.</th>
+                <th className="px-4 py-2 font-medium">Company</th>
                 <th className="px-4 py-2 font-medium">OC No.</th>
                 <th className="px-4 py-2 font-medium">Buyer</th>
                 <th className="px-4 py-2 font-medium">Shipment Date</th>
@@ -115,13 +127,14 @@ export default function ExportDocumentsPage() {
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {loading ? (
-                <tr><td colSpan="6" className="text-center py-8 text-gray-500">Loading Export Documents...</td></tr>
+                <tr><td colSpan="7" className="text-center py-8 text-gray-500">Loading Export Documents...</td></tr>
               ) : rows.length === 0 ? (
-                <EmptyState colspan={6} icon="bi-files" title="No Export Documents yet" message="Raise one from a confirmed Order Confirmation's item list." />
+                <EmptyState colspan={7} icon="bi-files" title="No Export Documents yet" message="Raise one from a confirmed Order Confirmation's item list." />
               ) : (
                 rows.map((doc) => (
                   <tr key={doc.id} className="hover:bg-gray-50">
                     <td className="px-4 py-2 font-mono font-semibold text-gray-900">{doc.doc_num}</td>
+                    <td className="px-4 py-2"><CompanyBadge label={doc.company_label} code={doc.company_code} /></td>
                     <td className="px-4 py-2 text-gray-700">{doc.order_confirmation_num || '—'}</td>
                     <td className="px-4 py-2 text-gray-700">{doc.buyer_name || '—'}</td>
                     <td className="px-4 py-2 text-gray-500">{doc.shipment_date ? formatDate(doc.shipment_date) : '—'}</td>

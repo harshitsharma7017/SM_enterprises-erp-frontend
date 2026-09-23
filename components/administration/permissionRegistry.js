@@ -47,6 +47,7 @@ export const GROUPS = {
     role: { label: 'Roles' },
     permission: { label: 'Permissions', actions: ['view', 'sync'] },
     'company-profile': { label: 'Company Profile', actions: ['view', 'edit'] },
+    company: { label: 'Companies', actions: ['view', 'create', 'edit', 'delete'] },
   },
 };
 
