@@ -33,7 +33,8 @@ export default function InwardEntryForm({ entryId = null }) {
   const fetchPos = useCallback(async () => {
     try {
       const res = await apiClient.get('/procurement/purchase-orders?limit=200');
-      if (res.success) setPos((res.data || []).filter((p) => p.status === 'raised' || p.status === 'partial'));
+      // Planning (garment) POs are received through the GRN of a later phase; the server rejects them here too.
+      if (res.success) setPos((res.data || []).filter((p) => (p.status === 'raised' || p.status === 'partial') && (!p.origin || p.origin === 'order_confirmation')));
     } catch (err) {
       console.error('Failed to load Purchase Orders', err);
     }

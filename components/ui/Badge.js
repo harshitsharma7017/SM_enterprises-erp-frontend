@@ -50,6 +50,14 @@ export const PO_STATUS_BADGES = {
   raised: { label: 'Raised', color: 'blue' },
   partial: { label: 'Partial', color: 'amber' },
   received: { label: 'Received', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+
+// Where a purchase order came from (purchase_orders.origin).
+export const PO_ORIGIN_LABELS = {
+  order_confirmation: 'Order Confirmation',
+  material_requirement: 'Material Requirement',
+  material_plan: 'Material Plan',
 };
 
 // Mirrors ExportDocument::STATUSES / STATUS_COLORS in the original ERP.

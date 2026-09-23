@@ -134,7 +134,9 @@ export default function MaterialPlanShowPage({ params }) {
                 <th className="px-3 py-2 font-medium">Material</th>
                 <th className="px-3 py-2 font-medium text-right">Required</th>
                 <th className="px-3 py-2 font-medium text-right">Planned (this plan)</th>
-                <th className="px-3 py-2 font-medium text-right">Pending</th>
+                <th className="px-3 py-2 font-medium text-right">Pending (plan)</th>
+                <th className="px-3 py-2 font-medium text-right">Ordered</th>
+                <th className="px-3 py-2 font-medium text-right">Pending (order)</th>
                 <th className="px-3 py-2 font-medium">UOM</th>
                 <th className="px-3 py-2 font-medium">Remarks</th>
               </tr>
@@ -156,6 +158,8 @@ export default function MaterialPlanShowPage({ params }) {
                   <td className="px-3 py-2 text-right">{formatQuantity(item.required_quantity, item.uom_decimal_places)}</td>
                   <td className="px-3 py-2 text-right font-medium">{formatQuantity(item.planned_quantity, item.uom_decimal_places)}</td>
                   <td className="px-3 py-2 text-right">{formatQuantity(item.pending_quantity, item.uom_decimal_places)}</td>
+                  <td className="px-3 py-2 text-right">{formatQuantity(item.ordered_quantity, item.uom_decimal_places)}</td>
+                  <td className="px-3 py-2 text-right">{formatQuantity(item.order_pending_quantity, item.uom_decimal_places)}</td>
                   <td className="px-3 py-2 font-mono text-gray-600">{item.uom_code}</td>
                   <td className="px-3 py-2 text-gray-500">{item.remarks || '—'}</td>
                 </tr>
@@ -163,7 +167,7 @@ export default function MaterialPlanShowPage({ params }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Pending is per requirement across all planned/closed plans. A draft plan&apos;s quantities are reserved but not yet counted as planned.</p>
+        <p className="text-xs text-gray-500 mt-2 mb-0">Pending (plan) is per requirement across all planned/closed plans. Ordered counts confirmed purchase orders raised from this plan line; Pending (order) = planned on this plan − ordered.</p>
       </Card>
     </DashboardLayout>
   );

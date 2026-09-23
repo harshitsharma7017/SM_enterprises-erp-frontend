@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, REQUIREMENT_STATUS_BADGES, PLAN_STATUS_BADGES } from '@/components/ui/Badge';
+import { WorkflowBadge, REQUIREMENT_STATUS_BADGES, PLAN_STATUS_BADGES, PO_STATUS_BADGES, PO_ORIGIN_LABELS } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
@@ -95,7 +95,7 @@ export default function MaterialRequirementShowPage({ params }) {
                 <i className="bi bi-arrow-counterclockwise me-1"></i> Reopen
               </button>
             )}
-            {r.status === 'open' && r.plans.length === 0 && can('material-requirement.delete') && (
+            {r.status === 'open' && r.plans.length === 0 && r.purchase_orders.length === 0 && can('material-requirement.delete') && (
               <button type="button" onClick={remove} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}>
                 <i className="bi bi-trash me-1"></i> Delete
               </button>
@@ -126,6 +126,9 @@ export default function MaterialRequirementShowPage({ params }) {
           <div><dt className="text-gray-500 text-xs">Required</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(r.required_quantity, dp)} <span className="text-sm font-mono text-gray-500">{r.uom_code}</span></dd></div>
           <div><dt className="text-gray-500 text-xs">Planned (committed plans)</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(r.planned_quantity, dp)} <span className="text-sm font-mono text-gray-500">{r.uom_code}</span></dd></div>
           <div><dt className="text-gray-500 text-xs">Pending</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(r.pending_quantity, dp)} <span className="text-sm font-mono text-gray-500">{r.uom_code}</span></dd></div>
+          <div><dt className="text-gray-500 text-xs">Ordered (confirmed POs)</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(r.ordered_quantity, dp)} <span className="text-sm font-mono text-gray-500">{r.uom_code}</span></dd></div>
+          <div><dt className="text-gray-500 text-xs">Pending to order</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(r.order_pending_quantity, dp)} <span className="text-sm font-mono text-gray-500">{r.uom_code}</span></dd></div>
+          <div><dt className="text-gray-500 text-xs">On draft POs</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(r.order_reserved_quantity, dp)} <span className="text-sm font-mono text-gray-500">{r.uom_code}</span></dd></div>
           <div><dt className="text-gray-500 text-xs">Not yet on any plan</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(r.available_quantity, dp)} <span className="text-sm font-mono text-gray-500">{r.uom_code}</span></dd></div>
           {r.remarks && <div className="md:col-span-4"><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{r.remarks}</dd></div>}
         </dl>
@@ -161,6 +164,41 @@ export default function MaterialRequirementShowPage({ params }) {
             </tbody>
           </table>
         )}
+      </Card>
+      <Card title="Purchase Orders" variant="success">
+        {r.purchase_orders.length === 0 ? (
+          <p className="text-sm text-gray-500 m-0">No purchase orders have been raised against this requirement yet.</p>
+        ) : (
+          <table className="min-w-full divide-y divide-gray-200 text-sm text-left border border-gray-200 rounded-md">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
+                <th className="px-3 py-2 font-medium">PO No.</th>
+                <th className="px-3 py-2 font-medium">Origin</th>
+                <th className="px-3 py-2 font-medium">Supplier</th>
+                <th className="px-3 py-2 font-medium">PO Date</th>
+                <th className="px-3 py-2 font-medium text-right">Ordered Qty</th>
+                <th className="px-3 py-2 font-medium">PO Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {r.purchase_orders.map((po) => (
+                <tr key={po.purchase_order_id}>
+                  <td className="px-3 py-2 font-mono">
+                    {can('purchase-order.view')
+                      ? <Link href={`/procurement/purchase-orders/${po.purchase_order_id}`} className="text-blue-600 hover:underline">{po.po_num}</Link>
+                      : po.po_num}
+                  </td>
+                  <td className="px-3 py-2 text-gray-600">{PO_ORIGIN_LABELS[po.origin] || '—'}</td>
+                  <td className="px-3 py-2 text-gray-700">{po.supplier_name || '—'}</td>
+                  <td className="px-3 py-2 text-gray-600">{formatDate(po.po_date)}</td>
+                  <td className="px-3 py-2 text-right">{formatQuantity(po.ordered_quantity, dp)} {r.uom_code}</td>
+                  <td className="px-3 py-2"><WorkflowBadge status={po.status} config={PO_STATUS_BADGES} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <p className="text-xs text-gray-500 mt-2 mb-0">Only confirmed purchase orders count as ordered. Draft POs hold their quantity; cancelled POs count for nothing.</p>
       </Card>
     </DashboardLayout>
   );

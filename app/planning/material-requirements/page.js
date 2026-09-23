@@ -111,16 +111,18 @@ export default function MaterialRequirementsPage() {
                 <th className="px-4 py-2 font-medium">Material</th>
                 <th className="px-4 py-2 font-medium text-right">Required</th>
                 <th className="px-4 py-2 font-medium text-right">Planned</th>
-                <th className="px-4 py-2 font-medium text-right">Pending</th>
+                <th className="px-4 py-2 font-medium text-right">Pending (plan)</th>
+                <th className="px-4 py-2 font-medium text-right">Ordered</th>
+                <th className="px-4 py-2 font-medium text-right">Pending (order)</th>
                 <th className="px-4 py-2 font-medium">UOM</th>
                 <th className="px-4 py-2 font-medium">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {loading ? (
-                <tr><td colSpan="10" className="text-center py-8 text-gray-500">Loading material requirements...</td></tr>
+                <tr><td colSpan="12" className="text-center py-8 text-gray-500">Loading material requirements...</td></tr>
               ) : rows.length === 0 ? (
-                <EmptyState colspan={10} icon="bi-list-check" title="No material requirements" message="Finalize a brand projection, then generate its requirements." />
+                <EmptyState colspan={12} icon="bi-list-check" title="No material requirements" message="Finalize a brand projection, then generate its requirements." />
               ) : rows.map((r) => (
                 <tr key={r.id} className="hover:bg-gray-50">
                   <td className="px-4 py-2 font-mono font-semibold text-gray-900">
@@ -137,6 +139,8 @@ export default function MaterialRequirementsPage() {
                   <td className="px-4 py-2 text-right font-medium">{formatQuantity(r.required_quantity, r.uom_decimal_places)}</td>
                   <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(r.planned_quantity, r.uom_decimal_places)}</td>
                   <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(r.pending_quantity, r.uom_decimal_places)}</td>
+                  <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(r.ordered_quantity, r.uom_decimal_places)}</td>
+                  <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(r.order_pending_quantity, r.uom_decimal_places)}</td>
                   <td className="px-4 py-2 font-mono text-gray-600">{r.uom_code}</td>
                   <td className="px-4 py-2"><WorkflowBadge status={r.status} config={REQUIREMENT_STATUS_BADGES} /></td>
                 </tr>

@@ -105,15 +105,16 @@ export default function MaterialPlansPage() {
                 <th className="px-4 py-2 font-medium">Material</th>
                 <th className="px-4 py-2 font-medium text-right">Required</th>
                 <th className="px-4 py-2 font-medium text-right">Planned (this plan)</th>
-                <th className="px-4 py-2 font-medium text-right">Pending</th>
+                <th className="px-4 py-2 font-medium text-right">Pending (plan)</th>
+                <th className="px-4 py-2 font-medium text-right">Ordered</th>
                 <th className="px-4 py-2 font-medium">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {loading ? (
-                <tr><td colSpan="8" className="text-center py-8 text-gray-500">Loading material plans...</td></tr>
+                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading material plans...</td></tr>
               ) : rows.length === 0 ? (
-                <EmptyState colspan={8} icon="bi-calendar2-week" title="No material plans" message="Create a plan from open material requirements." />
+                <EmptyState colspan={9} icon="bi-calendar2-week" title="No material plans" message="Create a plan from open material requirements." />
               ) : rows.map((p) => {
                 const lines = p.items.length ? p.items : [null];
                 return lines.map((line, i) => (
@@ -134,6 +135,7 @@ export default function MaterialPlansPage() {
                     <td className="px-4 py-2 text-right">{line ? `${formatQuantity(line.required_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
                     <td className="px-4 py-2 text-right font-medium">{line ? `${formatQuantity(line.planned_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
                     <td className="px-4 py-2 text-right text-gray-700">{line ? `${formatQuantity(line.pending_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
+                    <td className="px-4 py-2 text-right text-gray-700">{line ? `${formatQuantity(line.ordered_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
                     {i === 0 && (
                       <td rowSpan={lines.length} className="px-4 py-2"><WorkflowBadge status={p.status} config={PLAN_STATUS_BADGES} /></td>
                     )}
