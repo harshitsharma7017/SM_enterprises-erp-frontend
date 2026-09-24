@@ -12,7 +12,7 @@ import { formatDate, formatDateTime } from '@/components/sales/shared/format';
 import { toPaginationFromPageLimit } from '@/components/sales/shared/pagination';
 
 const INPUT = 'w-full px-3 py-1.5 border border-gray-300 rounded text-sm';
-const LABELS = { grn: 'GRN', production: 'Production', in_process: 'In process', partially_accepted: 'Partially accepted', not_found: 'Not found', material_issue: 'Material issue', order_confirmation: 'Order confirmation', material_requirement: 'Material requirement', material_plan: 'Material plan', partially_fulfilled: 'Partially fulfilled', available: 'In stock', nil: 'Nil', 1: 'Duplicates', 0: 'First scans' };
+const LABELS = { grn: 'GRN', production: 'Production', in_process: 'In process', partially_accepted: 'Partially accepted', not_found: 'Not found', material_issue: 'Material issue', order_confirmation: 'Order confirmation', material_requirement: 'Material requirement', material_plan: 'Material plan', partially_fulfilled: 'Partially fulfilled', available: 'In stock', nil: 'Nil', 1: 'Duplicates', 0: 'First scans', po_price: 'PO price', po_line: 'PO line', grn_line: 'GRN line', qc: 'QC', supplier_return: 'Supplier return', debit_note: 'Debit note' };
 const label = (v) => LABELS[v] || (typeof v === 'string' ? v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, ' ') : v);
 
 /** Quantities keep every recorded decimal (up to 6) — nothing is rounded for display. */
@@ -129,7 +129,7 @@ export default function ReportView({ reportKey }) {
         {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>}
         {notice && <div className="bg-green-50 text-green-700 p-3 rounded mb-4 text-sm">{notice}</div>}
         <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={(e) => e.preventDefault()}>
-          <ReportCompanySelect value={company} onChange={changeCompany} allowUnassigned={['purchase-orders', 'grns', 'orders'].includes(reportKey)} />
+          <ReportCompanySelect value={company} onChange={changeCompany} allowUnassigned={['purchase-orders', 'grns', 'orders', 'supplier-history'].includes(reportKey)} />
           {definition.search && (
             <div className="flex-1 min-w-[180px]">
               <label className="block text-xs text-gray-500 mb-1">Search</label>
