@@ -44,6 +44,9 @@ export const GROUPS = {
     'material-issue': { label: 'Material Issues', actions: ['view', 'create', 'edit', 'post', 'cancel'] },
     processing: { label: 'Processing · post = output to stock', actions: ['view', 'create', 'edit', 'complete', 'post'] },
   },
+  Barcode: {
+    barcode: { label: 'Lot Barcodes · create = generate / retire', actions: ['view', 'create', 'scan'] },
+  },
   Dispatch: {
     dispatch: { label: 'Dispatches', actions: ['view', 'create', 'edit', 'post', 'cancel'] },
   },

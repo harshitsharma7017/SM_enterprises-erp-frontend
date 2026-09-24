@@ -7,7 +7,9 @@ import FormSection from '@/components/ui/FormSection';
 import CompanySelect from '@/components/company/CompanySelect';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import { DISPATCH_TYPE_LABELS } from '@/components/ui/Badge';
+import BarcodeScanInput from '@/components/barcode/BarcodeScanInput';
 import { apiClient } from '@/lib/api-client';
+import { useAuth } from '@/hooks/useAuth';
 import { toDateInputValue, todayDateInputValue, formatQuantity } from '@/components/sales/shared/format';
 
 const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
@@ -29,6 +31,9 @@ const stockKey = (l) => `${l.order_confirmation_item_id}-${l.lot_id}`;
  */
 export default function DispatchForm({ dispatchId = null, initialType = STOCK, initialOrderId = '', initialPoId = '' }) {
   const router = useRouter();
+  const { can } = useAuth(true);
+  const [scannedLotId, setScannedLotId] = useState(null);
+  const [scanNote, setScanNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState([]);
@@ -149,6 +154,21 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
     loadSource(STOCK, sourceId, value).catch((err) => setErrors([err.message]));
   };
   const set = (name) => (e) => setHeader((prev) => ({ ...prev, [name]: e.target.value }));
+  // A scanned barcode only points at the finished lot's allocation rows; posting re-checks every Phase 11 rule.
+  const onScan = (data) => {
+    const { lot } = data;
+    const repeat = data.duplicate ? ' (this barcode was scanned before)' : '';
+    if (lot.source_type !== 'production') {
+      setScannedLotId(null);
+      setScanNote({ error: true, text: `Lot ${lot.lot_no} is not finished production output and cannot be stock-dispatched.` });
+    } else if (!lines.some((l) => String(l.lot_id) === String(lot.id))) {
+      setScannedLotId(null);
+      setScanNote({ error: true, text: `Lot ${lot.lot_no} is not allocated to this order.` });
+    } else {
+      setScannedLotId(lot.id);
+      setScanNote({ text: `Lot ${lot.lot_no} highlighted below — enter the quantity to dispatch${repeat}.` });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -285,6 +305,13 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
       </FormSection>
 
       <FormSection title="Lines" icon="bi-list-check" subtitle={type === STOCK ? 'Finished lots allocated to the order. Enter a quantity for each line to dispatch.' : 'PO lines. A line can be received (GRN) or direct-dispatched; together never above its ordered quantity.'}>
+        {type === STOCK && header.location_id && lines.length > 0 && can('barcode.scan') && (
+          <div className="mb-3 max-w-xl">
+            <label className={LABEL}>Scan a finished-lot barcode</label>
+            <BarcodeScanInput companyId={companyId} context="dispatch" locationId={header.location_id} onResult={onScan} onError={(message) => { setScannedLotId(null); setScanNote({ error: true, text: message }); }} />
+            {scanNote && <p className={`text-xs mt-1 mb-0 ${scanNote.error ? 'text-red-600' : 'text-green-700'}`}>{scanNote.text}</p>}
+          </div>
+        )}
         {!sourceId ? <p className="text-sm text-gray-500 m-0">Select {type === STOCK ? 'an order' : 'a purchase order'} first.</p>
           : type === STOCK && !header.location_id ? <p className="text-sm text-gray-500 m-0">Select the source location to see its stock.</p>
           : lines.length === 0 ? <p className="text-sm text-gray-500 m-0">{type === STOCK ? 'No finished production is allocated to this order.' : 'This PO has no lines.'}</p>
@@ -298,7 +325,7 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
                   const value = quantities[key] || '';
                   const over = value !== '' && (micro(value) > micro(left) || micro(value) > micro(l.stock_at_location));
                   return (
-                    <tr key={key}>
+                    <tr key={key} className={String(l.lot_id) === String(scannedLotId) ? 'bg-yellow-50' : ''}>
                       <td className="py-1.5">{l.design_no || l.item_description || l.product_name}</td>
                       <td className="py-1.5 font-mono text-xs">{l.lot_no} <span className="font-sans text-gray-500">({l.processing_no})</span></td>
                       <td className="py-1.5 text-right">{formatQuantity(l.allocated_quantity, l.uom_decimal_places)}</td>

@@ -6,7 +6,9 @@ import Link from 'next/link';
 import FormSection from '@/components/ui/FormSection';
 import CompanySelect from '@/components/company/CompanySelect';
 import CompanyBadge from '@/components/company/CompanyBadge';
+import BarcodeScanInput from '@/components/barcode/BarcodeScanInput';
 import { apiClient } from '@/lib/api-client';
+import { useAuth } from '@/hooks/useAuth';
 import { toDateInputValue, todayDateInputValue, formatQuantity } from '@/components/sales/shared/format';
 
 const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
@@ -22,6 +24,8 @@ const EMPTY_HEADER = { issue_date: todayDateInputValue(), location_id: '', job_r
  */
 export default function MaterialIssueForm({ issueId = null }) {
   const router = useRouter();
+  const { can } = useAuth(true);
+  const [scanNote, setScanNote] = useState(null);
   const [loading, setLoading] = useState(!!issueId);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState([]);
@@ -118,6 +122,17 @@ export default function MaterialIssueForm({ issueId = null }) {
   };
   const updateLine = (lotId, patch) => setLines((prev) => prev.map((l) => (l.lot_id === lotId ? { ...l, ...patch } : l)));
   const removeLine = (lotId) => setLines((prev) => prev.filter((l) => l.lot_id !== lotId));
+  // A scanned barcode only selects its lot; it must be usable stock at this location, and posting re-checks everything.
+  const onScan = (data) => {
+    const { lot } = data;
+    const repeat = data.duplicate ? ' (this barcode was scanned before)' : '';
+    if (lines.some((l) => String(l.lot_id) === String(lot.id))) setScanNote({ warn: true, text: `Lot ${lot.lot_no} is already on this issue${repeat}.` });
+    else if (!stockOf(lot.id)) setScanNote({ error: true, text: `Lot ${lot.lot_no} has no usable stock at this location.` });
+    else {
+      addLine(lot.id);
+      setScanNote({ text: `Added lot ${lot.lot_no}${repeat}.` });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -216,6 +231,13 @@ export default function MaterialIssueForm({ issueId = null }) {
                 </select>
               </div>
             </div>
+            {can('barcode.scan') && (
+              <div className="mb-3">
+                <label className={LABEL}>…or scan the lot barcode</label>
+                <BarcodeScanInput companyId={companyId} context="material_issue" locationId={header.location_id} onResult={onScan} onError={(message) => setScanNote({ error: true, text: message })} />
+                {scanNote && <p className={`text-xs mt-1 mb-0 ${scanNote.error ? 'text-red-600' : scanNote.warn ? 'text-amber-700' : 'text-green-700'}`}>{scanNote.text}</p>}
+              </div>
+            )}
             {lines.length > 0 && (
               <table className="min-w-full text-sm">
                 <thead className="text-gray-500 text-xs text-left">

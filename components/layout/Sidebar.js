@@ -7,7 +7,7 @@ import { useState } from 'react';
  * Sidebar — faithful reproduction of the original Guru Traders ERP sidebar.
  *
  * Sections match config/permissions.php groups, in the same order:
- *   Masters → Sales → Planning → Procurement → Inventory → Production → Dispatch → Export → Finance → Reports → Administration
+ *   Masters → Sales → Planning → Procurement → Inventory → Production → Barcode → Dispatch → Export → Finance → Reports → Administration
  *
  * Every entry is permission-gated. A section header only renders when the user
  * can see at least one of its children.
@@ -167,6 +167,14 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           )}
 
           {/* ═══════ DISPATCH ═══════ */}
+          {canAny(['barcode.scan', 'barcode.view']) && (
+            <>
+              {!collapsed && <li className="nav-header">Barcode</li>}
+              <NavItem href="/barcode/scan" icon="bi-upc-scan" label="Scan" permission="barcode.scan" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/barcode/codes" icon="bi-upc" label="Barcodes" permission="barcode.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/barcode/history" icon="bi-clock-history" label="Scan History" permission="barcode.view" can={can} collapsed={collapsed} isActive={isActive} />
+            </>
+          )}
           {canAny(['dispatch.view']) && (
             <>
               {!collapsed && <li className="nav-header">Dispatch</li>}

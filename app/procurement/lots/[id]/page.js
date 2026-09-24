@@ -9,6 +9,7 @@ import { WorkflowBadge, LOT_STATUS_BADGES, PO_ORIGIN_LABELS, QC_STATUS_BADGES, q
 import CompanyBadge from '@/components/company/CompanyBadge';
 import ProductionTrace from '@/components/production/ProductionTrace';
 import OrderAllocationsCard from '@/components/sales/order-confirmations/OrderAllocationsCard';
+import LotBarcodeCard from '@/components/barcode/LotBarcodeCard';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatQuantity } from '@/components/sales/shared/format';
@@ -71,6 +72,7 @@ export default function LotShowPage({ params }) {
             {can('stock.view') && <div><dt className="text-gray-500 text-xs">Stock</dt><dd className="mt-1"><Link href={`/inventory/stock/${lot.id}`} className="text-blue-600 hover:underline">Stock movements →</Link></dd></div>}
           </dl>
         </Card>
+        <LotBarcodeCard lot={lot} can={can} />
         <Card title="Traceability" variant="info">
           <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
         </Card>
@@ -125,6 +127,8 @@ export default function LotShowPage({ params }) {
           <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Supplier</dt><dd className="mt-1 text-gray-900">{lot.supplier_name}</dd></div>
         </dl>
       </Card>
+
+      <LotBarcodeCard lot={lot} can={can} />
 
       <Card title="Quality Control" variant="info">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm mb-3">

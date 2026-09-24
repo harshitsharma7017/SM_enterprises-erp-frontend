@@ -123,6 +123,17 @@ export const COMMERCIAL_STATUS_BADGES = {
   issued: { label: 'Issued', color: 'green' },
   cancelled: { label: 'Cancelled', color: 'red' },
 };
+// Lot barcodes and their scan history.
+export const BARCODE_STATUS_BADGES = {
+  active: { label: 'Active', color: 'green' },
+  retired: { label: 'Retired', color: 'gray' },
+};
+export const SCAN_RESULT_BADGES = {
+  found: { label: 'Found', color: 'green' },
+  not_found: { label: 'Not found', color: 'red' },
+  retired: { label: 'Retired barcode', color: 'amber' },
+};
+export const SCAN_CONTEXT_LABELS = { lookup: 'Lookup', material_issue: 'Material issue', dispatch: 'Dispatch' };
 // Where a lot came from: received against a GRN, or finished material produced in-house.
 export const LOT_SOURCE_LABELS = { grn: 'Received (GRN)', production: 'Production output' };
 
