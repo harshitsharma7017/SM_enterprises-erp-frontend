@@ -4,7 +4,7 @@ import { use, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, PO_STATUS_BADGES, PO_ORIGIN_LABELS, GRN_STATUS_BADGES } from '@/components/ui/Badge';
+import { WorkflowBadge, PO_STATUS_BADGES, PO_ORIGIN_LABELS, GRN_STATUS_BADGES, POSTING_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
@@ -175,6 +175,7 @@ export default function PurchaseOrderShowPage({ params }) {
                   <th className="px-3 py-2 font-medium text-right">₹/Unit</th>
                   <th className="px-3 py-2 font-medium text-right">Ordered Qty</th>
                   <th className="px-3 py-2 font-medium text-right">Received</th>
+                  <th className="px-3 py-2 font-medium text-right">Direct Disp.</th>
                   <th className="px-3 py-2 font-medium text-right">Pending</th>
                   <th className="px-3 py-2 font-medium">UOM</th>
                   <th className="px-3 py-2 font-medium text-right">Amount</th>
@@ -202,6 +203,7 @@ export default function PurchaseOrderShowPage({ params }) {
                     <td className="px-3 py-2 text-right text-gray-900">{item.cost_price == null ? '—' : formatAmount(item.cost_price)}</td>
                     <td className="px-3 py-2 text-right font-medium text-gray-900">{formatQuantity(item.ordered_quantity, item.trace?.uom_decimal_places)}</td>
                     <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.received_quantity, item.trace?.uom_decimal_places)}</td>
+                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.direct_dispatched_quantity, item.trace?.uom_decimal_places)}</td>
                     <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.pending_quantity, item.trace?.uom_decimal_places)}</td>
                     <td className="px-3 py-2 font-mono text-gray-700">{item.unit}</td>
                     <td className="px-3 py-2 text-right text-gray-900 font-medium">{formatAmount(item.amount)}</td>
@@ -229,6 +231,7 @@ export default function PurchaseOrderShowPage({ params }) {
                   <th className="px-3 py-2 font-medium text-right">₹/Unit</th>
                   <th className="px-3 py-2 font-medium text-right">Qty</th>
                   <th className="px-3 py-2 font-medium text-right">Received</th>
+                  <th className="px-3 py-2 font-medium text-right">Direct Disp.</th>
                   <th className="px-3 py-2 font-medium text-right">Amount</th>
                 </tr>
               </thead>
@@ -250,6 +253,7 @@ export default function PurchaseOrderShowPage({ params }) {
                     <td className="px-3 py-2 text-right text-gray-900">{formatAmount(item.cost_price)}</td>
                     <td className="px-3 py-2 text-right text-gray-900">{item.qty}</td>
                     <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.received_quantity, 3)}</td>
+                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.direct_dispatched_quantity, 3)}</td>
                     <td className="px-3 py-2 text-right text-gray-900 font-medium">{formatAmount(item.amount)}</td>
                   </tr>
                 ))}
@@ -258,6 +262,7 @@ export default function PurchaseOrderShowPage({ params }) {
                 <tr className="border-t bg-gray-50">
                   <td colSpan="6" className="px-3 py-2 text-right font-semibold text-gray-700">Total</td>
                   <td className="px-3 py-2 text-right font-semibold text-gray-900">{totalQty}</td>
+                  <td></td>
                   <td></td>
                   <td className="px-3 py-2 text-right font-semibold text-gray-900">{formatAmount(totalAmount)}</td>
                 </tr>
@@ -285,6 +290,30 @@ export default function PurchaseOrderShowPage({ params }) {
                   <span className="text-gray-500"> · {formatDate(g.inward_date)}{g.entry_type === 'legacy_inward' ? ' · legacy inward' : ''} · {g.lots_count} lot(s)</span>
                 </span>
                 <WorkflowBadge status={g.receipt_status} config={GRN_STATUS_BADGES} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
+        <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700 flex items-center justify-between">
+          <span>Direct Supplier Dispatches</span>
+          {can('dispatch.create') && ['raised', 'partial'].includes(po.status) && po.company_id && (
+            <Link href={`/dispatch/create?type=DIRECT_SUPPLIER_DISPATCH&purchase_order_id=${po.id}`} className="text-xs font-medium text-blue-600 hover:underline">Direct dispatch</Link>
+          )}
+        </div>
+        {(po.direct_dispatches || []).length === 0 ? (
+          <div className="p-4 text-sm text-gray-500">The mill has not dispatched this purchase order directly to a customer. A line is fulfilled by receipt (GRN) or direct dispatch — together never above its ordered quantity.</div>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {po.direct_dispatches.map((d) => (
+              <li key={d.id} className="px-4 py-2 text-sm flex items-center justify-between gap-2">
+                <span>
+                  {can('dispatch.view') ? <Link href={`/dispatch/${d.id}`} className="font-mono text-blue-600 hover:underline">{d.dispatch_no}</Link> : <span className="font-mono">{d.dispatch_no}</span>}
+                  <span className="text-gray-500"> · {formatDate(d.dispatch_date)} · {d.buyer_name || d.destination_name || '—'}</span>
+                </span>
+                <WorkflowBadge status={d.status} config={POSTING_STATUS_BADGES} />
               </li>
             ))}
           </ul>

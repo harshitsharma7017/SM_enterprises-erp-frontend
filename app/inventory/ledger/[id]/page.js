@@ -52,6 +52,8 @@ export default function StockMovementPage({ params }) {
             <dd className="mt-1 text-gray-900">
               {movement.quality_inspection_id ? (
                 <>Inspection <Link href={`/quality-control/${movement.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{movement.qc_no}</Link></>
+              ) : movement.dispatch_id ? (
+                <>Dispatch <Link href={`/dispatch/${movement.dispatch_id}`} className="font-mono text-blue-600 hover:underline">{movement.dispatch_no}</Link></>
               ) : movement.processing_record_id ? (
                 <>Production output of <Link href={`/production/processing/${movement.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{movement.processing_no}</Link></>
               ) : movement.material_issue_id ? (

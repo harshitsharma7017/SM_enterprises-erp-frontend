@@ -95,6 +95,7 @@ export default function LotStockPage({ params }) {
         <Card title="Production → Stock" variant="primary">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             <Figure label="Produced (posted)" value={q(lot.stock_received_quantity)} tone="text-green-700" />
+            <Figure label="Dispatched" value={q(lot.stock_dispatched_quantity)} />
             <Figure label="Usable stock now" value={q(lot.stock_quantity)} tone="text-blue-800" />
           </div>
           <p className="text-xs text-gray-500 mt-2 mb-0">Finished material posted from a completed processing record, exactly as recorded.</p>
@@ -173,7 +174,7 @@ export default function LotStockPage({ params }) {
                   <td className="py-1.5 text-gray-600 whitespace-nowrap">{formatDate(m.movement_date)}</td>
                   <td className="py-1.5">{STOCK_MOVEMENT_LABELS[m.movement_type]}</td>
                   <td className="py-1.5 font-mono text-xs">{m.location_code}</td>
-                  <td className="py-1.5 text-gray-700">{m.qc_no ? <Link href={`/quality-control/${m.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{m.qc_no}</Link> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{m.issue_no}</Link> : m.processing_no ? <Link href={`/production/processing/${m.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{m.processing_no}</Link> : m.reason}</td>
+                  <td className="py-1.5 text-gray-700">{m.qc_no ? <Link href={`/quality-control/${m.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{m.qc_no}</Link> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{m.issue_no}</Link> : m.processing_no ? <Link href={`/production/processing/${m.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{m.processing_no}</Link> : m.dispatch_no ? <Link href={`/dispatch/${m.dispatch_id}`} className="font-mono text-blue-600 hover:underline">{m.dispatch_no}</Link> : m.reason}</td>
                   <td className="py-1.5 text-right text-green-700">{Number(m.quantity_in) > 0 ? formatQuantity(m.quantity_in, dp) : ''}</td>
                   <td className="py-1.5 text-right text-red-700">{Number(m.quantity_out) > 0 ? formatQuantity(m.quantity_out, dp) : ''}</td>
                   <td className="py-1.5 text-right font-medium">{formatQuantity(m.balance_after, dp)}</td>

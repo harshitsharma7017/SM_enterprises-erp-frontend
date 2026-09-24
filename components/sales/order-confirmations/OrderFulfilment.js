@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
-import { WorkflowBadge, ORDER_STATUS_BADGES, PRODUCTION_PROGRESS_BADGES, ALLOCATION_STATUS_BADGES } from '@/components/ui/Badge';
+import { WorkflowBadge, ORDER_STATUS_BADGES, PRODUCTION_PROGRESS_BADGES, ALLOCATION_STATUS_BADGES, POSTING_STATUS_BADGES, DISPATCH_TYPE_LABELS } from '@/components/ui/Badge';
 import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,9 +17,9 @@ const EMPTY_FORM = { order_confirmation_item_id: '', lot_id: '', quantity: '', r
 /**
  * Order tracking on an Order Confirmation: per item ordered / produced /
  * dispatched / pending, production allocations (finished lots → items) with
- * their full production trace, and the company's finished stock. Every figure
- * comes from the server; produced = allocated production output, dispatched
- * stays 0 until a dispatch module exists.
+ * their full production trace, dispatch history and the company's finished
+ * stock. Every figure comes from the server; produced = allocated production
+ * output, dispatched = posted dispatches.
  */
 export default function OrderFulfilment({ ocId, companyLabel, companyCode, onChanged }) {
   const { can } = useAuth(true);
@@ -105,6 +105,9 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
         <div className="flex flex-wrap items-center gap-3 mb-3 text-sm">
           <span className="text-gray-500">Order status</span>
           <WorkflowBadge status={data.order_status} config={ORDER_STATUS_BADGES} />
+          {data.status === 'confirmed' && can('dispatch.create') && data.allocations.some((a) => a.status === 'active') && (
+            <Link href={`/dispatch/create?type=STOCK_DISPATCH&order_confirmation_id=${ocId}`} className="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium"><i className="bi bi-truck me-1"></i> Dispatch</Link>
+          )}
         </div>
         <div className="overflow-x-auto border border-gray-200 rounded-md">
           <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
@@ -131,7 +134,7 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
                     <td className="px-3 py-2 font-mono text-xs">{i.unit || i.product_uom_code || '—'}</td>
                     <td className="px-3 py-2 text-right font-semibold">{formatQuantity(i.ordered_quantity, dp)}</td>
                     <td className="px-3 py-2 text-right">{formatQuantity(i.produced_quantity, dp)}</td>
-                    <td className="px-3 py-2 text-right text-gray-500">{formatQuantity(i.dispatched_quantity, dp)}</td>
+                    <td className="px-3 py-2 text-right">{formatQuantity(i.dispatched_quantity, dp)}</td>
                     <td className="px-3 py-2 text-right font-semibold">{formatQuantity(i.pending_quantity, dp)}</td>
                     <td className="px-3 py-2 text-right">{formatQuantity(i.to_produce_quantity, dp)}</td>
                     <td className="px-3 py-2"><WorkflowBadge status={i.production_status} config={PRODUCTION_PROGRESS_BADGES} /></td>
@@ -142,7 +145,7 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
           </table>
         </div>
         <p className="text-xs text-gray-500 mt-2 mb-0">
-          Produced = finished production output allocated to the item. Dispatched stays 0 until dispatch is recorded in the ERP.
+          Produced = finished production output allocated to the item. Dispatched = posted dispatches (finished stock, or direct supplier dispatch of a PO raised from the item).
           Pending = ordered − dispatched; still to produce = ordered − produced. No other formula is applied.
         </p>
       </Card>
@@ -202,6 +205,31 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
           </form>
         )}
         {!canAllocate && data.status !== 'confirmed' && <p className="text-xs text-gray-500 mt-3 mb-0">Production can be allocated once the order is confirmed.</p>}
+      </Card>
+
+      <Card title="Dispatch History" variant="info">
+        {data.dispatches.length === 0 ? <p className="text-sm text-gray-500 m-0">Nothing dispatched for this order.</p> : (
+          <table className="min-w-full text-sm">
+            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Dispatch</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium">Type</th><th className="py-1.5 font-medium">Item</th><th className="py-1.5 font-medium">Lot / PO</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium">Destination</th><th className="py-1.5 font-medium">Status</th></tr></thead>
+            <tbody className="divide-y divide-gray-100">
+              {data.dispatches.map((d) => {
+                const item = data.items.find((i) => i.id === d.order_confirmation_item_id);
+                return (
+                  <tr key={d.id}>
+                    <td className="py-1.5">{can('dispatch.view') ? <Link href={`/dispatch/${d.dispatch_id}`} className={LINK}>{d.dispatch_no}</Link> : <span className="font-mono">{d.dispatch_no}</span>}</td>
+                    <td className="py-1.5 text-gray-600">{formatDate(d.dispatch_date)}</td>
+                    <td className="py-1.5 text-xs">{DISPATCH_TYPE_LABELS[d.dispatch_type]}</td>
+                    <td className="py-1.5 text-gray-700">{item?.design_no || item?.description || item?.product_name}</td>
+                    <td className="py-1.5">{d.lot_id ? <Link href={`/procurement/lots/${d.lot_id}`} className={LINK}>{d.lot_no}</Link> : <span className="font-mono text-xs">{d.po_num}</span>}</td>
+                    <td className="py-1.5 text-right whitespace-nowrap">{formatQuantity(d.quantity, d.uom_decimal_places)} {d.unit}</td>
+                    <td className="py-1.5 text-gray-700">{d.destination_name || d.buyer_name || '—'}</td>
+                    <td className="py-1.5"><WorkflowBadge status={d.status} config={POSTING_STATUS_BADGES} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </Card>
 
       {data.finished_stock.length > 0 && (

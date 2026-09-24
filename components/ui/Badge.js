@@ -109,6 +109,13 @@ export const STOCK_MOVEMENT_LABELS = {
   STOCK_ADJUSTMENT: 'Stock Adjustment',
   MATERIAL_ISSUE: 'Material Issue',
   PRODUCTION_OUTPUT: 'Production Output',
+  DISPATCH: 'Dispatch',
+};
+
+// Dispatch: finished stock against an order, or the mill shipping a PO directly.
+export const DISPATCH_TYPE_LABELS = {
+  STOCK_DISPATCH: 'Stock dispatch',
+  DIRECT_SUPPLIER_DISPATCH: 'Direct supplier dispatch',
 };
 // Where a lot came from: received against a GRN, or finished material produced in-house.
 export const LOT_SOURCE_LABELS = { grn: 'Received (GRN)', production: 'Production output' };

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, LOT_STATUS_BADGES, PO_ORIGIN_LABELS, QC_STATUS_BADGES, qcBadgeStatus, MATERIAL_ISSUE_STATUS_BADGES, PROCESSING_STATUS_BADGES } from '@/components/ui/Badge';
+import { WorkflowBadge, LOT_STATUS_BADGES, PO_ORIGIN_LABELS, QC_STATUS_BADGES, qcBadgeStatus, MATERIAL_ISSUE_STATUS_BADGES, PROCESSING_STATUS_BADGES, POSTING_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import ProductionTrace from '@/components/production/ProductionTrace';
 import OrderAllocationsCard from '@/components/sales/order-confirmations/OrderAllocationsCard';
@@ -63,6 +63,7 @@ export default function LotShowPage({ params }) {
             <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Product</dt><dd className="mt-1 text-gray-900">{lot.product_name} <span className="text-xs text-gray-500">({lot.item_group_code})</span></dd></div>
             <div><dt className="text-gray-500 text-xs">Produced quantity</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(lot.quantity, dp)} <span className="text-sm font-mono text-gray-500">{lot.unit}</span></dd></div>
             <div><dt className="text-gray-500 text-xs">Posted to stock</dt><dd className="mt-1 text-gray-900">{formatDate(lot.received_date)}</dd></div>
+            <div><dt className="text-gray-500 text-xs">Dispatched</dt><dd className="mt-1 text-gray-900">{formatQuantity(lot.stock_dispatched_quantity, dp)} {lot.unit}</dd></div>
             <div>
               <dt className="text-gray-500 text-xs">Usable stock now</dt>
               <dd className="mt-1 text-lg font-semibold text-blue-800">{formatQuantity(lot.stock_quantity, dp)} {lot.unit}</dd>
@@ -74,6 +75,25 @@ export default function LotShowPage({ params }) {
           <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
         </Card>
         <OrderAllocationsCard allocations={lot.order_allocations} can={can} />
+        {lot.dispatches.length > 0 && (
+          <Card title="Dispatched" variant="info">
+            <table className="min-w-full text-sm">
+              <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Dispatch</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium">Order</th><th className="py-1.5 font-medium">Customer</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium">Status</th></tr></thead>
+              <tbody className="divide-y divide-gray-100">
+                {lot.dispatches.map((d) => (
+                  <tr key={d.id}>
+                    <td className="py-1.5">{can('dispatch.view') ? <Link href={`/dispatch/${d.dispatch_id}`} className="font-mono text-blue-600 hover:underline">{d.dispatch_no}</Link> : <span className="font-mono">{d.dispatch_no}</span>}</td>
+                    <td className="py-1.5 text-gray-600">{formatDate(d.dispatch_date)}</td>
+                    <td className="py-1.5 font-mono text-xs">{d.oc_num || '—'}</td>
+                    <td className="py-1.5 text-gray-700">{d.buyer_name || d.destination_name || '—'}</td>
+                    <td className="py-1.5 text-right">{formatQuantity(d.quantity, dp)} {d.unit}</td>
+                    <td className="py-1.5"><WorkflowBadge status={d.status} config={POSTING_STATUS_BADGES} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        )}
       </DashboardLayout>
     );
   }

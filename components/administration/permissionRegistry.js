@@ -44,6 +44,9 @@ export const GROUPS = {
     'material-issue': { label: 'Material Issues', actions: ['view', 'create', 'edit', 'post', 'cancel'] },
     processing: { label: 'Processing · post = output to stock', actions: ['view', 'create', 'edit', 'complete', 'post'] },
   },
+  Dispatch: {
+    dispatch: { label: 'Dispatches', actions: ['view', 'create', 'edit', 'post', 'cancel'] },
+  },
   Export: {
     packing: { label: 'Packing' },
     'export-document': { label: 'Export Documents', actions: ['view', 'create', 'edit', 'delete', 'generate', 'export'] },
