@@ -27,7 +27,8 @@ function Field({ label, children }) {
  * location, and the existing trace — GRN → PO → supplier, or finished lot →
  * processing → issue → source lots — plus order / dispatch / PI / invoice
  * links (finance documents only when the API returned them).
- * `data` is a scan result or a barcode detail: { barcode fields, lot, stock_by_location, commercial }.
+ * `data` is a scan result, a barcode detail or a traceability result: { lot, stock_by_location, commercial };
+ * `barcode` may be null (a lot traced by its number that has no barcode).
  */
 export default function LotScanPanel({ data, barcode }) {
   const { can } = useAuth(true);
@@ -40,7 +41,7 @@ export default function LotScanPanel({ data, barcode }) {
     <>
       <Card title="Lot" variant="primary">
         <dl className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
-          <Field label="Barcode"><span className="font-mono">{barcode.barcode_value}</span> <WorkflowBadge status={barcode.status} config={BARCODE_STATUS_BADGES} /></Field>
+          <Field label="Barcode">{barcode ? <><span className="font-mono">{barcode.barcode_value}</span> <WorkflowBadge status={barcode.status} config={BARCODE_STATUS_BADGES} /></> : '—'}</Field>
           <Field label="Lot">{lotLink}</Field>
           <Field label="Company"><CompanyBadge label={lot.company_label} code={lot.company_code} /></Field>
           <Field label="Source">{LOT_SOURCE_LABELS[lot.source_type]}</Field>
@@ -55,7 +56,7 @@ export default function LotScanPanel({ data, barcode }) {
               <Field label="Quality control">{QC_LABELS[lot.qc_state] || lot.qc_state}</Field>
             </>
           ) : (
-            <Field label="Processing / job">{lot.processing_no}{barcode.job_reference ? <span className="text-gray-500 text-xs"> · job {barcode.job_reference}</span> : ''}</Field>
+            <Field label="Processing / job">{lot.processing_no}{(barcode?.job_reference || lot.production?.job_reference) ? <span className="text-gray-500 text-xs"> · job {barcode?.job_reference || lot.production?.job_reference}</span> : ''}</Field>
           )}
           <Field label="Lot status">{lot.status === 'received' ? 'Received' : 'Cancelled'}</Field>
           <Field label="Current stock"><span className="font-semibold">{formatQuantity(lot.stock_quantity, dp)}</span> {lot.unit}</Field>
@@ -118,7 +119,7 @@ export default function LotScanPanel({ data, barcode }) {
             ))}
           </div>
         )}
-        <p className="text-xs text-gray-400 mt-4 mb-0">Scanned details are read live from the lot and the stock ledger{barcode.created_at ? ` · barcode created ${formatDateTime(barcode.created_at)}` : ''}.</p>
+        <p className="text-xs text-gray-400 mt-4 mb-0">Scanned details are read live from the lot and the stock ledger{barcode?.created_at ? ` · barcode created ${formatDateTime(barcode.created_at)}` : ''}.</p>
       </Card>
     </>
   );

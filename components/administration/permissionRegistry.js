@@ -65,7 +65,7 @@ export const GROUPS = {
   },
   Reports: {
     outstanding: { label: 'Outstanding', actions: ['view', 'export'] },
-    report: { label: 'Reports', actions: ['view', 'export'] },
+    report: { label: 'Reports · each report also needs its module view permission; import also needs the record\'s create permission', actions: ['view', 'export', 'import'] },
   },
   Administration: {
     user: { label: 'Users' },

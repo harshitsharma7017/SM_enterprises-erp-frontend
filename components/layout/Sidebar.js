@@ -3,6 +3,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
+// Excel-ready reports: [route, icon, label, module view permission (plus report.view)].
+const REPORT_LINKS = [
+  ['/reports/purchase-orders', 'bi-cart-check', 'PO Report', 'purchase-order.view'],
+  ['/reports/grns', 'bi-box-arrow-in-down', 'GRN Report', 'inward-entry.view'],
+  ['/reports/stock', 'bi-boxes', 'Lot Stock Report', 'stock.view'],
+  ['/reports/qc', 'bi-clipboard-check', 'QC / Rejections', 'inward-entry.view'],
+  ['/reports/production', 'bi-gear', 'Production Report', 'processing.view'],
+  ['/reports/orders', 'bi-truck', 'Orders / Dispatch', 'order-confirmation.view'],
+  ['/reports/barcodes', 'bi-upc-scan', 'Barcode History', 'barcode.view'],
+  ['/reports/traceability', 'bi-diagram-3', 'Lot Traceability', 'inward-entry.view'],
+];
+
 /**
  * Sidebar — faithful reproduction of the original Guru Traders ERP sidebar.
  *
@@ -206,11 +218,20 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           )}
 
           {/* ═══════ REPORTS ═══════ */}
-          {canAny(['outstanding.view', 'report.view']) && (
+          {canAny(['outstanding.view', 'report.view', 'report.import']) && (
             <>
               {!collapsed && <li className="nav-header">Reports</li>}
               <NavItem href="/reports/outstanding" icon="bi-hourglass-split" label="Outstanding" permission="outstanding.view" can={can} collapsed={collapsed} isActive={isActive} />
-              <NavItem href="/reports" icon="bi-bar-chart-line" label="Reports" permission="report.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/reports" icon="bi-bar-chart-line" label="Reports" permission="report.view" can={can} collapsed={collapsed} isActive={(path) => pathname === path} />
+              {/* Each report also needs its module's view permission — the server enforces the same rule. */}
+              {can('report.view') && (
+                <>
+                  {REPORT_LINKS.map(([href, icon, label, permission]) => (
+                    <NavItem key={href} href={href} icon={icon} label={label} permission={permission} can={can} collapsed={collapsed} isActive={isActive} />
+                  ))}
+                </>
+              )}
+              <NavItem href="/reports/import" icon="bi-file-earmark-arrow-up" label="Excel Import" permission="report.import" can={can} collapsed={collapsed} isActive={isActive} />
             </>
           )}
 
