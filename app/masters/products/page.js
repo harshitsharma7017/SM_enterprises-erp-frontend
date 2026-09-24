@@ -121,8 +121,9 @@ export default function ProductsPage() {
                 className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All Categories</option>
-                {Object.entries(categories).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
+                {/* The API sends [{ id, name }]; an { id: name } map is still accepted (same as ProductForm). */}
+                {(Array.isArray(categories) ? categories : Object.entries(categories).map(([id, name]) => ({ id, name }))).map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>

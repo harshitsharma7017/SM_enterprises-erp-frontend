@@ -1,3 +1,7 @@
 'use client';
-import JobberForm from '@/components/masters/jobbers/JobberForm';
-export default function CreateJobberPage() { return <JobberForm />; }
+
+import PartyForm from '@/components/masters/suppliers/PartyForm';
+
+export default function CreateJobberPage() {
+  return <PartyForm kind="jobber" />;
+}
