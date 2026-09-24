@@ -7,6 +7,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import PageHeading from '@/components/sales/shared/PageHeading';
 import { WorkflowBadge, OC_STATUS_BADGES, PO_STATUS_BADGES, EXPORT_DOC_STATUS_BADGES } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
+import OrderFulfilment from '@/components/sales/order-confirmations/OrderFulfilment';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatAmount } from '@/components/sales/shared/format';
 
@@ -167,6 +168,18 @@ export default function OcShowPage({ params }) {
   const total = (oc.items || []).reduce((sum, it) => sum + (Number(it.amount) || 0), 0);
   const canRaise = can('order-confirmation.approve') && oc.status === 'confirmed' && oc.mode !== 'direct';
   const canShip = can('export-document.create') && oc.status === 'confirmed' && oc.mode !== 'direct';
+  const isCancelled = oc.status === 'cancelled';
+
+  const cancelOrder = async () => {
+    const reason = prompt(`Cancel ${oc.oc_num}? The order stays as history. It cannot be cancelled while production is allocated to it or purchase orders / export documents depend on it.\n\nReason (optional):`);
+    if (reason === null) return;
+    try {
+      await apiClient.post(`/sales/order-confirmations/${id}/cancel`, { reason });
+      await fetchOc();
+    } catch (err) {
+      alert(err.message || 'Could not cancel the order');
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -175,10 +188,15 @@ export default function OcShowPage({ params }) {
         breadcrumbs={[{ label: 'Order Confirmations', href: '/sales/order-confirmations' }, { label: oc.oc_num }]}
         actions={(
           <>
-            {can('order-confirmation.edit') && (
+            {can('order-confirmation.edit') && !isCancelled && (
               <Link href={`/sales/order-confirmations/${id}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium">
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
+            )}
+            {can('order-confirmation.edit') && !isCancelled && (
+              <button type="button" onClick={cancelOrder} className="border border-red-300 text-red-600 hover:bg-red-50 px-3 py-1.5 rounded text-sm font-medium">
+                <i className="bi bi-x-circle me-1"></i> Cancel Order
+              </button>
             )}
             <Link href="/sales/order-confirmations" className="border border-gray-300 px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
               Back
@@ -204,14 +222,18 @@ export default function OcShowPage({ params }) {
           <div><dt className="text-gray-500">OC Date</dt><dd className="mt-0.5 text-gray-900">{formatDate(oc.oc_date)}</dd></div>
           <div><dt className="text-gray-500">Buyer&apos;s Ref</dt><dd className="mt-0.5 text-gray-900">{oc.buyer_ref || '—'}</dd></div>
           <div><dt className="text-gray-500">Buyer</dt><dd className="mt-0.5 text-gray-900">{buyer ? `${buyer.company_name}${buyer.display_code ? ` (${buyer.display_code})` : ''}` : `#${oc.buyer_id}`}</dd></div>
+          <div><dt className="text-gray-500">Brand</dt><dd className="mt-0.5 text-gray-900">{oc.brand_name || '—'}</dd></div>
           <div><dt className="text-gray-500">Category / Order Format</dt><dd className="mt-0.5 text-gray-900">{category?.name || '—'} / {format?.name || '—'}</dd></div>
           <div><dt className="text-gray-500">Agent</dt><dd className="mt-0.5 text-gray-900">{agent ? `${agent.name}${oc.agent_commission_value != null ? ` (${oc.agent_commission_value}${oc.agent_commission_type === 'percent' ? '%' : ''})` : ''}` : '—'}</dd></div>
           <div><dt className="text-gray-500">Currency / Incoterm</dt><dd className="mt-0.5 text-gray-900">{currency?.iso_code || '—'} / {oc.incoterm || '—'}</dd></div>
           <div><dt className="text-gray-500">Shipment</dt><dd className="mt-0.5 text-gray-900">{shipmentParts.length > 0 ? shipmentParts.join(' · ') : '—'}</dd></div>
           <div><dt className="text-gray-500">Payment Terms</dt><dd className="mt-0.5 text-gray-900">{oc.payment_terms || '—'}</dd></div>
           <div className="md:col-span-2"><dt className="text-gray-500">Remarks</dt><dd className="mt-0.5 text-gray-900">{oc.remarks || '—'}</dd></div>
+          {isCancelled && <div className="md:col-span-3"><dt className="text-gray-500">Cancelled</dt><dd className="mt-0.5 text-red-700">{formatDateTime(oc.cancelled_at)} · {oc.canceller_name || '—'}{oc.cancellation_reason ? ` — ${oc.cancellation_reason}` : ''}</dd></div>}
         </dl>
       </div>
+
+      <OrderFulfilment key={`${oc.status}-${oc.updated_at}`} ocId={id} companyLabel={oc.company_label} companyCode={oc.company_code} />
 
       <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
         <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700">Items</div>

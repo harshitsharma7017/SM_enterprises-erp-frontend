@@ -24,7 +24,7 @@ export const GROUPS = {
   },
   Sales: {
     inquiry: { label: 'Inquiries', actions: ['view', 'create', 'edit', 'delete', 'approve', 'export'] },
-    'order-confirmation': { label: 'Order Confirmations', actions: ['view', 'create', 'edit', 'delete', 'approve', 'export'] },
+    'order-confirmation': { label: 'Order Confirmations · allocate = production to orders', actions: ['view', 'create', 'edit', 'delete', 'approve', 'export', 'allocate'] },
   },
   Planning: {
     'brand-projection': { label: 'Brand Projections' },
@@ -79,6 +79,7 @@ export const ACTION_LABELS = {
   ledger: 'Ledger',
   adjust: 'Adjust',
   complete: 'Complete',
+  allocate: 'Allocate',
   export: 'Export',
   generate: 'Generate',
   sync: 'Sync',
@@ -86,7 +87,7 @@ export const ACTION_LABELS = {
 
 // Column order for the matrix — every action actually used by any module,
 // in config/permissions.php's declared order.
-export const ALL_ACTIONS = ['view', 'create', 'edit', 'delete', 'post', 'cancel', 'approve', 'complete', 'ledger', 'adjust', 'export', 'generate', 'sync'];
+export const ALL_ACTIONS = ['view', 'create', 'edit', 'delete', 'post', 'cancel', 'approve', 'complete', 'allocate', 'ledger', 'adjust', 'export', 'generate', 'sync'];
 
 export function moduleActions(group, moduleKey) {
   return GROUPS[group]?.[moduleKey]?.actions || DEFAULT_ACTIONS;

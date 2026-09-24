@@ -8,6 +8,7 @@ import PageHeading from '@/components/sales/shared/PageHeading';
 import { WorkflowBadge, PROCESSING_STATUS_BADGES, OUTPUT_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import TraceChain from '@/components/quality/TraceChain';
+import OrderAllocationsCard from '@/components/sales/order-confirmations/OrderAllocationsCard';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, toDateInputValue, todayDateInputValue } from '@/components/sales/shared/format';
@@ -296,6 +297,8 @@ export default function ProcessingShowPage({ params }) {
           <p className="text-sm text-gray-500 m-0">Output not posted to stock yet.</p>
         )}
       </Card>
+
+      <OrderAllocationsCard allocations={record.order_allocations} can={can} />
 
       {record.items.map((item) => (
         <Card key={item.id} title={`Traceability · ${item.lot_no}`} variant="info">

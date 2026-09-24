@@ -17,6 +17,7 @@ const emptyHeader = {
   oc_date: todayDateInputValue(),
   buyer_ref: '',
   buyer_id: '',
+  brand_id: '',
   category_id: '',
   document_format_id: '',
   agent_id: '',
@@ -111,6 +112,7 @@ export default function OcForm({ ocId = null }) {
           oc_date: toDateInputValue(oc.oc_date),
           buyer_ref: oc.buyer_ref || '',
           buyer_id: oc.buyer_id || '',
+          brand_id: oc.brand_id || '',
           category_id: oc.category_id || '',
           document_format_id: oc.document_format_id || '',
           agent_id: oc.agent_id || '',
@@ -192,6 +194,7 @@ export default function OcForm({ ocId = null }) {
         ...prev,
         company_id: companyId,
         buyer_id: buyer && !buyerFitsCompany(buyer, companyId) ? '' : prev.buyer_id,
+        brand_id: '', // brands are company-owned
       };
     });
     if (formData.category_id) fetchCascade(formData.category_id, companyId);
@@ -208,6 +211,15 @@ export default function OcForm({ ocId = null }) {
     }));
   };
 
+  // Brand options of the order's company (brands are company-owned).
+  const [brands, setBrands] = useState([]);
+  useEffect(() => {
+    if (!formData.company_id) return;
+    apiClient.get(`/sales/order-confirmations/form-brands?company_id=${formData.company_id}`)
+      .then((res) => setBrands(res.data || []))
+      .catch(() => setBrands([]));
+  }, [formData.company_id]);
+
   const selectedFormat = formats.find((f) => String(f.id) === String(formData.document_format_id)) || null;
   const isDirect = formData.mode === 'direct';
 
@@ -218,7 +230,7 @@ export default function OcForm({ ocId = null }) {
     const payload = { ...formData, status };
     // Joi's numeric fields accept null but not '' — a blank <select> must become
     // null, not an empty string, or validation rejects e.g. an unset Agent.
-    for (const key of ['agent_id', 'agent_commission_value', 'agent_commission_type']) {
+    for (const key of ['agent_id', 'agent_commission_value', 'agent_commission_type', 'brand_id']) {
       if (payload[key] === '') payload[key] = null;
     }
     if (isDirect) {
@@ -326,6 +338,13 @@ export default function OcForm({ ocId = null }) {
             <select name="buyer_id" required value={formData.buyer_id} onChange={handleBuyerChange} className="form-select w-full rounded border-gray-300 text-sm">
               <option value="">— Select —</option>
               {buyers.filter((b) => buyerFitsCompany(b, formData.company_id) || String(b.id) === String(formData.buyer_id)).map((b) => <option key={b.id} value={b.id}>{b.company_name}{b.display_code ? ` (${b.display_code})` : ''}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Brand</label>
+            <select name="brand_id" value={formData.brand_id} onChange={handleChange} disabled={!formData.company_id} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <option value="">{formData.company_id ? '— None —' : 'Select a company first'}</option>
+              {brands.map((b) => <option key={b.id} value={b.id}>{b.name} ({b.code})</option>)}
             </select>
           </div>
           <div>

@@ -6,7 +6,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
-import { WorkflowBadge, OC_STATUS_BADGES, StandardBadge } from '@/components/ui/Badge';
+import { WorkflowBadge, OC_STATUS_BADGES, ORDER_STATUS_BADGES, StandardBadge } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
 import CompanyFilter from '@/components/company/CompanyFilter';
 import CompanyBadge from '@/components/company/CompanyBadge';
@@ -15,7 +15,7 @@ import { formatDate } from '@/components/sales/shared/format';
 import { toPaginationFromMeta } from '@/components/sales/shared/pagination';
 import PageHeading from '@/components/sales/shared/PageHeading';
 
-const STATUS_OPTIONS = ['draft', 'sent', 'confirmed'];
+const STATUS_OPTIONS = ['draft', 'sent', 'confirmed', 'cancelled'];
 const MODE_LABELS = { oc: 'Order Confirmation', direct: 'Direct Buyer Contract' };
 
 export default function OrderConfirmationsPage() {
@@ -30,6 +30,10 @@ export default function OrderConfirmationsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [companyFilter, setCompanyFilter] = useState('');
   const [buyerFilter, setBuyerFilter] = useState('');
+  const [brandFilter, setBrandFilter] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [brands, setBrands] = useState([]);
   const [page, setPage] = useState(1);
 
   const fetchOcs = useCallback(async () => {
@@ -41,6 +45,9 @@ export default function OrderConfirmationsPage() {
       if (statusFilter) params.append('status', statusFilter);
       if (companyFilter) params.append('company_id', companyFilter);
       if (buyerFilter) params.append('buyer_id', buyerFilter);
+      if (brandFilter) params.append('brand_id', brandFilter);
+      if (dateFrom) params.append('date_from', dateFrom);
+      if (dateTo) params.append('date_to', dateTo);
       params.append('page', page);
 
       const res = await apiClient.get(`/sales/order-confirmations?${params.toString()}`);
@@ -54,11 +61,19 @@ export default function OrderConfirmationsPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, statusFilter, companyFilter, buyerFilter, page]);
+  }, [searchTerm, statusFilter, companyFilter, buyerFilter, brandFilter, dateFrom, dateTo, page]);
 
   useEffect(() => {
     queueMicrotask(fetchOcs);
-  }, [statusFilter, companyFilter, buyerFilter, page]);
+  }, [statusFilter, companyFilter, buyerFilter, brandFilter, dateFrom, dateTo, page]);
+
+  // Brand filter options need brand.view; without it the filter is hidden.
+  useEffect(() => {
+    if (!can('brand.view')) return;
+    apiClient.get('/masters/brands?limit=500')
+      .then((res) => setBrands(res.data?.data || []))
+      .catch(() => setBrands([]));
+  }, [can]);
 
   useEffect(() => {
     queueMicrotask(async () => {
@@ -82,6 +97,9 @@ export default function OrderConfirmationsPage() {
     setStatusFilter('');
     setCompanyFilter('');
     setBuyerFilter('');
+    setBrandFilter('');
+    setDateFrom('');
+    setDateTo('');
     setPage(1);
   };
 
@@ -134,6 +152,23 @@ export default function OrderConfirmationsPage() {
             emptyOptionLabel="Unassigned"
             className="w-56"
           />
+          {can('brand.view') && (
+            <div className="w-44">
+              <label className="block text-xs text-gray-500 mb-1">Brand</label>
+              <select value={brandFilter} onChange={(e) => { setBrandFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+                <option value="">All Brands</option>
+                {brands.filter((b) => !companyFilter || String(b.company_id) === String(companyFilter)).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+              </select>
+            </div>
+          )}
+          <div className="w-36">
+            <label className="block text-xs text-gray-500 mb-1">From</label>
+            <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+          </div>
+          <div className="w-36">
+            <label className="block text-xs text-gray-500 mb-1">To</label>
+            <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+          </div>
           <div className="w-48">
             <label className="block text-xs text-gray-500 mb-1">Status</label>
             <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
@@ -160,18 +195,19 @@ export default function OrderConfirmationsPage() {
                 <th className="px-4 py-2 font-medium">Contract No.</th>
                 <th className="px-4 py-2 font-medium">Company</th>
                 <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium">Buyer</th>
+                <th className="px-4 py-2 font-medium">Buyer / Brand</th>
                 <th className="px-4 py-2 font-medium">Type</th>
                 <th className="px-4 py-2 font-medium">Source Inquiry</th>
-                <th className="px-4 py-2 font-medium">Status</th>
+                <th className="px-4 py-2 font-medium">Order Status</th>
+                <th className="px-4 py-2 font-medium">Production</th>
                 <th className="px-4 py-2 font-medium text-right w-32">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {loading ? (
-                <tr><td colSpan="8" className="text-center py-8 text-gray-500">Loading Order Confirmations...</td></tr>
+                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading Order Confirmations...</td></tr>
               ) : rows.length === 0 ? (
-                <EmptyState colspan={8} icon="bi-check2-square" title="No Order Confirmations yet" message="Convert a confirmed inquiry, or raise a direct buyer contract." />
+                <EmptyState colspan={9} icon="bi-check2-square" title="No Order Confirmations yet" message="Convert a confirmed inquiry, or raise a direct buyer contract." />
               ) : (
                 rows.map((oc) => (
                   <tr key={oc.id} className="hover:bg-gray-50">
@@ -181,6 +217,7 @@ export default function OrderConfirmationsPage() {
                     <td className="px-4 py-2">
                       <div className="text-gray-900">{oc.buyer_company_name || '—'}</div>
                       {oc.buyer_display_code && <div className="text-xs text-gray-500">{oc.buyer_display_code}</div>}
+                      {oc.brand_name && <div className="text-xs text-gray-500">Brand: {oc.brand_name}</div>}
                     </td>
                     <td className="px-4 py-2">
                       {oc.mode === 'direct' ? (
@@ -190,13 +227,17 @@ export default function OrderConfirmationsPage() {
                       )}
                     </td>
                     <td className="px-4 py-2 text-gray-500">{oc.source_inquiry_id ? `#${oc.source_inquiry_id}` : '—'}</td>
-                    <td className="px-4 py-2"><WorkflowBadge status={oc.status} config={OC_STATUS_BADGES} /></td>
+                    <td className="px-4 py-2"><WorkflowBadge status={oc.order_status || oc.status} config={oc.order_status ? ORDER_STATUS_BADGES : OC_STATUS_BADGES} /></td>
+                    <td className="px-4 py-2 text-xs text-gray-600 whitespace-nowrap">
+                      {oc.items_count > 0 ? `${oc.produced_items_count}/${oc.items_count} lines produced` : '—'}
+                      {oc.allocated_items_count > oc.produced_items_count && <div className="text-amber-700">{oc.allocated_items_count - oc.produced_items_count} in progress</div>}
+                    </td>
                     <td className="px-4 py-2 text-right">
                       <div className="inline-flex items-center gap-2">
                         {can('order-confirmation.view') && (
                           <Link href={`/sales/order-confirmations/${oc.id}`} className="text-gray-500 hover:text-gray-900" title="View"><i className="bi bi-eye"></i></Link>
                         )}
-                        {can('order-confirmation.edit') && (
+                        {can('order-confirmation.edit') && oc.status !== 'cancelled' && (
                           <Link href={`/sales/order-confirmations/${oc.id}/edit`} className="text-blue-600 hover:text-blue-900" title="Edit"><i className="bi bi-pencil"></i></Link>
                         )}
                         {can('order-confirmation.delete') && (

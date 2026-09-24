@@ -42,6 +42,27 @@ export const OC_STATUS_BADGES = {
   draft: { label: 'Draft', color: 'gray' },
   sent: { label: 'OC Sent', color: 'cyan' },
   confirmed: { label: 'Confirmed', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+
+// Customer-order lifecycle: the stored OC status, or once confirmed its fulfilment (follows dispatch).
+export const ORDER_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  sent: { label: 'OC Sent', color: 'cyan' },
+  open: { label: 'Confirmed / Open', color: 'blue' },
+  partially_fulfilled: { label: 'Partially Fulfilled', color: 'amber' },
+  fulfilled: { label: 'Fulfilled', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+// Production against an order item (from production allocations).
+export const PRODUCTION_PROGRESS_BADGES = {
+  not_produced: { label: 'Not produced', color: 'gray' },
+  partially_produced: { label: 'Partially produced', color: 'amber' },
+  produced: { label: 'Produced', color: 'green' },
+};
+export const ALLOCATION_STATUS_BADGES = {
+  active: { label: 'Active', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
 };
 
 // Mirrors PurchaseOrder::STATUSES / STATUS_COLORS in the original ERP.

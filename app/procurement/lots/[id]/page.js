@@ -8,6 +8,7 @@ import PageHeading from '@/components/sales/shared/PageHeading';
 import { WorkflowBadge, LOT_STATUS_BADGES, PO_ORIGIN_LABELS, QC_STATUS_BADGES, qcBadgeStatus, MATERIAL_ISSUE_STATUS_BADGES, PROCESSING_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import ProductionTrace from '@/components/production/ProductionTrace';
+import OrderAllocationsCard from '@/components/sales/order-confirmations/OrderAllocationsCard';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatQuantity } from '@/components/sales/shared/format';
@@ -72,6 +73,7 @@ export default function LotShowPage({ params }) {
         <Card title="Traceability" variant="info">
           <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
         </Card>
+        <OrderAllocationsCard allocations={lot.order_allocations} can={can} />
       </DashboardLayout>
     );
   }
