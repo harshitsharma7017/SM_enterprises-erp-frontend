@@ -52,6 +52,8 @@ export const GROUPS = {
     'export-document': { label: 'Export Documents', actions: ['view', 'create', 'edit', 'delete', 'generate', 'export'] },
   },
   Finance: {
+    'proforma-invoice': { label: 'Proforma Invoices', actions: ['view', 'create', 'edit', 'issue', 'cancel'] },
+    invoice: { label: 'Invoices', actions: ['view', 'create', 'edit', 'issue', 'cancel'] },
     'purchase-bill': { label: 'Purchase Bills' },
     'debit-note': { label: 'Debit Notes · approve = post / cancel', actions: ['view', 'create', 'edit', 'delete', 'approve'] },
     payment: { label: 'Supplier Payments', actions: ['view', 'create', 'edit', 'delete', 'approve'] },

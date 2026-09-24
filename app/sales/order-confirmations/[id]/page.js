@@ -8,6 +8,7 @@ import PageHeading from '@/components/sales/shared/PageHeading';
 import { WorkflowBadge, OC_STATUS_BADGES, PO_STATUS_BADGES, EXPORT_DOC_STATUS_BADGES } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
 import OrderFulfilment from '@/components/sales/order-confirmations/OrderFulfilment';
+import OrderCommercialDocuments from '@/components/finance/OrderCommercialDocuments';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatAmount } from '@/components/sales/shared/format';
 
@@ -234,6 +235,8 @@ export default function OcShowPage({ params }) {
       </div>
 
       <OrderFulfilment key={`${oc.status}-${oc.updated_at}`} ocId={id} companyLabel={oc.company_label} companyCode={oc.company_code} />
+
+      <OrderCommercialDocuments ocId={id} orderStatus={oc.status} />
 
       <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
         <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700">Items</div>

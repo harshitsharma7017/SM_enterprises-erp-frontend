@@ -184,9 +184,11 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           )}
 
           {/* ═══════ FINANCE ═══════ */}
-          {canAny(['purchase-bill.view', 'debit-note.view', 'payment.view', 'foreign-payment.view', 'agent-commission.view']) && (
+          {canAny(['proforma-invoice.view', 'invoice.view', 'purchase-bill.view', 'debit-note.view', 'payment.view', 'foreign-payment.view', 'agent-commission.view']) && (
             <>
               {!collapsed && <li className="nav-header">Finance</li>}
+              <NavItem href="/finance/proforma-invoices" icon="bi-file-earmark-text" label="Proforma Invoices" permission="proforma-invoice.view" can={can} collapsed={collapsed} isActive={isActive} />
+              <NavItem href="/finance/invoices" icon="bi-file-earmark-check" label="Invoices" permission="invoice.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/finance/purchase-bills" icon="bi-receipt" label="Purchase Bills" permission="purchase-bill.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/finance/debit-notes" icon="bi-file-earmark-minus" label="Debit Notes" permission="debit-note.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/finance/supplier-payments" icon="bi-cash-coin" label="Supplier Payments" permission="payment.view" can={can} collapsed={collapsed} isActive={isActive} />

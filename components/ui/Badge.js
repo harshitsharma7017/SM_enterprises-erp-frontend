@@ -117,6 +117,12 @@ export const DISPATCH_TYPE_LABELS = {
   STOCK_DISPATCH: 'Stock dispatch',
   DIRECT_SUPPLIER_DISPATCH: 'Direct supplier dispatch',
 };
+// Proforma / final invoices: draft (editable) → issued (frozen), or cancelled.
+export const COMMERCIAL_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  issued: { label: 'Issued', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
 // Where a lot came from: received against a GRN, or finished material produced in-house.
 export const LOT_SOURCE_LABELS = { grn: 'Received (GRN)', production: 'Production output' };
 

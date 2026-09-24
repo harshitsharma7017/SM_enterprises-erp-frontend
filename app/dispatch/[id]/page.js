@@ -5,12 +5,12 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, POSTING_STATUS_BADGES, DISPATCH_TYPE_LABELS, PO_ORIGIN_LABELS } from '@/components/ui/Badge';
+import { WorkflowBadge, POSTING_STATUS_BADGES, DISPATCH_TYPE_LABELS, PO_ORIGIN_LABELS, COMMERCIAL_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
-import { formatDate, formatDateTime, formatQuantity } from '@/components/sales/shared/format';
+import { formatDate, formatDateTime, formatQuantity, formatAmount } from '@/components/sales/shared/format';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 const LINK = 'font-mono text-blue-600 hover:underline';
@@ -23,6 +23,14 @@ export default function DispatchShowPage({ params }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [notice, setNotice] = useState(null);
+  const [invoices, setInvoices] = useState([]);
+  const canInvoices = can('invoice.view');
+
+  // Invoices billing this dispatch (only with invoice.view; the API enforces it too).
+  useEffect(() => {
+    if (!canInvoices) return;
+    apiClient.get(`/finance/invoices?dispatch_id=${id}&limit=100`).then((res) => setInvoices(res.data || [])).catch(() => setInvoices([]));
+  }, [id, canInvoices]);
 
   const fetchDispatch = useCallback(async () => {
     try {
@@ -145,6 +153,33 @@ export default function DispatchShowPage({ params }) {
         </table>
         {!isStock && <p className="text-xs text-gray-500 mt-2 mb-0">Direct supplier dispatch: the mill ships to the customer; the material never enters ERP stock, so no stock movement is created.</p>}
       </Card>
+
+      {canInvoices && dispatch.status === 'posted' && (
+        <Card
+          title="Invoices"
+          variant="info"
+          actions={can('invoice.create') && dispatch.buyer_id ? <Link href={`/finance/invoices/create?dispatch_id=${id}`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-file-earmark-check me-1"></i> Invoice this dispatch</Link> : null}
+        >
+          {invoices.length === 0 ? (
+            <p className="text-sm text-gray-500 m-0">{dispatch.buyer_id ? 'Not invoiced yet.' : 'No customer on this dispatch, so it cannot be invoiced.'}</p>
+          ) : (
+            <table className="min-w-full text-sm">
+              <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Invoice</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium">PI</th><th className="py-1.5 font-medium text-right">Amount</th><th className="py-1.5 font-medium">Status</th></tr></thead>
+              <tbody className="divide-y divide-gray-100">
+                {invoices.map((i) => (
+                  <tr key={i.id}>
+                    <td className="py-1.5"><Link href={`/finance/invoices/${i.id}`} className={LINK}>{i.invoice_no || `Draft #${i.id}`}</Link></td>
+                    <td className="py-1.5">{formatDate(i.invoice_date)}</td>
+                    <td className="py-1.5">{i.pi_no ? (can('proforma-invoice.view') ? <Link href={`/finance/proforma-invoices/${i.proforma_invoice_id}`} className={LINK}>{i.pi_no}</Link> : <span className="font-mono">{i.pi_no}</span>) : '—'}</td>
+                    <td className="py-1.5 text-right">{i.total_amount === null ? '—' : `${formatAmount(i.total_amount)} ${i.currency_code || ''}`}</td>
+                    <td className="py-1.5"><WorkflowBadge status={i.status} config={COMMERCIAL_STATUS_BADGES} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </Card>
+      )}
 
       <Card title="Traceability" variant="info">
         {isStock ? (
