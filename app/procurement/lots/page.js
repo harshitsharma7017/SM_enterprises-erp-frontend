@@ -6,7 +6,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
-import { WorkflowBadge, LOT_STATUS_BADGES } from '@/components/ui/Badge';
+import { WorkflowBadge, LOT_STATUS_BADGES, LOT_SOURCE_LABELS } from '@/components/ui/Badge';
 import CompanyFilter from '@/components/company/CompanyFilter';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
@@ -14,7 +14,7 @@ import { formatDate, formatQuantity } from '@/components/sales/shared/format';
 import { toPaginationFromPageLimit } from '@/components/sales/shared/pagination';
 import PageHeading from '@/components/sales/shared/PageHeading';
 
-const EMPTY_FILTERS = { search: '', company_id: '', status: '' };
+const EMPTY_FILTERS = { search: '', company_id: '', status: '', source_type: '' };
 const QC_STATE_LABELS = { not_inspected: 'Not inspected', partially_inspected: 'Partly inspected', inspected: 'Inspected' };
 
 export default function LotsPage() {
@@ -57,7 +57,7 @@ export default function LotsPage() {
     <DashboardLayout>
       <PageHeading title="Lots" breadcrumbs={[{ label: 'Procurement' }, { label: 'Lots' }]} />
 
-      <Card title="Received lots (created when a goods receipt is posted)" variant="primary">
+      <Card title="Lots (received on a goods receipt, or finished material posted from production)" variant="primary">
         {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
 
         <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
@@ -72,6 +72,13 @@ export default function LotsPage() {
               <option value="">All</option>
               <option value="received">Received</option>
               <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div className="w-40">
+            <label className="block text-xs text-gray-500 mb-1">Source</label>
+            <select value={filters.source_type} onChange={(e) => setFilter('source_type', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+              <option value="">All</option>
+              {Object.entries(LOT_SOURCE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
           </div>
           <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
@@ -89,7 +96,7 @@ export default function LotsPage() {
                 <th className="px-4 py-2 font-medium text-right">Quantity</th>
                 <th className="px-4 py-2 font-medium text-right">Width (inch)</th>
                 <th className="px-4 py-2 font-medium">Mill Lot</th>
-                <th className="px-4 py-2 font-medium">GRN / PO</th>
+                <th className="px-4 py-2 font-medium">Source (GRN / PO or production)</th>
                 <th className="px-4 py-2 font-medium">Supplier</th>
                 <th className="px-4 py-2 font-medium">Received</th>
                 <th className="px-4 py-2 font-medium">QC</th>
@@ -108,13 +115,19 @@ export default function LotsPage() {
                   <td className="px-4 py-2"><CompanyBadge label={l.company_label} code={l.company_code} /></td>
                   <td className="px-4 py-2 text-gray-900">{l.product_name}</td>
                   <td className="px-4 py-2 text-right font-medium whitespace-nowrap">{formatQuantity(l.quantity, l.uom_decimal_places)} {l.unit}</td>
-                  <td className="px-4 py-2 text-right">{formatQuantity(l.width_inch, 3)}</td>
+                  <td className="px-4 py-2 text-right">{l.width_inch === null ? '—' : formatQuantity(l.width_inch, 3)}</td>
                   <td className="px-4 py-2 text-gray-600">{l.supplier_lot_no || '—'}</td>
                   <td className="px-4 py-2 font-mono text-xs text-gray-700">
-                    <Link href={`/procurement/grn/${l.inward_entry_id}`} className="hover:text-blue-600">{l.inward_no}</Link>
-                    <div>{l.po_num}</div>
+                    {l.source_type === 'production' ? (
+                      <span className="font-sans">Produced · <span className="font-mono">{l.processing_no}</span></span>
+                    ) : (
+                      <>
+                        <Link href={`/procurement/grn/${l.inward_entry_id}`} className="hover:text-blue-600">{l.inward_no}</Link>
+                        <div>{l.po_num}</div>
+                      </>
+                    )}
                   </td>
-                  <td className="px-4 py-2 text-gray-700">{l.supplier_name}</td>
+                  <td className="px-4 py-2 text-gray-700">{l.supplier_name || '—'}</td>
                   <td className="px-4 py-2 text-gray-500">{formatDate(l.received_date)}</td>
                   <td className="px-4 py-2 text-xs whitespace-nowrap">
                     <div className="text-gray-700">{QC_STATE_LABELS[l.qc_state]}</div>

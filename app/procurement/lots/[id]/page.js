@@ -7,6 +7,7 @@ import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
 import { WorkflowBadge, LOT_STATUS_BADGES, PO_ORIGIN_LABELS, QC_STATUS_BADGES, qcBadgeStatus, MATERIAL_ISSUE_STATUS_BADGES, PROCESSING_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
+import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatQuantity } from '@/components/sales/shared/format';
@@ -44,6 +45,36 @@ export default function LotShowPage({ params }) {
   const dp = lot.uom_decimal_places;
   const uninspected = Number(lot.quantity) - Number(lot.qc_claimed_quantity);
   const canInspect = lot.status === 'received' && lot.receipt_status === 'posted' && uninspected > 0 && can('inward-entry.approve');
+
+  // Finished material: no GRN, QC or supplier — its source is the processing record.
+  if (lot.source_type === 'production') {
+    return (
+      <DashboardLayout>
+        <PageHeading
+          title={lot.lot_no}
+          breadcrumbs={[{ label: 'Lots', href: '/procurement/lots' }, { label: lot.lot_no }]}
+          actions={<Link href="/procurement/lots" className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">Back</Link>}
+        />
+        <Card title="Finished-Material Lot" variant="primary">
+          <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
+            <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={lot.company_label} code={lot.company_code} /></dd></div>
+            <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={lot.status} config={LOT_STATUS_BADGES} /></dd></div>
+            <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Product</dt><dd className="mt-1 text-gray-900">{lot.product_name} <span className="text-xs text-gray-500">({lot.item_group_code})</span></dd></div>
+            <div><dt className="text-gray-500 text-xs">Produced quantity</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(lot.quantity, dp)} <span className="text-sm font-mono text-gray-500">{lot.unit}</span></dd></div>
+            <div><dt className="text-gray-500 text-xs">Posted to stock</dt><dd className="mt-1 text-gray-900">{formatDate(lot.received_date)}</dd></div>
+            <div>
+              <dt className="text-gray-500 text-xs">Usable stock now</dt>
+              <dd className="mt-1 text-lg font-semibold text-blue-800">{formatQuantity(lot.stock_quantity, dp)} {lot.unit}</dd>
+            </div>
+            {can('stock.view') && <div><dt className="text-gray-500 text-xs">Stock</dt><dd className="mt-1"><Link href={`/inventory/stock/${lot.id}`} className="text-blue-600 hover:underline">Stock movements →</Link></dd></div>}
+          </dl>
+        </Card>
+        <Card title="Traceability" variant="info">
+          <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
+        </Card>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

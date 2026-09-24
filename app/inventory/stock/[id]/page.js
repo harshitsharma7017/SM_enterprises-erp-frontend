@@ -7,6 +7,7 @@ import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
 import { WorkflowBadge, STOCK_STATUS_BADGES, STOCK_MOVEMENT_LABELS, QC_STATUS_BADGES, qcBadgeStatus } from '@/components/ui/Badge';
 import TraceChain from '@/components/quality/TraceChain';
+import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, todayDateInputValue } from '@/components/sales/shared/format';
@@ -90,6 +91,15 @@ export default function LotStockPage({ params }) {
       {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4 text-sm">{error}</div>}
       {notice && <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded mb-4 text-sm">{notice}</div>}
 
+      {lot.source_type === 'production' ? (
+        <Card title="Production → Stock" variant="primary">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <Figure label="Produced (posted)" value={q(lot.stock_received_quantity)} tone="text-green-700" />
+            <Figure label="Usable stock now" value={q(lot.stock_quantity)} tone="text-blue-800" />
+          </div>
+          <p className="text-xs text-gray-500 mt-2 mb-0">Finished material posted from a completed processing record, exactly as recorded.</p>
+        </Card>
+      ) : (
       <Card title="Receipt → Quality → Stock" variant="primary">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 text-sm">
           <Figure label="Received (GRN)" value={q(lot.quantity)} />
@@ -103,15 +113,18 @@ export default function LotStockPage({ params }) {
         </div>
         <p className="text-xs text-gray-500 mt-2 mb-0">Only QC-accepted quantity enters usable stock. Rejected material stays outside stock and is tracked through QC and supplier returns.</p>
       </Card>
+      )}
 
       <Card title="Source & Traceability" variant="info">
-        <TraceChain doc={{ ...lot, lot_id: lot.id, lot_quantity: lot.quantity }} quantityLabel="Received quantity" />
+        {lot.source_type === 'production'
+          ? <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
+          : <TraceChain doc={{ ...lot, lot_id: lot.id, lot_quantity: lot.quantity }} quantityLabel="Received quantity" />}
       </Card>
 
       <Card title="Balance by Location" variant="info">
         {balances.length === 0 ? <p className="text-sm text-gray-500 m-0">Nothing of this lot has been posted to stock.</p> : (
           <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Location</th><th className="py-1.5 font-medium text-right">Received from QC</th><th className="py-1.5 font-medium text-right">Available</th><th className="py-1.5 font-medium">Last movement</th><th className="py-1.5 font-medium">Status</th></tr></thead>
+            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Location</th><th className="py-1.5 font-medium text-right">Received into stock</th><th className="py-1.5 font-medium text-right">Available</th><th className="py-1.5 font-medium">Last movement</th><th className="py-1.5 font-medium">Status</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
               {balances.map((b) => (
                 <tr key={b.location_id}>
@@ -127,6 +140,7 @@ export default function LotStockPage({ params }) {
         )}
       </Card>
 
+      {lot.source_type !== 'production' && (
       <Card title="Inspections" variant="info">
         {lot.inspections.length === 0 ? <p className="text-sm text-gray-500 m-0">Not inspected yet.</p> : (
           <table className="min-w-full text-sm">
@@ -146,6 +160,8 @@ export default function LotStockPage({ params }) {
         )}
       </Card>
 
+      )}
+
       <Card title="Stock Movements" variant="info">
         {movements.length === 0 ? <p className="text-sm text-gray-500 m-0">No movements.</p> : (
           <table className="min-w-full text-sm">
@@ -157,7 +173,7 @@ export default function LotStockPage({ params }) {
                   <td className="py-1.5 text-gray-600 whitespace-nowrap">{formatDate(m.movement_date)}</td>
                   <td className="py-1.5">{STOCK_MOVEMENT_LABELS[m.movement_type]}</td>
                   <td className="py-1.5 font-mono text-xs">{m.location_code}</td>
-                  <td className="py-1.5 text-gray-700">{m.qc_no ? <Link href={`/quality-control/${m.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{m.qc_no}</Link> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{m.issue_no}</Link> : m.reason}</td>
+                  <td className="py-1.5 text-gray-700">{m.qc_no ? <Link href={`/quality-control/${m.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{m.qc_no}</Link> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{m.issue_no}</Link> : m.processing_no ? <Link href={`/production/processing/${m.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{m.processing_no}</Link> : m.reason}</td>
                   <td className="py-1.5 text-right text-green-700">{Number(m.quantity_in) > 0 ? formatQuantity(m.quantity_in, dp) : ''}</td>
                   <td className="py-1.5 text-right text-red-700">{Number(m.quantity_out) > 0 ? formatQuantity(m.quantity_out, dp) : ''}</td>
                   <td className="py-1.5 text-right font-medium">{formatQuantity(m.balance_after, dp)}</td>

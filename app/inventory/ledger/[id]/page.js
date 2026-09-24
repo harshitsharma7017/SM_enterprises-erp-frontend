@@ -7,6 +7,7 @@ import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
 import { STOCK_MOVEMENT_LABELS } from '@/components/ui/Badge';
 import TraceChain from '@/components/quality/TraceChain';
+import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity } from '@/components/sales/shared/format';
@@ -51,6 +52,8 @@ export default function StockMovementPage({ params }) {
             <dd className="mt-1 text-gray-900">
               {movement.quality_inspection_id ? (
                 <>Inspection <Link href={`/quality-control/${movement.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{movement.qc_no}</Link></>
+              ) : movement.processing_record_id ? (
+                <>Production output of <Link href={`/production/processing/${movement.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{movement.processing_no}</Link></>
               ) : movement.material_issue_id ? (
                 <>Material issue <Link href={`/production/material-issues/${movement.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{movement.issue_no}</Link>{movement.job_reference ? ` · job ${movement.job_reference}` : ''}</>
               ) : 'Stock adjustment'}
@@ -64,7 +67,9 @@ export default function StockMovementPage({ params }) {
       </Card>
 
       <Card title="Traceability" variant="info">
-        <TraceChain doc={movement} />
+        {movement.production
+          ? <ProductionTrace production={movement.production} companyLabel={movement.company_label} companyCode={movement.company_code} />
+          : <TraceChain doc={movement} />}
       </Card>
     </DashboardLayout>
   );

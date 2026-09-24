@@ -5,7 +5,7 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, PROCESSING_STATUS_BADGES } from '@/components/ui/Badge';
+import { WorkflowBadge, PROCESSING_STATUS_BADGES, OUTPUT_STATUS_BADGES } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import TraceChain from '@/components/quality/TraceChain';
 import { apiClient } from '@/lib/api-client';
@@ -44,6 +44,8 @@ export default function ProcessingShowPage({ params }) {
   const [form, setForm] = useState(null);
   const [options, setOptions] = useState({ products: [], uoms: [] });
   const [completionDate, setCompletionDate] = useState(todayDateInputValue());
+  const [outputLocations, setOutputLocations] = useState([]);
+  const [output, setOutput] = useState({ location_id: '', movement_date: todayDateInputValue(), remarks: '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [notice, setNotice] = useState(null);
@@ -70,6 +72,22 @@ export default function ProcessingShowPage({ params }) {
       .then((res) => setOptions(res.data || { products: [], uoms: [] }))
       .catch(() => setOptions({ products: [], uoms: [] }));
   }, [companyId, editable]);
+
+  // Active locations of the record's company, for Post Output to Stock.
+  const canPostOutput = record?.status === 'completed' && !record?.output_posted_at && can('processing.post');
+  useEffect(() => {
+    if (!canPostOutput) return;
+    apiClient.get(`/production/processing/${id}/output-form-data`)
+      .then((res) => setOutputLocations(res.data?.locations || []))
+      .catch(() => setOutputLocations([]));
+  }, [canPostOutput, id]);
+
+  const postOutput = (e) => {
+    e.preventDefault();
+    const location = outputLocations.find((l) => String(l.id) === String(output.location_id));
+    if (!confirm(`Post ${formatQuantity(record.produced_quantity, record.produced_uom_decimal_places)} ${record.produced_unit} of ${record.produced_product_name} to stock at ${location?.code}? This creates a finished-material lot and an immutable stock movement; it cannot be undone.`)) return;
+    act(() => apiClient.post(`/production/processing/${id}/post-output`, { ...output, location_id: Number(output.location_id) }));
+  };
 
   const act = async (work) => {
     setBusy(true);
@@ -225,6 +243,59 @@ export default function ProcessingShowPage({ params }) {
           </Card>
         )}
       </form>
+
+      <Card title="Output Stock (finished material)" variant="info">
+        <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm mb-3">
+          <div><dt className="text-gray-500 text-xs">Produced product</dt><dd className="mt-1 text-gray-900">{record.produced_product_name || '—'}</dd></div>
+          <div><dt className="text-gray-500 text-xs">Produced UOM</dt><dd className="mt-1 text-gray-900">{record.produced_unit || '—'}</dd></div>
+          <div><dt className="text-gray-500 text-xs">Produced quantity</dt><dd className="mt-1 text-gray-900">{record.produced_quantity === null ? '—' : formatQuantity(record.produced_quantity, record.produced_uom_decimal_places)}</dd></div>
+          <div>
+            <dt className="text-gray-500 text-xs">Output stock status</dt>
+            <dd className="mt-1">
+              <WorkflowBadge status={record.output_posted_at ? 'posted' : 'not_posted'} config={OUTPUT_STATUS_BADGES} />
+            </dd>
+          </div>
+        </dl>
+        {record.output_posted_at ? (
+          <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
+            <div><dt className="text-gray-500 text-xs">Destination location</dt><dd className="mt-1 text-gray-900"><span className="font-mono">{record.output_location_code}</span> · {record.output_location_name}</dd></div>
+            <div>
+              <dt className="text-gray-500 text-xs">Stock movement</dt>
+              <dd className="mt-1">{can('stock.ledger') ? <Link href={`/inventory/ledger/${record.output_movement_id}`} className="font-mono text-blue-600 hover:underline">{record.output_movement_no}</Link> : <span className="font-mono">{record.output_movement_no}</span>} <span className="text-xs text-gray-500">{formatDate(record.output_movement_date)}</span></dd>
+            </div>
+            <div><dt className="text-gray-500 text-xs">Finished-material lot</dt><dd className="mt-1"><Link href={`/procurement/lots/${record.output_lot_id}`} className="font-mono text-blue-600 hover:underline">{record.output_lot_no}</Link></dd></div>
+            <div><dt className="text-gray-500 text-xs">Posted</dt><dd className="mt-1 text-gray-900">{formatDateTime(record.output_posted_at)} · {record.output_poster_name || '—'}</dd></div>
+          </dl>
+        ) : record.status !== 'completed' ? (
+          <p className="text-sm text-gray-500 m-0">Output can be posted to stock once the processing is completed.</p>
+        ) : !(Number(record.produced_quantity) > 0) || !record.produced_product_id ? (
+          <p className="text-sm text-gray-500 m-0">Nothing to post: a produced product and a produced quantity above zero are required.</p>
+        ) : canPostOutput ? (
+          <form onSubmit={postOutput} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+            <p className="md:col-span-5 text-xs text-gray-500 m-0">The produced quantity is posted exactly as recorded, as a new finished-material lot. Choose where it is held.</p>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Destination location *</label>
+              <select required value={output.location_id} onChange={(e) => setOutput({ ...output, location_id: e.target.value })} className="form-select w-full rounded border-gray-300 text-sm">
+                <option value="">{outputLocations.length ? '— Select —' : 'No active location'}</option>
+                {outputLocations.map((l) => <option key={l.id} value={l.id}>{l.code} · {l.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Date *</label>
+              <input type="date" required value={output.movement_date} onChange={(e) => setOutput({ ...output, movement_date: e.target.value })} className={INPUT} />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
+              <input type="text" maxLength={2000} value={output.remarks} onChange={(e) => setOutput({ ...output, remarks: e.target.value })} className={INPUT} />
+            </div>
+            <button type="submit" disabled={busy || !output.location_id} className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium disabled:opacity-60">
+              <i className="bi bi-box-arrow-in-down me-1"></i> Post Output to Stock
+            </button>
+          </form>
+        ) : (
+          <p className="text-sm text-gray-500 m-0">Output not posted to stock yet.</p>
+        )}
+      </Card>
 
       {record.items.map((item) => (
         <Card key={item.id} title={`Traceability · ${item.lot_no}`} variant="info">

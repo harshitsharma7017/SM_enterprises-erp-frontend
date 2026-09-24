@@ -42,7 +42,7 @@ export const GROUPS = {
   },
   Production: {
     'material-issue': { label: 'Material Issues', actions: ['view', 'create', 'edit', 'post', 'cancel'] },
-    processing: { label: 'Processing', actions: ['view', 'create', 'edit', 'complete'] },
+    processing: { label: 'Processing · post = output to stock', actions: ['view', 'create', 'edit', 'complete', 'post'] },
   },
   Export: {
     packing: { label: 'Packing' },

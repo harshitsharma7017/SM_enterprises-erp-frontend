@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import CompanyFilter from '@/components/company/CompanyFilter';
-import { STOCK_MOVEMENT_LABELS } from '@/components/ui/Badge';
+import { STOCK_MOVEMENT_LABELS, LOT_SOURCE_LABELS } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -93,6 +93,15 @@ export default function InventoryFilters({ filters, setFilter, onReset, fields, 
         <div className="w-32">
           <label className="block text-xs text-gray-500 mb-1">Lot No.</label>
           <input type="text" value={filters.lot} onChange={(e) => setFilter('lot', e.target.value)} className={INPUT} />
+        </div>
+      )}
+      {show('lot_source') && (
+        <div className="w-40">
+          <label className="block text-xs text-gray-500 mb-1">Lot source</label>
+          <select value={filters.lot_source} onChange={(e) => setFilter('lot_source', e.target.value)} className={INPUT}>
+            <option value="">All</option>
+            {Object.entries(LOT_SOURCE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
         </div>
       )}
       {show('movement_type') && (

@@ -87,7 +87,10 @@ export const STOCK_MOVEMENT_LABELS = {
   QC_ACCEPTED_RECEIPT: 'QC Accepted Receipt',
   STOCK_ADJUSTMENT: 'Stock Adjustment',
   MATERIAL_ISSUE: 'Material Issue',
+  PRODUCTION_OUTPUT: 'Production Output',
 };
+// Where a lot came from: received against a GRN, or finished material produced in-house.
+export const LOT_SOURCE_LABELS = { grn: 'Received (GRN)', production: 'Production output' };
 
 // Material issue (store → supervisor/cutting) and its processing record.
 export const MATERIAL_ISSUE_STATUS_BADGES = {
@@ -98,6 +101,10 @@ export const MATERIAL_ISSUE_STATUS_BADGES = {
 export const PROCESSING_STATUS_BADGES = {
   in_process: { label: 'In Process', color: 'amber' },
   completed: { label: 'Completed', color: 'green' },
+};
+export const OUTPUT_STATUS_BADGES = {
+  not_posted: { label: 'Not posted', color: 'gray' },
+  posted: { label: 'Posted to stock', color: 'green' },
 };
 export const STOCK_STATUS_BADGES = {
   available: { label: 'Available', color: 'green' },

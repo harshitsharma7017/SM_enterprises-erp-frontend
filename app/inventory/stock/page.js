@@ -15,8 +15,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatQuantity } from '@/components/sales/shared/format';
 import { toPaginationFromPageLimit } from '@/components/sales/shared/pagination';
 
-const EMPTY_FILTERS = { search: '', company_id: '', product_id: '', material_type_id: '', supplier_id: '', location_id: '', lot: '', stock_status: '', date_from: '', date_to: '' };
-const LOT_FIELDS = ['product_id', 'material_type_id', 'supplier_id', 'location_id', 'lot', 'stock_status', 'dates', 'received_dates'];
+const EMPTY_FILTERS = { search: '', company_id: '', product_id: '', material_type_id: '', supplier_id: '', location_id: '', lot: '', lot_source: '', stock_status: '', date_from: '', date_to: '' };
+const LOT_FIELDS = ['product_id', 'material_type_id', 'supplier_id', 'location_id', 'lot', 'lot_source', 'stock_status', 'dates', 'received_dates'];
 const PRODUCT_FIELDS = ['product_id', 'material_type_id', 'location_id'];
 const TAB = 'px-3 py-1.5 text-sm font-medium rounded-md';
 
@@ -91,7 +91,7 @@ export default function StockPage() {
         </Card>
       )}
 
-      <Card title="Usable stock (QC-accepted material)" variant="primary" actions={(
+      <Card title="Usable stock (QC-accepted material and posted production output)" variant="primary" actions={(
         <div className="flex gap-1">
           <button type="button" onClick={() => switchView('lot')} className={`${TAB} ${view === 'lot' ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700'}`}>By lot</button>
           <button type="button" onClick={() => switchView('product')} className={`${TAB} ${view === 'product' ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700'}`}>By product</button>
@@ -118,7 +118,7 @@ export default function StockPage() {
                   <th className="px-4 py-2 font-medium text-right">Width</th>
                   <th className="px-4 py-2 font-medium">Location</th>
                   <th className="px-4 py-2 font-medium">Supplier</th>
-                  <th className="px-4 py-2 font-medium">GRN / PO</th>
+                  <th className="px-4 py-2 font-medium">Source (GRN / PO or production)</th>
                   <th className="px-4 py-2 font-medium">Received</th>
                   <th className="px-4 py-2 font-medium text-right">Available</th>
                   <th className="px-4 py-2 font-medium">Status</th>
@@ -137,10 +137,12 @@ export default function StockPage() {
                       <div className="text-gray-900">{b.product_name}</div>
                       <div className="text-xs text-gray-500">{b.material_type_name || '—'}</div>
                     </td>
-                    <td className="px-4 py-2 text-right">{formatQuantity(b.width_inch, 3)}&quot;</td>
+                    <td className="px-4 py-2 text-right">{b.width_inch === null ? '—' : `${formatQuantity(b.width_inch, 3)}"`}</td>
                     <td className="px-4 py-2 text-gray-700"><span className="font-mono">{b.location_code}</span> <span className="text-xs text-gray-500">{b.location_name}</span></td>
-                    <td className="px-4 py-2 text-gray-700">{b.supplier_name}</td>
-                    <td className="px-4 py-2 font-mono text-xs text-gray-700">{b.inward_no}<div>{b.po_num}</div></td>
+                    <td className="px-4 py-2 text-gray-700">{b.supplier_name || '—'}</td>
+                    <td className="px-4 py-2 font-mono text-xs text-gray-700">
+                      {b.lot_source_type === 'production' ? <span className="font-sans">Produced · <span className="font-mono">{b.lot_processing_no}</span></span> : <>{b.inward_no}<div>{b.po_num}</div></>}
+                    </td>
                     <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{formatDate(b.received_date)}</td>
                     <td className="px-4 py-2 text-right font-semibold whitespace-nowrap">{formatQuantity(b.quantity, b.uom_decimal_places)} <span className="text-xs font-normal text-gray-500">{b.unit}</span></td>
                     <td className="px-4 py-2"><WorkflowBadge status={b.stock_status} config={STOCK_STATUS_BADGES} /></td>
