@@ -11,6 +11,7 @@ import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity } from '@/components/sales/shared/format';
+import DocumentButton from '@/components/ui/DocumentButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 
@@ -82,6 +83,7 @@ export default function GrnShowPage({ params }) {
         breadcrumbs={[{ label: 'Goods Receipts', href: '/procurement/grn' }, { label: grn.inward_no }]}
         actions={(
           <>
+            <DocumentButton endpoint={`/procurement/inward-entries/${id}/document`} number={grn.inward_no} onError={setError} />
             {isDraft && can('inward-entry.edit') && (
               <Link href={`/procurement/grn/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}>
                 <i className="bi bi-pencil me-1"></i> Edit

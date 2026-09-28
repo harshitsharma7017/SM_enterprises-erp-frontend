@@ -118,7 +118,9 @@ export default function LotsPage() {
                   <td className="px-4 py-2 text-right">{l.width_inch === null ? '—' : formatQuantity(l.width_inch, 3)}</td>
                   <td className="px-4 py-2 text-gray-600">{l.supplier_lot_no || '—'}</td>
                   <td className="px-4 py-2 font-mono text-xs text-gray-700">
-                    {l.source_type === 'production' ? (
+                    {l.source_type === 'opening' ? (
+                      <span className="font-sans">Opening stock</span>
+                    ) : l.source_type === 'production' ? (
                       <span className="font-sans">Produced · <span className="font-mono">{l.processing_no}</span></span>
                     ) : (
                       <>

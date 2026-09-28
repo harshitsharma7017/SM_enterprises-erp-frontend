@@ -11,6 +11,7 @@ import OrderFulfilment from '@/components/sales/order-confirmations/OrderFulfilm
 import OrderCommercialDocuments from '@/components/finance/OrderCommercialDocuments';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatAmount } from '@/components/sales/shared/format';
+import BrandSpecNote from '@/components/masters/brands/BrandSpecNote';
 
 const MODE_LABELS = { oc: 'Order Confirmation', direct: 'Direct Buyer Contract' };
 
@@ -280,7 +281,7 @@ export default function OcShowPage({ params }) {
                       </td>
                     )}
                     <td className="px-3 py-2 text-gray-500">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-900">{item.design_no || '—'}</td>
+                    <td className="px-3 py-2 text-gray-900">{item.design_no || '—'}<BrandSpecNote spec={item.brand_spec} /></td>
                     <td className="px-3 py-2 text-gray-700">{item.product_id ? `#${item.product_id}` : '—'}</td>
                     <td className="px-3 py-2 text-gray-700">{item.supplier_id ? `#${item.supplier_id}` : '—'}</td>
                     <td className="px-3 py-2 text-gray-700">

@@ -91,10 +91,10 @@ export default function LotStockPage({ params }) {
       {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4 text-sm">{error}</div>}
       {notice && <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded mb-4 text-sm">{notice}</div>}
 
-      {lot.source_type === 'production' ? (
-        <Card title="Production → Stock" variant="primary">
+      {lot.source_type !== 'grn' ? (
+        <Card title={lot.source_type === 'opening' ? 'Opening Stock' : 'Production → Stock'} variant="primary">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-            <Figure label="Produced (posted)" value={q(lot.stock_received_quantity)} tone="text-green-700" />
+            <Figure label={lot.source_type === 'opening' ? 'Opening (posted)' : 'Produced (posted)'} value={q(lot.stock_received_quantity)} tone="text-green-700" />
             <Figure label="Dispatched" value={q(lot.stock_dispatched_quantity)} />
             <Figure label="Usable stock now" value={q(lot.stock_quantity)} tone="text-blue-800" />
           </div>
@@ -117,7 +117,9 @@ export default function LotStockPage({ params }) {
       )}
 
       <Card title="Source & Traceability" variant="info">
-        {lot.source_type === 'production'
+        {lot.source_type === 'opening'
+          ? <p className="text-sm text-gray-700 m-0">Opening stock (imported) — no PO, GRN, QC or processing record before this lot.{lot.supplier_name ? ` Supplier: ${lot.supplier_name}.` : ''}{lot.supplier_lot_no ? ` Mill lot: ${lot.supplier_lot_no}.` : ''}</p>
+          : lot.source_type === 'production'
           ? <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
           : <TraceChain doc={{ ...lot, lot_id: lot.id, lot_quantity: lot.quantity }} quantityLabel="Received quantity" />}
       </Card>
@@ -141,7 +143,7 @@ export default function LotStockPage({ params }) {
         )}
       </Card>
 
-      {lot.source_type !== 'production' && (
+      {lot.source_type === 'grn' && (
       <Card title="Inspections" variant="info">
         {lot.inspections.length === 0 ? <p className="text-sm text-gray-500 m-0">Not inspected yet.</p> : (
           <table className="min-w-full text-sm">

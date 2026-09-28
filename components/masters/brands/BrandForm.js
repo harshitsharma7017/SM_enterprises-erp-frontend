@@ -5,6 +5,7 @@ import DashboardLayout from '../../layout/DashboardLayout';
 import FormSection from '../../ui/FormSection';
 import CompanySelect from '../../company/CompanySelect';
 import { apiClient } from '../../../lib/api-client';
+import BrandSpecs from './BrandSpecs';
 
 const INPUT = 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
 
@@ -28,6 +29,8 @@ export default function BrandForm({ brandId }) {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState([]);
   const [formData, setFormData] = useState({ company_id: '', code: '', name: '', status: 'active' });
+  // The saved company — specs pick products from it, not from an unsaved change in the form.
+  const [savedCompanyId, setSavedCompanyId] = useState(null);
 
   useEffect(() => {
     if (!brandId) return;
@@ -35,6 +38,7 @@ export default function BrandForm({ brandId }) {
       const b = res.data?.brand;
       if (b) {
         setFormData({ company_id: b.company_id || '', code: b.code || '', name: b.name || '', status: b.status || 'active' });
+        setSavedCompanyId(b.company_id || null);
       }
       setLoading(false);
     }).catch(err => {
@@ -125,6 +129,7 @@ export default function BrandForm({ brandId }) {
           </div>
         </form>
       </div>
+      {brandId && savedCompanyId && <BrandSpecs brandId={brandId} companyId={savedCompanyId} />}
     </DashboardLayout>
   );
 }

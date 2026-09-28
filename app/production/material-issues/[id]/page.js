@@ -12,6 +12,7 @@ import TraceChain from '@/components/quality/TraceChain';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, todayDateInputValue } from '@/components/sales/shared/format';
+import DocumentButton from '@/components/ui/DocumentButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 
@@ -82,6 +83,7 @@ export default function MaterialIssueShowPage({ params }) {
         breadcrumbs={[{ label: 'Material Issues', href: '/production/material-issues' }, { label: issue.issue_no }]}
         actions={(
           <>
+            <DocumentButton endpoint={`/production/material-issues/${id}/document`} number={issue.issue_no} onError={setError} />
             {isDraft && can('material-issue.edit') && (
               <Link href={`/production/material-issues/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-pencil me-1"></i> Edit</Link>
             )}

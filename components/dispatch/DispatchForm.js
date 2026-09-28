@@ -158,10 +158,8 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
   const onScan = (data) => {
     const { lot } = data;
     const repeat = data.duplicate ? ' (this barcode was scanned before)' : '';
-    if (lot.source_type !== 'production') {
-      setScannedLotId(null);
-      setScanNote({ error: true, text: `Lot ${lot.lot_no} is not finished production output and cannot be stock-dispatched.` });
-    } else if (!lines.some((l) => String(l.lot_id) === String(lot.id))) {
+    // Any lot allocated to the order can be dispatched (production, QC-accepted GRN or opening stock).
+    if (!lines.some((l) => String(l.lot_id) === String(lot.id))) {
       setScannedLotId(null);
       setScanNote({ error: true, text: `Lot ${lot.lot_no} is not allocated to this order.` });
     } else {
@@ -327,7 +325,7 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
                   return (
                     <tr key={key} className={String(l.lot_id) === String(scannedLotId) ? 'bg-yellow-50' : ''}>
                       <td className="py-1.5">{l.design_no || l.item_description || l.product_name}</td>
-                      <td className="py-1.5 font-mono text-xs">{l.lot_no} <span className="font-sans text-gray-500">({l.processing_no})</span></td>
+                      <td className="py-1.5 font-mono text-xs">{l.lot_no} <span className="font-sans text-gray-500">({l.processing_no || (l.inward_no ? `GRN ${l.inward_no}` : l.lot_source_type === 'opening' ? 'opening stock' : 'bought-in')})</span></td>
                       <td className="py-1.5 text-right">{formatQuantity(l.allocated_quantity, l.uom_decimal_places)}</td>
                       <td className="py-1.5 text-right text-gray-600">{formatQuantity(l.dispatched_quantity, l.uom_decimal_places)}</td>
                       <td className="py-1.5 text-right font-semibold">{formatQuantity(left, l.uom_decimal_places)} {l.unit}</td>

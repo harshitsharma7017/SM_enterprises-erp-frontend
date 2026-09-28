@@ -55,6 +55,8 @@ export default function LotScanPanel({ data, barcode }) {
               <Field label="Supplier">{lot.supplier_name}{lot.supplier_lot_no ? <span className="text-gray-500 text-xs"> · mill lot {lot.supplier_lot_no}</span> : ''}</Field>
               <Field label="Quality control">{QC_LABELS[lot.qc_state] || lot.qc_state}</Field>
             </>
+          ) : lot.source_type === 'opening' ? (
+            <Field label="Source">Opening stock{lot.supplier_name ? <span className="text-gray-500 text-xs"> · {lot.supplier_name}</span> : ''}{lot.supplier_lot_no ? <span className="text-gray-500 text-xs"> · mill lot {lot.supplier_lot_no}</span> : ''}</Field>
           ) : (
             <Field label="Processing / job">{lot.processing_no}{(barcode?.job_reference || lot.production?.job_reference) ? <span className="text-gray-500 text-xs"> · job {barcode?.job_reference || lot.production?.job_reference}</span> : ''}</Field>
           )}
@@ -80,7 +82,9 @@ export default function LotScanPanel({ data, barcode }) {
       </Card>
 
       <Card title="Traceability" variant="info">
-        {lot.source_type === 'production'
+        {lot.source_type === 'opening'
+          ? <p className="text-sm text-gray-700 m-0">Opening stock (imported) — no PO, GRN, QC or processing record before this lot.</p>
+          : lot.source_type === 'production'
           ? <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
           : <TraceChain doc={{ ...lot, lot_id: lot.id, lot_quantity: lot.quantity, inward_date: lot.trace?.inward_date }} />}
         {lot.material_issues?.length > 0 && (

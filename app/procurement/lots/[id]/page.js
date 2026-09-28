@@ -26,6 +26,37 @@ function Step({ label, children }) {
   );
 }
 
+/** Material issued from this lot, with the processing each issue went to. */
+function MaterialIssuesCard({ lot, dp, can }) {
+  if (!lot.material_issues?.length) return null;
+  return (
+    <Card title="Material Issues & Processing" variant="info">
+        <table className="min-w-full text-sm">
+          <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Issue</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium">Job Ref.</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium">Status</th><th className="py-1.5 font-medium">Processing</th></tr></thead>
+          <tbody className="divide-y divide-gray-100">
+            {lot.material_issues.map((mi) => (
+              <tr key={mi.material_issue_item_id}>
+                <td className="py-1.5">{can('material-issue.view') ? <Link href={`/production/material-issues/${mi.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{mi.issue_no}</Link> : <span className="font-mono">{mi.issue_no}</span>}</td>
+                <td className="py-1.5 text-gray-600">{formatDate(mi.issue_date)}</td>
+                <td className="py-1.5 text-gray-700">{mi.job_reference || '—'}</td>
+                <td className="py-1.5 text-right">{formatQuantity(mi.quantity, dp)} {lot.unit}</td>
+                <td className="py-1.5"><WorkflowBadge status={mi.status} config={MATERIAL_ISSUE_STATUS_BADGES} /></td>
+                <td className="py-1.5">
+                  {mi.processing_record_id ? (
+                    <span className="inline-flex items-center gap-1">
+                      {can('processing.view') ? <Link href={`/production/processing/${mi.processing_record_id}`} className="font-mono text-xs text-blue-600 hover:underline">{mi.processing_no}</Link> : <span className="font-mono text-xs">{mi.processing_no}</span>}
+                      <WorkflowBadge status={mi.processing_status} config={PROCESSING_STATUS_BADGES} />
+                    </span>
+                  ) : '—'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+  );
+}
+
 export default function LotShowPage({ params }) {
   const { id } = use(params);
   const { can } = useAuth(true);
@@ -48,8 +79,9 @@ export default function LotShowPage({ params }) {
   const uninspected = Number(lot.quantity) - Number(lot.qc_claimed_quantity);
   const canInspect = lot.status === 'received' && lot.receipt_status === 'posted' && uninspected > 0 && can('inward-entry.approve');
 
-  // Finished material: no GRN, QC or supplier — its source is the processing record.
-  if (lot.source_type === 'production') {
+  // Finished material (source: its processing record) and opening stock (no PO / GRN / QC behind it).
+  if (lot.source_type === 'production' || lot.source_type === 'opening') {
+    const isOpening = lot.source_type === 'opening';
     return (
       <DashboardLayout>
         <PageHeading
@@ -57,13 +89,13 @@ export default function LotShowPage({ params }) {
           breadcrumbs={[{ label: 'Lots', href: '/procurement/lots' }, { label: lot.lot_no }]}
           actions={<Link href="/procurement/lots" className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">Back</Link>}
         />
-        <Card title="Finished-Material Lot" variant="primary">
+        <Card title={isOpening ? 'Opening-Stock Lot' : 'Finished-Material Lot'} variant="primary">
           <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
             <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={lot.company_label} code={lot.company_code} /></dd></div>
             <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={lot.status} config={LOT_STATUS_BADGES} /></dd></div>
             <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Product</dt><dd className="mt-1 text-gray-900">{lot.product_name} <span className="text-xs text-gray-500">({lot.item_group_code})</span></dd></div>
-            <div><dt className="text-gray-500 text-xs">Produced quantity</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(lot.quantity, dp)} <span className="text-sm font-mono text-gray-500">{lot.unit}</span></dd></div>
-            <div><dt className="text-gray-500 text-xs">Posted to stock</dt><dd className="mt-1 text-gray-900">{formatDate(lot.received_date)}</dd></div>
+            <div><dt className="text-gray-500 text-xs">{isOpening ? 'Opening quantity' : 'Produced quantity'}</dt><dd className="mt-1 text-lg font-semibold">{formatQuantity(lot.quantity, dp)} <span className="text-sm font-mono text-gray-500">{lot.unit}</span></dd></div>
+            <div><dt className="text-gray-500 text-xs">{isOpening ? 'As of' : 'Posted to stock'}</dt><dd className="mt-1 text-gray-900">{formatDate(lot.received_date)}</dd></div>
             <div><dt className="text-gray-500 text-xs">Dispatched</dt><dd className="mt-1 text-gray-900">{formatQuantity(lot.stock_dispatched_quantity, dp)} {lot.unit}</dd></div>
             <div>
               <dt className="text-gray-500 text-xs">Usable stock now</dt>
@@ -73,9 +105,21 @@ export default function LotShowPage({ params }) {
           </dl>
         </Card>
         <LotBarcodeCard lot={lot} can={can} />
-        <Card title="Traceability" variant="info">
-          <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
-        </Card>
+        {isOpening ? (
+          <Card title="Source" variant="info">
+            <p className="text-sm text-gray-700 m-0">Opening stock brought in by the Opening Stock import — stock that existed before the ERP, so there is no PO, GRN, QC or processing record before this lot.</p>
+            <dl className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3 text-sm mt-3">
+              <div><dt className="text-gray-500 text-xs">Supplier</dt><dd className="mt-1 text-gray-900">{lot.supplier_name || '—'}</dd></div>
+              <div><dt className="text-gray-500 text-xs">Width</dt><dd className="mt-1 text-gray-900">{lot.width_inch === null ? '—' : `${formatQuantity(lot.width_inch, 3)}"`}</dd></div>
+              <div><dt className="text-gray-500 text-xs">Mill lot no.</dt><dd className="mt-1 text-gray-900">{lot.supplier_lot_no || '—'}</dd></div>
+            </dl>
+          </Card>
+        ) : (
+          <Card title="Traceability" variant="info">
+            <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
+          </Card>
+        )}
+        {isOpening && <MaterialIssuesCard lot={lot} dp={dp} can={can} />}
         <OrderAllocationsCard allocations={lot.order_allocations} can={can} />
         {lot.dispatches.length > 0 && (
           <Card title="Dispatched" variant="info">
@@ -164,32 +208,7 @@ export default function LotShowPage({ params }) {
         )}
       </Card>
 
-      {lot.material_issues.length > 0 && (
-        <Card title="Material Issues & Processing" variant="info">
-          <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Issue</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium">Job Ref.</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium">Status</th><th className="py-1.5 font-medium">Processing</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
-              {lot.material_issues.map((mi) => (
-                <tr key={mi.material_issue_item_id}>
-                  <td className="py-1.5">{can('material-issue.view') ? <Link href={`/production/material-issues/${mi.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{mi.issue_no}</Link> : <span className="font-mono">{mi.issue_no}</span>}</td>
-                  <td className="py-1.5 text-gray-600">{formatDate(mi.issue_date)}</td>
-                  <td className="py-1.5 text-gray-700">{mi.job_reference || '—'}</td>
-                  <td className="py-1.5 text-right">{formatQuantity(mi.quantity, dp)} {lot.unit}</td>
-                  <td className="py-1.5"><WorkflowBadge status={mi.status} config={MATERIAL_ISSUE_STATUS_BADGES} /></td>
-                  <td className="py-1.5">
-                    {mi.processing_record_id ? (
-                      <span className="inline-flex items-center gap-1">
-                        {can('processing.view') ? <Link href={`/production/processing/${mi.processing_record_id}`} className="font-mono text-xs text-blue-600 hover:underline">{mi.processing_no}</Link> : <span className="font-mono text-xs">{mi.processing_no}</span>}
-                        <WorkflowBadge status={mi.processing_status} config={PROCESSING_STATUS_BADGES} />
-                      </span>
-                    ) : '—'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
-      )}
+      <MaterialIssuesCard lot={lot} dp={dp} can={can} />
 
       <Card title="Traceability" variant="info">
         <ol className="list-none p-0 m-0 space-y-3">

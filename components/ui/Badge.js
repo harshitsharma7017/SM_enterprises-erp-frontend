@@ -135,7 +135,7 @@ export const SCAN_RESULT_BADGES = {
 };
 export const SCAN_CONTEXT_LABELS = { lookup: 'Lookup', material_issue: 'Material issue', dispatch: 'Dispatch' };
 // Where a lot came from: received against a GRN, or finished material produced in-house.
-export const LOT_SOURCE_LABELS = { grn: 'Received (GRN)', production: 'Production output' };
+export const LOT_SOURCE_LABELS = { grn: 'Received (GRN)', production: 'Production output', opening: 'Opening stock' };
 
 // Material issue (store → supervisor/cutting) and its processing record.
 export const MATERIAL_ISSUE_STATUS_BADGES = {

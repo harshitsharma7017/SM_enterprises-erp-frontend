@@ -21,6 +21,9 @@ const EMPTY_FORM = { order_confirmation_item_id: '', lot_id: '', quantity: '', r
  * stock. Every figure comes from the server; produced = allocated production
  * output, dispatched = posted dispatches.
  */
+/** Where an allocated lot came from: its processing record, its GRN for bought-in stock, or opening stock. */
+const lotSource = (l) => l.processing_no || (l.inward_no ? `GRN ${l.inward_no}` : (l.source_type || l.lot_source_type) === 'opening' ? 'Opening stock' : 'Bought-in');
+
 export default function OrderFulfilment({ ocId, companyLabel, companyCode, onChanged }) {
   const { can } = useAuth(true);
   const [data, setData] = useState(null);
@@ -117,7 +120,7 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
                 <th className="px-3 py-2 font-medium">Product</th>
                 <th className="px-3 py-2 font-medium">UOM</th>
                 <th className="px-3 py-2 font-medium text-right">Ordered</th>
-                <th className="px-3 py-2 font-medium text-right">Produced</th>
+                <th className="px-3 py-2 font-medium text-right">Produced / Allocated</th>
                 <th className="px-3 py-2 font-medium text-right">Dispatched</th>
                 <th className="px-3 py-2 font-medium text-right">Pending</th>
                 <th className="px-3 py-2 font-medium text-right">Still to produce</th>
@@ -145,23 +148,25 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
           </table>
         </div>
         <p className="text-xs text-gray-500 mt-2 mb-0">
-          Produced = finished production output allocated to the item. Dispatched = posted dispatches (finished stock, or direct supplier dispatch of a PO raised from the item).
+          Produced / Allocated = stock allocated to the item (finished production output, or QC-accepted bought-in stock). Dispatched = posted dispatches (finished stock, or direct supplier dispatch of a PO raised from the item).
           Pending = ordered − dispatched; still to produce = ordered − produced. No other formula is applied.
         </p>
       </Card>
 
-      <Card title="Production Allocations" variant="info">
-        {data.allocations.length === 0 ? <p className="text-sm text-gray-500 m-0">No production has been allocated to this order.</p> : (
+      <Card title="Stock Allocations" variant="info">
+        {data.allocations.length === 0 ? <p className="text-sm text-gray-500 m-0">No stock has been allocated to this order.</p> : (
           <table className="min-w-full text-sm">
             <thead className="text-gray-500 text-xs text-left">
-              <tr><th className="py-1.5 font-medium">Item</th><th className="py-1.5 font-medium">Finished Lot</th><th className="py-1.5 font-medium">Processing</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium text-right">Lot stock now</th><th className="py-1.5 font-medium">By</th><th className="py-1.5 font-medium">Status</th><th></th></tr>
+              <tr><th className="py-1.5 font-medium">Item</th><th className="py-1.5 font-medium">Lot</th><th className="py-1.5 font-medium">Source</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium text-right">Lot stock now</th><th className="py-1.5 font-medium">By</th><th className="py-1.5 font-medium">Status</th><th></th></tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {data.allocations.map((a) => (
                 <tr key={a.id}>
                   <td className="py-1.5 text-gray-700">{a.design_no || a.item_description || a.product_name}</td>
                   <td className="py-1.5"><Link href={`/procurement/lots/${a.lot_id}`} className={LINK}>{a.lot_no}</Link></td>
-                  <td className="py-1.5">{can('processing.view') ? <Link href={`/production/processing/${a.processing_record_id}`} className={LINK}>{a.processing_no}</Link> : <span className="font-mono">{a.processing_no}</span>}</td>
+                  <td className="py-1.5">{a.processing_record_id
+                    ? (can('processing.view') ? <Link href={`/production/processing/${a.processing_record_id}`} className={LINK}>{a.processing_no}</Link> : <span className="font-mono">{a.processing_no}</span>)
+                    : (can('inward-entry.view') && a.inward_entry_id ? <Link href={`/procurement/grn/${a.inward_entry_id}`} className={LINK}>GRN {a.inward_no}</Link> : <span className="font-mono">{lotSource(a)}</span>)}</td>
                   <td className="py-1.5 text-right whitespace-nowrap">{formatQuantity(a.quantity, a.uom_decimal_places)} {a.unit}</td>
                   <td className="py-1.5 text-right text-gray-600">{formatQuantity(a.lot_stock_quantity, a.uom_decimal_places)}</td>
                   <td className="py-1.5 text-xs text-gray-500">{a.creator_name || '—'} · {formatDateTime(a.created_at)}{a.cancelled_at && <div>cancelled {formatDate(a.cancelled_at)}{a.cancellation_reason ? ` — ${a.cancellation_reason}` : ''}</div>}</td>
@@ -179,7 +184,7 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
 
         {canAllocate && (
           <form onSubmit={allocate} className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end border-t border-gray-200 mt-4 pt-4">
-            <p className="md:col-span-6 text-xs text-gray-500 m-0">Allocate finished production output (same company and product, same unit) to an order item. Allocation is manual; a lot can serve several orders but never more than it produced.</p>
+            <p className="md:col-span-6 text-xs text-gray-500 m-0">Allocate finished production output, or bought-in stock that passed QC (badges, elastic, drawcords), to an order item — same company, product and unit. Allocation is manual; a lot can serve several orders but never more than it produced (production) or QC accepted (bought-in).</p>
             <div className="md:col-span-2">
               <label className="block text-xs font-medium text-gray-700 mb-1">Order item *</label>
               <select required value={form.order_confirmation_item_id} onChange={(e) => chooseItem(e.target.value)} className="form-select w-full rounded border-gray-300 text-sm">
@@ -188,10 +193,10 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Finished lot *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Lot *</label>
               <select required value={form.lot_id} onChange={(e) => setForm({ ...form, lot_id: e.target.value })} disabled={!form.order_confirmation_item_id} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
-                <option value="">{form.order_confirmation_item_id ? (lots.length ? '— Select —' : 'No finished lot with quantity left') : 'Select an item first'}</option>
-                {lots.map((l) => <option key={l.lot_id} value={l.lot_id}>{l.lot_no} · {l.processing_no} · {formatQuantity(l.allocatable_quantity, l.uom_decimal_places)} {l.unit} allocatable · stock {formatQuantity(l.stock_quantity, l.uom_decimal_places)}</option>)}
+                <option value="">{form.order_confirmation_item_id ? (lots.length ? '— Select —' : 'No lot with quantity left') : 'Select an item first'}</option>
+                {lots.map((l) => <option key={l.lot_id} value={l.lot_id}>{l.lot_no} · {lotSource(l)} · {formatQuantity(l.allocatable_quantity, l.uom_decimal_places)} {l.unit} allocatable · stock {formatQuantity(l.stock_quantity, l.uom_decimal_places)}</option>)}
               </select>
             </div>
             <div>
@@ -233,9 +238,9 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
       </Card>
 
       {data.finished_stock.length > 0 && (
-        <Card title="Finished Stock (this company)" variant="info">
+        <Card title="Allocatable Stock (this company)" variant="info">
           <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Product</th><th className="py-1.5 font-medium text-right">In stock</th><th className="py-1.5 font-medium text-right">Not yet allocated</th><th className="py-1.5 font-medium">Finished lots</th></tr></thead>
+            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Product</th><th className="py-1.5 font-medium text-right">In stock</th><th className="py-1.5 font-medium text-right">Not yet allocated</th><th className="py-1.5 font-medium">Lots</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
               {data.finished_stock.map((fs) => {
                 const item = data.items.find((i) => i.product_id === fs.product_id);
@@ -255,7 +260,7 @@ export default function OrderFulfilment({ ocId, companyLabel, companyCode, onCha
               })}
             </tbody>
           </table>
-          <p className="text-xs text-gray-500 mt-2 mb-0">From the stock ledger (finished production lots only). Allocation does not move stock.</p>
+          <p className="text-xs text-gray-500 mt-2 mb-0">From the stock ledger: finished production lots and QC-accepted bought-in lots. Allocation does not move stock.</p>
         </Card>
       )}
 

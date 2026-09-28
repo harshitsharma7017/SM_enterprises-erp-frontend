@@ -11,6 +11,7 @@ import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity } from '@/components/sales/shared/format';
+import BrandSpecNote from '@/components/masters/brands/BrandSpecNote';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 
@@ -145,7 +146,7 @@ export default function BrandProjectionShowPage({ params }) {
               {projection.items.map((item, index) => (
                 <tr key={item.id}>
                   <td className="px-3 py-2 text-gray-500">{index + 1}</td>
-                  <td className="px-3 py-2 text-gray-900">{item.product_name} <span className="text-xs text-gray-500">({item.item_group_code})</span></td>
+                  <td className="px-3 py-2 text-gray-900">{item.product_name} <span className="text-xs text-gray-500">({item.item_group_code})</span><BrandSpecNote spec={item.brand_spec} /></td>
                   <td className="px-3 py-2 text-gray-500">{item.material_type_name || '—'}</td>
                   <td className="px-3 py-2 text-right font-medium">{formatQuantity(item.quantity, item.uom_decimal_places)}</td>
                   <td className="px-3 py-2 font-mono text-gray-600">{item.uom_code}</td>

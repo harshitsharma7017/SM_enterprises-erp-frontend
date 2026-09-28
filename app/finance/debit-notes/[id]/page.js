@@ -10,6 +10,7 @@ import TraceChain from '@/components/quality/TraceChain';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, formatAmount } from '@/components/sales/shared/format';
+import DocumentButton from '@/components/ui/DocumentButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 const AMOUNT_BASIS = { po_price: 'Quantity × PO price', manual: 'Entered manually (PO has no price)', none: 'No amount (PO has no price)' };
@@ -68,6 +69,7 @@ export default function DebitNoteShowPage({ params }) {
         breadcrumbs={[{ label: 'Debit Notes', href: '/finance/debit-notes' }, { label: note.debit_note_no }]}
         actions={(
           <>
+            <DocumentButton endpoint={`/finance/debit-notes/${id}/document`} number={note.debit_note_no} onError={setError} />
             {isDraft && can('debit-note.edit') && (
               <Link href={`/finance/debit-notes/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-pencil me-1"></i> Edit</Link>
             )}

@@ -12,6 +12,7 @@ import OrderAllocationsCard from '@/components/sales/order-confirmations/OrderAl
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, toDateInputValue, todayDateInputValue } from '@/components/sales/shared/format';
+import DocumentButton from '@/components/ui/DocumentButton';
 
 const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
@@ -131,7 +132,12 @@ export default function ProcessingShowPage({ params }) {
       <PageHeading
         title={record.processing_no}
         breadcrumbs={[{ label: 'Processing', href: '/production/processing' }, { label: record.processing_no }]}
-        actions={<Link href="/production/processing" className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">Back</Link>}
+        actions={(
+          <>
+            <DocumentButton endpoint={`/production/processing/${id}/document`} number={record.processing_no} onError={setError} />
+            <Link href="/production/processing" className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">Back</Link>
+          </>
+        )}
       />
 
       {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4 text-sm">{error}</div>}

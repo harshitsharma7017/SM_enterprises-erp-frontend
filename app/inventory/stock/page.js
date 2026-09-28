@@ -141,7 +141,7 @@ export default function StockPage() {
                     <td className="px-4 py-2 text-gray-700"><span className="font-mono">{b.location_code}</span> <span className="text-xs text-gray-500">{b.location_name}</span></td>
                     <td className="px-4 py-2 text-gray-700">{b.supplier_name || '—'}</td>
                     <td className="px-4 py-2 font-mono text-xs text-gray-700">
-                      {b.lot_source_type === 'production' ? <span className="font-sans">Produced · <span className="font-mono">{b.lot_processing_no}</span></span> : <>{b.inward_no}<div>{b.po_num}</div></>}
+                      {b.lot_source_type === 'opening' ? <span className="font-sans">Opening stock</span> : b.lot_source_type === 'production' ? <span className="font-sans">Produced · <span className="font-mono">{b.lot_processing_no}</span></span> : <>{b.inward_no}<div>{b.po_num}</div></>}
                     </td>
                     <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{formatDate(b.received_date)}</td>
                     <td className="px-4 py-2 text-right font-semibold whitespace-nowrap">{formatQuantity(b.quantity, b.uom_decimal_places)} <span className="text-xs font-normal text-gray-500">{b.unit}</span></td>

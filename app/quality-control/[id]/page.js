@@ -10,6 +10,7 @@ import TraceChain from '@/components/quality/TraceChain';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, formatAmount, todayDateInputValue } from '@/components/sales/shared/format';
+import DocumentButton from '@/components/ui/DocumentButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 
@@ -115,6 +116,7 @@ export default function QcShowPage({ params }) {
         breadcrumbs={[{ label: 'Quality Control', href: '/quality-control' }, { label: qc.qc_no }]}
         actions={(
           <>
+            <DocumentButton endpoint={`/quality-control/${id}/document`} number={qc.qc_no} onError={setError} />
             {isDraft && can('inward-entry.approve') && (
               <Link href={`/quality-control/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-pencil me-1"></i> Edit</Link>
             )}

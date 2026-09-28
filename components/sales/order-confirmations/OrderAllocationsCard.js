@@ -5,7 +5,7 @@ import Card from '@/components/ui/Card';
 import { WorkflowBadge, ALLOCATION_STATUS_BADGES } from '@/components/ui/Badge';
 import { formatQuantity } from '@/components/sales/shared/format';
 
-/** Orders this finished material is allocated to (finished lot → order item → customer). */
+/** Orders this lot is allocated to (finished or bought-in lot → order item → customer). */
 export default function OrderAllocationsCard({ allocations, can }) {
   if (!allocations || allocations.length === 0) return null;
   return (

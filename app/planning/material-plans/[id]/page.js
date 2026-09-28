@@ -137,6 +137,9 @@ export default function MaterialPlanShowPage({ params }) {
                 <th className="px-3 py-2 font-medium text-right">Pending (plan)</th>
                 <th className="px-3 py-2 font-medium text-right">Ordered</th>
                 <th className="px-3 py-2 font-medium text-right">Pending (order)</th>
+                <th className="px-3 py-2 font-medium text-right bg-blue-50">In stock</th>
+                <th className="px-3 py-2 font-medium text-right bg-blue-50">Open POs</th>
+                <th className="px-3 py-2 font-medium text-right bg-blue-50">Stock + open POs</th>
                 <th className="px-3 py-2 font-medium">UOM</th>
                 <th className="px-3 py-2 font-medium">Remarks</th>
               </tr>
@@ -160,6 +163,9 @@ export default function MaterialPlanShowPage({ params }) {
                   <td className="px-3 py-2 text-right">{formatQuantity(item.pending_quantity, item.uom_decimal_places)}</td>
                   <td className="px-3 py-2 text-right">{formatQuantity(item.ordered_quantity, item.uom_decimal_places)}</td>
                   <td className="px-3 py-2 text-right">{formatQuantity(item.order_pending_quantity, item.uom_decimal_places)}</td>
+                  <td className="px-3 py-2 text-right bg-blue-50/40">{formatQuantity(item.stock_quantity, item.uom_decimal_places)}</td>
+                  <td className="px-3 py-2 text-right bg-blue-50/40">{formatQuantity(item.open_po_quantity, item.uom_decimal_places)}</td>
+                  <td className="px-3 py-2 text-right bg-blue-50/40 font-medium">{formatQuantity(Number(item.stock_quantity || 0) + Number(item.open_po_quantity || 0), item.uom_decimal_places)}</td>
                   <td className="px-3 py-2 font-mono text-gray-600">{item.uom_code}</td>
                   <td className="px-3 py-2 text-gray-500">{item.remarks || '—'}</td>
                 </tr>
@@ -167,7 +173,7 @@ export default function MaterialPlanShowPage({ params }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Pending (plan) is per requirement across all planned/closed plans. Ordered counts confirmed purchase orders raised from this plan line; Pending (order) = planned on this plan − ordered.</p>
+        <p className="text-xs text-gray-500 mt-2 mb-0">Pending (plan) is per requirement across all planned/closed plans. Ordered counts confirmed purchase orders raised from this plan line; Pending (order) = planned on this plan − ordered. Material availability (shaded) is live for the plan&apos;s company: In stock = the stock ledger across all locations; Open POs = still to arrive on raised / partial purchase orders of the product. It is not reserved for this plan and may also serve other plans or orders.</p>
       </Card>
     </DashboardLayout>
   );

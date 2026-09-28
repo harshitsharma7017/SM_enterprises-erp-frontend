@@ -9,6 +9,8 @@ import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatAmount, formatQuantity } from '@/components/sales/shared/format';
+import DocumentButton from '@/components/ui/DocumentButton';
+import BrandSpecNote from '@/components/masters/brands/BrandSpecNote';
 
 export default function PurchaseOrderShowPage({ params }) {
   const { id } = use(params);
@@ -103,6 +105,7 @@ export default function PurchaseOrderShowPage({ params }) {
         breadcrumbs={[{ label: 'Purchase Orders', href: '/procurement/purchase-orders' }, { label: po.po_num }]}
         actions={(
           <>
+            <DocumentButton endpoint={`/procurement/purchase-orders/${id}/document`} number={po.po_num} onError={setError} />
             {can('purchase-order.edit') && po.status !== 'cancelled' && (!isPlanning || ['draft', 'raised'].includes(po.status)) && (
               <Link href={`/procurement/purchase-orders/${id}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium">
                 <i className="bi bi-pencil me-1"></i> Edit
@@ -185,7 +188,7 @@ export default function PurchaseOrderShowPage({ params }) {
                 {po.items.map((item, i) => (
                   <tr key={item.id}>
                     <td className="px-3 py-2 text-gray-500">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-900">{item.trace?.product_name || '—'} <span className="text-xs text-gray-500">{item.trace?.item_group_code ? `(${item.trace.item_group_code})` : ''}</span></td>
+                    <td className="px-3 py-2 text-gray-900">{item.trace?.product_name || '—'} <span className="text-xs text-gray-500">{item.trace?.item_group_code ? `(${item.trace.item_group_code})` : ''}</span><BrandSpecNote spec={item.brand_spec} /></td>
                     <td className="px-3 py-2 font-mono">
                       {can('material-requirement.view')
                         ? <Link href={`/planning/material-requirements/${item.material_requirement_id}`} className="text-blue-600 hover:underline">{item.trace?.requirement_no}</Link>
@@ -239,7 +242,7 @@ export default function PurchaseOrderShowPage({ params }) {
                 {po.items.map((item, i) => (
                   <tr key={item.id}>
                     <td className="px-3 py-2 text-gray-500">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-900">{item.design_no || '—'}</td>
+                    <td className="px-3 py-2 text-gray-900">{item.design_no || '—'}<BrandSpecNote spec={item.brand_spec} /></td>
                     <td className="px-3 py-2 text-gray-700">{item.product_id ? `#${item.product_id}` : '—'}</td>
                     <td className="px-3 py-2 text-gray-700">
                       {(item.colours || []).map((c, ci) => (

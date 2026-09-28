@@ -64,7 +64,9 @@ export default function BarcodeLabelPage({ params }) {
     fields.width && barcode.width_inch && ['Width', `${formatQuantity(barcode.width_inch, 3)} in`],
     fields.source && (barcode.source_type === 'grn'
       ? ['GRN', `${barcode.inward_no}${barcode.challan_no ? ` · bill ${barcode.challan_no}` : ''}`]
-      : ['Job', `${barcode.processing_no}${barcode.job_reference ? ` · ${barcode.job_reference}` : ''}`]),
+      : barcode.source_type === 'opening'
+        ? ['Source', `Opening stock${barcode.supplier_lot_no ? ` · mill lot ${barcode.supplier_lot_no}` : ''}`]
+        : ['Job', `${barcode.processing_no}${barcode.job_reference ? ` · ${barcode.job_reference}` : ''}`]),
     fields.company && ['Company', barcode.company_code],
     fields.date && ['Date', formatDate(barcode.received_date)],
   ].filter(Boolean);

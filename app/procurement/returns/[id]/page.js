@@ -10,6 +10,7 @@ import TraceChain from '@/components/quality/TraceChain';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, formatAmount } from '@/components/sales/shared/format';
+import DocumentButton from '@/components/ui/DocumentButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 
@@ -67,6 +68,7 @@ export default function SupplierReturnShowPage({ params }) {
         breadcrumbs={[{ label: 'Supplier Returns', href: '/procurement/returns' }, { label: ret.return_no }]}
         actions={(
           <>
+            <DocumentButton endpoint={`/procurement/supplier-returns/${id}/document`} number={ret.return_no} onError={setError} />
             {ret.status === 'draft' && can('supplier-return.post') && (
               <button type="button" disabled={busy} onClick={() => run('post', `Post ${ret.return_no}? The quantity counts as returned to the supplier.`)} className={`${BTN} bg-green-600 hover:bg-green-700 text-white`}><i className="bi bi-check2-circle me-1"></i> Post Return</button>
             )}
