@@ -5,6 +5,7 @@ import DashboardLayout from '../layout/DashboardLayout';
 import FormSection from '../ui/FormSection';
 import { apiClient } from '../../lib/api-client';
 import { resetCompaniesCache } from '../../hooks/useCompanies';
+import CompanyLetterhead from './CompanyLetterhead';
 
 const INPUT = 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
 
@@ -159,6 +160,7 @@ export default function CompanyForm({ companyId }) {
           </div>
         </form>
       </div>
+      {companyId && <CompanyLetterhead companyId={companyId} />}
     </DashboardLayout>
   );
 }

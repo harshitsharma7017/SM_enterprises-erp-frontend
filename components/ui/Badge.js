@@ -123,6 +123,16 @@ export const COMMERCIAL_STATUS_BADGES = {
   issued: { label: 'Issued', color: 'green' },
   cancelled: { label: 'Cancelled', color: 'red' },
 };
+// Where a proforma invoice stands: Order → PI → Confirmation / Payment → Final Invoice (from recorded references and issued invoices).
+export const PI_STAGE_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  issued: { label: 'Issued', color: 'blue' },
+  confirmed: { label: 'Confirmed', color: 'indigo' },
+  payment_referenced: { label: 'Payment ref. recorded', color: 'purple' },
+  partly_invoiced: { label: 'Partly invoiced', color: 'yellow' },
+  invoiced: { label: 'Invoiced', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
 // Lot barcodes and their scan history.
 export const BARCODE_STATUS_BADGES = {
   active: { label: 'Active', color: 'green' },
@@ -210,6 +220,20 @@ export const PLAN_STATUS_BADGES = {
   draft: { label: 'Draft', color: 'gray' },
   planned: { label: 'Planned', color: 'blue' },
   closed: { label: 'Closed', color: 'green' },
+};
+
+// Production plans (requirement 12) and the derived progress of each line.
+export const PRODUCTION_PLAN_STATUS_BADGES = {
+  draft: { label: 'Draft', color: 'gray' },
+  planned: { label: 'Planned', color: 'blue' },
+  completed: { label: 'Completed', color: 'green' },
+  cancelled: { label: 'Cancelled', color: 'red' },
+};
+export const PRODUCTION_LINE_BADGES = {
+  not_started: { label: 'Not started', color: 'gray' },
+  in_production: { label: 'In production', color: 'blue' },
+  partly_produced: { label: 'Partly produced', color: 'yellow' },
+  produced: { label: 'Produced', color: 'green' },
 };
 
 export function WorkflowBadge({ status, config }) {

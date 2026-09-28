@@ -30,7 +30,7 @@ const sourceQuery = (key, invoiceId) => {
  * item; nothing here moves stock or posts accounting entries. A draft is
  * unnumbered; the invoice number is assigned when it is issued.
  */
-export default function InvoiceForm({ invoiceId = null, initialOrderId = '', initialDispatchId = '' }) {
+export default function InvoiceForm({ invoiceId = null, initialOrderId = '', initialDispatchId = '', initialProformaId = '' }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -100,7 +100,10 @@ export default function InvoiceForm({ invoiceId = null, initialOrderId = '', ini
               .filter((l) => String(l.dispatch_id) === String(initialDispatchId) && remaining(l) > 0)
               .map((l) => [String(l.dispatch_item_id), String(remaining(l))])));
           }
-          if (loaded.proforma_invoices?.length === 1) setHeader((prev) => ({ ...prev, proforma_invoice_id: loaded.proforma_invoices[0].id }));
+          // A PI passed in the link (Create Invoice on the PI) wins; otherwise the only issued PI, if just one.
+          const linkedPi = initialProformaId && loaded.proforma_invoices?.find((p) => String(p.id) === String(initialProformaId));
+          if (linkedPi) setHeader((prev) => ({ ...prev, proforma_invoice_id: linkedPi.id }));
+          else if (loaded.proforma_invoices?.length === 1) setHeader((prev) => ({ ...prev, proforma_invoice_id: loaded.proforma_invoices[0].id }));
         }
       } catch (err) {
         if (mounted) setErrors([err.message || 'Failed to load invoice']);
@@ -109,7 +112,7 @@ export default function InvoiceForm({ invoiceId = null, initialOrderId = '', ini
       }
     })();
     return () => { mounted = false; };
-  }, [invoiceId, initialOrderId, initialDispatchId, router, loadSource, loadCompany]);
+  }, [invoiceId, initialOrderId, initialDispatchId, initialProformaId, router, loadSource, loadCompany]);
 
   const changeCompany = (e) => {
     const value = e.target.value;

@@ -17,7 +17,7 @@ export default function BuyersPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [companyFilter, setCompanyFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [categories, setCategories] = useState({});
+  const [categories, setCategories] = useState([]);
 
   const fetchBuyers = async () => {
     try {
@@ -33,13 +33,6 @@ export default function BuyersPage() {
         setBuyers(res.data?.data || []);
       }
 
-      // Also grab categories just for the filter if we don't have them
-      if (Object.keys(categories).length === 0) {
-        const catRes = await apiClient.get('/masters/buyers/create');
-        if (catRes.data.success && catRes.data.data.categories) {
-          setCategories(catRes.data.data.categories);
-        }
-      }
     } catch (err) {
       console.error(err);
       setError('Failed to fetch buyers');
@@ -47,6 +40,13 @@ export default function BuyersPage() {
       setLoading(false);
     }
   };
+
+  // Category choices for the filter — the create form's data ([{ id, name }]), loaded once.
+  useEffect(() => {
+    apiClient.get('/masters/buyers/create')
+      .then((res) => setCategories(Array.isArray(res.data?.categories) ? res.data.categories : []))
+      .catch(() => setCategories([]));
+  }, []);
 
   useEffect(() => {
     queueMicrotask(fetchBuyers);
@@ -117,8 +117,8 @@ export default function BuyersPage() {
                 className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All Categories</option>
-                {Object.entries(categories).map(([id, name]) => (
-                  <option key={id} value={id}>{name}</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>

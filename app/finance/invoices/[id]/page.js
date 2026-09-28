@@ -11,6 +11,7 @@ import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, formatAmount } from '@/components/sales/shared/format';
+import ArchivedCopyButton from '@/components/ui/ArchivedCopyButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 const LINK = 'font-mono text-blue-600 hover:underline';
@@ -78,6 +79,7 @@ export default function InvoiceShowPage({ params }) {
         actions={(
           <>
             <button type="button" onClick={download} className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}><i className="bi bi-file-earmark-pdf me-1"></i> Document</button>
+            <ArchivedCopyButton entityType="invoice" entityId={id} onError={setError} />
             {isDraft && can('invoice.edit') && <Link href={`/finance/invoices/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-pencil me-1"></i> Edit</Link>}
             {isDraft && can('invoice.issue') && <button type="button" disabled={busy} onClick={issue} className={`${BTN} bg-green-600 hover:bg-green-700 text-white`}><i className="bi bi-send-check me-1"></i> Issue</button>}
             {isDraft && can('invoice.cancel') && <button type="button" disabled={busy} onClick={cancel} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>}

@@ -11,6 +11,7 @@ import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, formatAmount } from '@/components/sales/shared/format';
+import DocumentButton from '@/components/ui/DocumentButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 const LINK = 'font-mono text-blue-600 hover:underline';
@@ -85,6 +86,7 @@ export default function DispatchShowPage({ params }) {
         breadcrumbs={[{ label: 'Dispatches', href: '/dispatch' }, { label: dispatch.dispatch_no }]}
         actions={(
           <>
+            <DocumentButton entityType="dispatch" entityId={id} endpoint={`/dispatches/${id}/document`} number={dispatch.dispatch_no || `DISPATCH-DRAFT-${id}`} label="Delivery Challan" onError={setError} />
             {isDraft && can('dispatch.edit') && <Link href={`/dispatch/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-pencil me-1"></i> Edit</Link>}
             {isDraft && can('dispatch.post') && <button type="button" disabled={busy} onClick={post} className={`${BTN} bg-green-600 hover:bg-green-700 text-white`}><i className="bi bi-check2-circle me-1"></i> Post Dispatch</button>}
             {isDraft && can('dispatch.cancel') && <button type="button" disabled={busy} onClick={cancel} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>}

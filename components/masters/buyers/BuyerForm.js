@@ -1,770 +1,382 @@
-/* eslint-disable */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { apiClient } from '@/lib/api-client';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import CompanySelect from '@/components/company/CompanySelect';
+import SearchMultiSelect from '@/components/masters/suppliers/SearchMultiSelect';
+import { INPUT, Section, Row, toList } from '@/components/masters/shared/MasterFormParts';
+import { apiClient } from '@/lib/api-client';
+
+/**
+ * Guru Traders' Buyer master form (resources/views/masters/buyers/_form.blade.php),
+ * in the sheet's own order: Identification, Contact, Secondary Contact Person,
+ * Address & Destination (Country → State → City cascade, India by default),
+ * Agent, Trade Terms (the advance / at-sight split opens only for a payment
+ * term that splits the payment), Bank Details, Carton Marking Details and
+ * Other Details. "Our Company" is this ERP's company scope (blank = shared).
+ * The original's accepted-currency / incoterm sets are not stored here.
+ */
+const API = '/masters/buyers';
+
+// Buyer::DEFAULT_CARTON_LINES — the five lines the sheet draws, as a starting point.
+const DEFAULT_CARTON_LINES = [
+  { label: 'BUYER NAME', placeholder: 'ABC CORP' },
+  { label: 'DESTINATION', placeholder: 'LONDON' },
+  { label: 'ORDER REF', placeholder: 'C/NO' },
+  { label: 'MADE IN', placeholder: 'MADE IN INDIA' },
+  { label: 'GROSS WT', placeholder: 'GROSS WT:' },
+];
+const EMPTY_CONTACT = { name: '', designation_id: '', mobile: '', email: '' };
+
+const blankForm = (indiaCountryId) => ({
+  company_id: '', company_name: '', name_on_export_invoice: '', category_ids: [],
+  contact_person: '', contact_designation_id: '', email: '', mobile: '', gst_vat_no: '',
+  address: '', country_id: indiaCountryId ? String(indiaCountryId) : '', state_id: '', city_id: '', pincode: '', port_id: '',
+  agent_id: '', agent_commission_value: '', agent_commission_type: 'percent',
+  payment_term_id: '', advance_percent: '', sight_percent: '', incoterm_id: '', shipment_method_id: '', currency_id: '',
+  bank_name: '', account_number: '', swift_code: '',
+  status: 'active', remarks: '', comments: '',
+});
+const str = (v) => (v === null || v === undefined ? '' : String(v));
 
 export default function BuyerForm({ buyerId = null }) {
   const router = useRouter();
-
-  // Reference data
-  const [categories, setCategories] = useState({});
-  const [countries, setCountries] = useState({});
-  const [ports, setPorts] = useState({});
-  const [designations, setDesignations] = useState({});
-  const [paymentTerms, setPaymentTerms] = useState({});
-  const [incoterms, setIncoterms] = useState({});
-  const [currencies, setCurrencies] = useState({});
-  const [shipmentMethods, setShipmentMethods] = useState({});
-  const [agents, setAgents] = useState([]);
-
-  // Note: Backend does not currently provide states/cities for Buyer.
-  // We keep empty arrays to satisfy the UI structure per requirements.
-  const [states, setStates] = useState({});
-  const [cities, setCities] = useState({});
-
-  // Form State
-  const [formData, setFormData] = useState({
-    company_id: '',
-    company_name: '',
-    category_ids: [],
-    is_overseas: false,
-    status: 'active',
-    
-    // Primary contact details in top-level for convenience (though stored as contacts)
-    mobile: '',
-    email: '',
-    website: '',
-    fax: '',
-    
-    // Secondary Contacts
-    contacts: [],
-    
-    // Address Details
-    address_line_1: '',
-    address_line_2: '',
-    country_id: '',
-    state_id: '',
-    city_id: '',
-    pincode: '',
-    gst_number: '',
-    pan_number: '',
-    
-    // Destination Details
-    port_id: '',
-    destination: '',
-    incoterm_id: '',
-    shipment_method_id: '',
-    
-    // Agent
-    agent_id: '',
-    commission_percent: '',
-    
-    // Trade Terms
-    payment_term_id: '',
-    currency_id: '',
-    advance_percent: '',
-    sight_percent: '',
-    
-    // Bank Details
-    bank_name: '',
-    branch_name: '',
-    account_number: '',
-    ifsc_code: '',
-    swift_code: '',
-    
-    // Carton Marking Details
-    carton_markings: [],
-
-    remarks: ''
-  });
-
-  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState(null);
+  const [lookups, setLookups] = useState({});
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [contacts, setContacts] = useState([{ ...EMPTY_CONTACT }]);
+  const [secondary, setSecondary] = useState(false);
+  const [carton, setCarton] = useState(DEFAULT_CARTON_LINES.map((l) => ({ label: l.label, value: '' })));
+  const [displayCode, setDisplayCode] = useState(null);
+  const [errors, setErrors] = useState([]);
   const [saving, setSaving] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [advanceSightError, setAdvanceSightError] = useState('');
 
-  async function fetchBuyer() {
-    try {
-            const res = await apiClient.get(`/masters/buyers/${buyerId}/edit`);
-      if (res.success) {
-        const { buyer, categories, countries, ports, designations, paymentTerms, incoterms, currencies, shipmentMethods, agents } = res.data;
-        
-        setCategories(categories || {});
-        setCountries(countries || {});
-        setPorts(ports || {});
-        setDesignations(designations || {});
-        setPaymentTerms(paymentTerms || {});
-        setIncoterms(incoterms || {});
-        setCurrencies(currencies || {});
-        setShipmentMethods(shipmentMethods || {});
-        setAgents(agents || []);
-
-        setFormData({
-          company_id: buyer.company_id || '',
-          company_name: buyer.company_name || '',
-          category_ids: buyer.category_ids || [],
-          is_overseas: !!buyer.is_overseas,
-          status: buyer.status || 'active',
-          mobile: buyer.mobile || '',
-          email: buyer.email || '',
-          website: buyer.website || '',
-          fax: buyer.fax || '',
-          contacts: buyer.contacts || [],
-          address_line_1: buyer.address_line_1 || '',
-          address_line_2: buyer.address_line_2 || '',
-          country_id: buyer.country_id || '',
-          state_id: buyer.state_id || '', // API currently might return this but no way to fetch states list
-          city_id: buyer.city_id || '',   // API currently might return this but no way to fetch cities list
-          pincode: buyer.pincode || '',
-          gst_number: buyer.gst_number || '',
-          pan_number: buyer.pan_number || '',
-          port_id: buyer.port_id || '',
-          destination: buyer.destination || '',
-          incoterm_id: buyer.incoterm_id || '',
-          shipment_method_id: buyer.shipment_method_id || '',
-          agent_id: buyer.agent_id || '',
-          commission_percent: buyer.commission_percent || '',
-          payment_term_id: buyer.payment_term_id || '',
-          currency_id: buyer.currency_id || '',
-          advance_percent: buyer.advance_percent || '',
-          sight_percent: buyer.sight_percent || '',
-          bank_name: buyer.bank_name || '',
-          branch_name: buyer.branch_name || '',
-          account_number: buyer.account_number || '',
-          ifsc_code: buyer.ifsc_code || '',
-          swift_code: buyer.swift_code || '',
-          carton_markings: buyer.carton_markings || [],
-          remarks: buyer.remarks || ''
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Failed to load buyer data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  async function fetchDefaults() {
-    try {
-            const res = await apiClient.get('/masters/buyers/create');
-      if (res.success) {
-        const data = res.data;
-        setCategories(data.categories || {});
-        setCountries(data.countries || {});
-        setPorts(data.ports || {});
-        setDesignations(data.designations || {});
-        setPaymentTerms(data.paymentTerms || {});
-        setIncoterms(data.incoterms || {});
-        setCurrencies(data.currencies || {});
-        setShipmentMethods(data.shipmentMethods || {});
-        setAgents(data.agents || []);
-        
-        // Initialize default carton markings (3 required lines)
-        setFormData(prev => ({
-          ...prev,
-          carton_markings: [
-            { label: 'Buyer Name', value: '' },
-            { label: 'Style No', value: '' },
-            { label: 'Destination', value: '' }
-          ]
-        }));
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const formUrl = buyerId ? `${API}/${buyerId}/edit` : `${API}/create`;
 
   useEffect(() => {
-    if (buyerId) {
-      fetchBuyer();
-    } else {
-      fetchDefaults();
-    }
-  }, [buyerId]);
-
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    let val = type === 'checkbox' ? checked : value;
-
-    if (name === 'category_ids') {
-      const options = e.target.options;
-      val = [];
-      for (let i = 0; i < options.length; i++) {
-        if (options[i].selected) {
-          val.push(options[i].value);
-        }
+    apiClient.get(formUrl).then((res) => {
+      const d = res.data || {};
+      setLookups(d);
+      setStates(d.states || []);
+      setCities(d.cities || []);
+      const b = d.buyer;
+      if (!b) {
+        setForm(blankForm(d.indiaCountryId));
+        return;
       }
-    }
+      setDisplayCode(b.display_code);
+      setForm({
+        company_id: str(b.company_id), company_name: str(b.company_name), name_on_export_invoice: str(b.name_on_export_invoice),
+        category_ids: (b.categories || []).map((c) => String(c.id)),
+        contact_person: str(b.contact_person), contact_designation_id: str(b.contact_designation_id), email: str(b.email), mobile: str(b.mobile), gst_vat_no: str(b.gst_vat_no),
+        address: str(b.address), country_id: str(b.country_id), state_id: str(b.state_id), city_id: str(b.city_id), pincode: str(b.pincode), port_id: str(b.port_id),
+        agent_id: str(b.agent_id), agent_commission_value: str(b.agent_commission_value), agent_commission_type: b.agent_commission_type || 'percent',
+        payment_term_id: str(b.payment_term_id), advance_percent: str(b.advance_percent), sight_percent: str(b.sight_percent),
+        incoterm_id: str(b.incoterm_id), shipment_method_id: str(b.shipment_method_id), currency_id: str(b.currency_id),
+        bank_name: str(b.bank_name), account_number: str(b.account_number), swift_code: str(b.swift_code),
+        status: b.status || 'active', remarks: str(b.remarks), comments: str(b.comments),
+      });
+      const extra = (b.contacts || []).map((c) => ({ name: str(c.name), designation_id: str(c.designation_id), mobile: str(c.mobile), email: str(c.email) }));
+      setContacts(extra.length ? extra : [{ ...EMPTY_CONTACT }]);
+      setSecondary(extra.length > 0);
+      if (b.carton_markings?.length) setCarton(b.carton_markings.map((l) => ({ label: str(l.label), value: str(l.value) })));
+    }).catch((err) => setErrors([err.message || 'Failed to load the form']));
+  }, [formUrl]);
 
-    setFormData(prev => {
-      const next = { ...prev, [name]: val };
-      
-      // Advance / Sight Validation
-      if (name === 'advance_percent' || name === 'sight_percent') {
-        const adv = parseFloat(next.advance_percent) || 0;
-        const sight = parseFloat(next.sight_percent) || 0;
-        if (adv + sight !== 100 && (next.advance_percent || next.sight_percent)) {
-          setAdvanceSightError('Advance and Sight percentages must total 100%.');
-        } else {
-          setAdvanceSightError('');
-        }
-      }
-
-      // Geo Cascade Placeholder
-      if (name === 'country_id') {
-        // [BLOCKER DOC] The Node backend does not have a standalone GeoController.
-        // It also does not support `?country_id=` for Buyer creation.
-        // We leave the state_id and city_id clearing logic, but cannot fetch the next level.
-        next.state_id = '';
-        next.city_id = '';
-      }
-      if (name === 'state_id') {
-        next.city_id = '';
-      }
-
-      return next;
-    });
-  };
-
-  const handleContactChange = (index, field, value) => {
-    const newContacts = [...formData.contacts];
-    newContacts[index] = { ...newContacts[index], [field]: value };
-    setFormData(prev => ({ ...prev, contacts: newContacts }));
-  };
-
-  const addContact = () => {
-    setFormData(prev => ({
-      ...prev,
-      contacts: [...prev.contacts, { name: '', designation_id: '', mobile: '', email: '' }]
-    }));
-  };
-
-  const removeContact = (index) => {
-    const newContacts = [...formData.contacts];
-    newContacts.splice(index, 1);
-    setFormData(prev => ({ ...prev, contacts: newContacts }));
-  };
-
-  const handleCartonChange = (index, field, value) => {
-    const newMarkings = [...formData.carton_markings];
-    newMarkings[index] = { ...newMarkings[index], [field]: value };
-    setFormData(prev => ({ ...prev, carton_markings: newMarkings }));
-  };
-
-  const addCartonLine = () => {
-    setFormData(prev => ({
-      ...prev,
-      carton_markings: [...prev.carton_markings, { label: `LINE ${prev.carton_markings.length + 1}`, value: '' }]
-    }));
-  };
-
-  const removeCartonLine = (index) => {
-    const newMarkings = [...formData.carton_markings];
-    newMarkings.splice(index, 1);
-    setFormData(prev => ({ ...prev, carton_markings: newMarkings }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const adv = parseFloat(formData.advance_percent) || 0;
-    const sight = parseFloat(formData.sight_percent) || 0;
-    if (adv + sight !== 100 && (formData.advance_percent || formData.sight_percent)) {
-      setAdvanceSightError('Advance and Sight percentages must total 100%.');
-      return;
-    }
-
-    setSaving(true);
-    setErrors({});
-
+  // Country → State → City: each parent change reloads its children from the form-data endpoint.
+  const reloadGeo = useCallback(async (countryId, stateId) => {
+    const params = new URLSearchParams();
+    if (countryId) params.set('country_id', countryId);
+    if (stateId) params.set('state_id', stateId);
     try {
-      const payload = { ...formData };
-      
-      let res;
-      if (buyerId) {
-        res = await apiClient.put(`/masters/buyers/${buyerId}`, payload);
-      } else {
-        res = await apiClient.post('/masters/buyers', payload);
-      }
+      const res = await apiClient.get(`${formUrl}?${params}`);
+      setStates(countryId ? res.data?.states || [] : []);
+      setCities(stateId ? res.data?.cities || [] : []);
+    } catch {
+      setStates([]);
+      setCities([]);
+    }
+  }, [formUrl]);
 
-      if (res.success) {
-        router.push('/masters/buyers');
-      }
+  const onInput = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const onCountry = (e) => {
+    const countryId = e.target.value;
+    setForm((f) => ({ ...f, country_id: countryId, state_id: '', city_id: '' }));
+    reloadGeo(countryId, null);
+  };
+  const onState = (e) => {
+    const stateId = e.target.value;
+    setForm((f) => ({ ...f, state_id: stateId, city_id: '' }));
+    reloadGeo(form.country_id, stateId);
+  };
+
+  const splitTermIds = (lookups.splitTermIds || []).map(String);
+  const splitVisible = !!form && splitTermIds.includes(String(form.payment_term_id));
+  const splitTotal = Number(form?.advance_percent || 0) + Number(form?.sight_percent || 0);
+
+  const setContact = (i, field, value) => setContacts((rows) => rows.map((r, idx) => (idx === i ? { ...r, [field]: value } : r)));
+  const setCartonLine = (i, field, value) => setCarton((rows) => rows.map((r, idx) => (idx === i ? { ...r, [field]: value } : r)));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setErrors([]);
+    const payload = {
+      ...form,
+      gst_vat_no: form.gst_vat_no.trim().toUpperCase(),
+      swift_code: form.swift_code.trim().toUpperCase(),
+      advance_percent: splitVisible ? form.advance_percent : '',
+      sight_percent: splitVisible ? form.sight_percent : '',
+      agent_commission_type: form.agent_commission_value === '' ? '' : form.agent_commission_type,
+      contacts: secondary ? contacts : [],
+      carton_markings: carton,
+    };
+    try {
+      if (buyerId) await apiClient.put(`${API}/${buyerId}`, payload);
+      else await apiClient.post(API, payload);
+      router.push(API);
     } catch (err) {
-      console.error(err);
-      if (err.response?.data?.errors) {
-        setErrors(err.response.data.errors);
-      } else {
-        alert(err.response?.data?.message || 'Error saving buyer');
-      }
-    } finally {
+      const list = err.response?.data?.errors;
+      setErrors(Array.isArray(list) ? list : list ? Object.values(list).flat() : [err.message || 'Failed to save the buyer']);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setSaving(false);
     }
   };
 
-  if (loading) {
-    return <div className="p-4">Loading form data...</div>;
+  if (!form) {
+    return <DashboardLayout>{errors.length ? <div className="bg-red-50 text-red-600 p-3 rounded">{errors[0]}</div> : <div className="p-8 text-center text-gray-500">Loading form data…</div>}</DashboardLayout>;
   }
 
+  const designations = toList(lookups.designations);
+  const option = (list, label = (x) => x.name) => toList(list).map((x) => <option key={x.id} value={x.id}>{label(x)}</option>);
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
-      
-      {/* Identification */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-person-badge text-gray-500"></i>
-          <h3 className="text-base font-semibold">Identification</h3>
-        </div>
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Our Company</label>
-            <div className="md:col-span-3">
-              <CompanySelect
-                value={formData.company_id}
-                onChange={handleChange}
-                emptyLabel="Shared (both companies)"
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-              />
-              <p className="text-xs text-gray-500 mt-1">Leave as Shared when this buyer deals with both SM Enterprises and Mahindra Gupta &amp; Company.</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Company Name <span className="text-red-500">*</span></label>
-            <div className="md:col-span-3">
-              <input 
-                type="text" 
-                name="company_name" 
-                value={formData.company_name} 
-                onChange={handleChange}
-                required
-                maxLength="200"
-                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.company_name ? 'border-red-500' : ''}`}
-               placeholder="Enter Company Name"/>
-              {errors.company_name && <p className="text-xs text-red-500 mt-1">{errors.company_name[0]}</p>}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Categories <span className="text-red-500">*</span></label>
-            <div className="md:col-span-3">
-              <select 
-                name="category_ids" 
-                multiple
-                value={formData.category_ids} 
-                onChange={handleChange}
-                required
-                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm h-24 ${errors.category_ids ? 'border-red-500' : ''}`}
-              >
-                {(Array.isArray(categories) ? categories : Object.entries(categories || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
-              </select>
-              <p className="text-xs text-gray-500 mt-1">Hold CMD/Ctrl to select multiple.</p>
-              {errors.category_ids && <p className="text-xs text-red-500 mt-1">{errors.category_ids[0]}</p>}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Overseas Buyer?</label>
-            <div className="md:col-span-3">
-              <label className="inline-flex items-center">
-                <input 
-                  type="checkbox" 
-                  name="is_overseas" 
-                  checked={formData.is_overseas} 
-                  onChange={handleChange}
-                  className="rounded border border-gray-300 text-blue-600" 
-                />
-                <span className="ml-2 text-sm">Yes, overseas buyer</span>
-              </label>
-            </div>
-          </div>
-        </div>
+    <DashboardLayout>
+      <div className="mb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 m-0">{buyerId ? 'Edit Buyer' : 'Add Buyer'}</h2>
       </div>
 
-      {/* Main Contact */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-telephone text-gray-500"></i>
-          <h3 className="text-base font-semibold">Contact Details</h3>
-        </div>
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Mobile</label>
-              <input 
-                type="text" 
-                name="mobile" 
-                value={formData.mobile} 
-                onChange={handleChange}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-               placeholder="Enter Mobile"/>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
-              <input 
-                type="email" 
-                name="email" 
-                value={formData.email} 
-                onChange={handleChange}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-               placeholder="Enter Email"/>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Website</label>
-              <input 
-                type="text" 
-                name="website" 
-                value={formData.website} 
-                onChange={handleChange}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-               placeholder="Enter Website"/>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Fax</label>
-              <input 
-                type="text" 
-                name="fax" 
-                value={formData.fax} 
-                onChange={handleChange}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-               placeholder="Enter Fax"/>
-            </div>
+      <div className="bg-white rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden">
+      <form onSubmit={submit}>
+        <div className="p-6">
+        {errors.length > 0 && (
+          <div className="bg-red-50 text-red-700 border border-red-200 p-3 rounded mb-4 text-sm">
+            <ul className="list-disc pl-5 m-0">{errors.map((m) => <li key={m}>{m}</li>)}</ul>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Secondary Contacts */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <i className="bi bi-people text-gray-500"></i>
-            <h3 className="text-base font-semibold">Secondary Contacts</h3>
-          </div>
-          <button type="button" onClick={addContact} className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-2 py-1 rounded hover:bg-blue-100">
-            <i className="bi bi-plus-lg"></i> Add Contact
-          </button>
-        </div>
-        <div className="p-4 space-y-4">
-          {formData.contacts.map((contact, index) => (
-            <div key={index} className="flex gap-3 items-end">
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Name</label>
-                <input 
-                  type="text" 
-                  value={contact.name} 
-                  onChange={(e) => handleContactChange(index, 'name', e.target.value)}
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Designation</label>
-                <select 
-                  value={contact.designation_id} 
-                  onChange={(e) => handleContactChange(index, 'designation_id', e.target.value)}
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-                >
-                  <option value="">— Select —</option>
-                  {(Array.isArray(designations) ? designations : Object.entries(designations || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
-                </select>
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Mobile</label>
-                <input 
-                  type="text" 
-                  value={contact.mobile} 
-                  onChange={(e) => handleContactChange(index, 'mobile', e.target.value)}
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
-                <input 
-                  type="email" 
-                  value={contact.email} 
-                  onChange={(e) => handleContactChange(index, 'email', e.target.value)}
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-                />
-              </div>
-              <div>
-                <button type="button" onClick={() => removeContact(index)} className="btn btn-sm btn-outline-danger px-3 py-2 border rounded text-red-600 border-red-600 hover:bg-red-50">
-                  <i className="bi bi-trash"></i>
-                </button>
-              </div>
-            </div>
-          ))}
-          {formData.contacts.length === 0 && <p className="text-sm text-gray-500">No secondary contacts added.</p>}
-        </div>
-      </div>
+        {/* A–D · Identification */}
+        <Section title="Identification" icon="bi-globe-asia-australia" subtitle="Who the buyer is, here and on the export invoice.">
+          <Row label="Our Company" htmlFor="company_id" hint="Blank = the buyer is shared by both companies.">
+            <CompanySelect value={form.company_id} onChange={onInput} emptyLabel="Shared (both companies)" className={INPUT} />
+          </Row>
+          <Row label="Display Code" hint={buyerId ? 'Codes never change — they appear on documents already sent.' : 'Assigned automatically when you save (BUY01, BUY02…).'}>
+            <input type="text" value={displayCode || 'Auto'} readOnly className={`${INPUT} font-mono bg-gray-50`} />
+          </Row>
+          <Row label="Company Name" required htmlFor="company_name">
+            <input id="company_name" name="company_name" type="text" required maxLength={200} value={form.company_name} onChange={onInput} placeholder="ABC Fashion Ltd" className={INPUT} />
+          </Row>
+          <Row label="Name on Export Invoice" htmlFor="name_on_export_invoice" hint="Leave blank to use the company name.">
+            <input id="name_on_export_invoice" name="name_on_export_invoice" type="text" maxLength={200} value={form.name_on_export_invoice} onChange={onInput} placeholder="Exactly as it must print on the invoice" className={INPUT} />
+          </Row>
+          <Row label="Category of Items" required hint="Pick every category this buyer orders.">
+            <SearchMultiSelect options={toList(lookups.categories)} value={form.category_ids} onChange={(ids) => setForm((f) => ({ ...f, category_ids: ids }))} placeholder="Search categories…" />
+          </Row>
+        </Section>
 
-      {/* Address & Destination */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-geo-alt text-gray-500"></i>
-          <h3 className="text-base font-semibold">Address & Destination</h3>
-        </div>
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <h4 className="text-sm font-medium border-b pb-1">Billing Address</h4>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Address Line 1</label>
-                <input type="text" name="address_line_1" value={formData.address_line_1} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Address Line 1"/>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Address Line 2</label>
-                <input type="text" name="address_line_2" value={formData.address_line_2} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Address Line 2"/>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Country</label>
-                  <select name="country_id" value={formData.country_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
-                    <option value="">— Select —</option>
-                    {(Array.isArray(countries) ? countries : Object.entries(countries || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    State 
-                    <i className="bi bi-info-circle text-gray-400" title="State cascade requires backend support (Not currently available)"></i>
-                  </label>
-                  <select name="state_id" value={formData.state_id} onChange={handleChange} disabled={true} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-100">
-                    <option value="">—</option>
-                    {/* States not fetched due to backend gap */}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">City</label>
-                  <select name="city_id" value={formData.city_id} onChange={handleChange} disabled={true} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-100">
-                    <option value="">—</option>
-                    {/* Cities not fetched due to backend gap */}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Pincode</label>
-                  <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Pincode"/>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2 mt-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">GST Number</label>
-                  <input type="text" name="gst_number" value={formData.gst_number} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"  placeholder="Enter Gst Number"/>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">PAN Number</label>
-                  <input type="text" name="pan_number" value={formData.pan_number} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"  placeholder="Enter Pan Number"/>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <h4 className="text-sm font-medium border-b pb-1">Destination Details</h4>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Port</label>
-                <select name="port_id" value={formData.port_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
-                  <option value="">— Select —</option>
-                  {(Array.isArray(ports) ? ports : Object.entries(ports || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Destination (City/Place)</label>
-                <input type="text" name="destination" value={formData.destination} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Destination"/>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Incoterm</label>
-                <select name="incoterm_id" value={formData.incoterm_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
-                  <option value="">— Select —</option>
-                  {(Array.isArray(incoterms) ? incoterms : Object.entries(incoterms || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Shipment Method</label>
-                <select name="shipment_method_id" value={formData.shipment_method_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
-                  <option value="">— Select —</option>
-                  {(Array.isArray(shipmentMethods) ? shipmentMethods : Object.entries(shipmentMethods || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        {/* E–H · Contact */}
+        <Section title="Contact" icon="bi-person-lines-fill">
+          <Row label="Contact Person" htmlFor="contact_person">
+            <input id="contact_person" name="contact_person" type="text" maxLength={120} value={form.contact_person} onChange={onInput} placeholder="John Smith" className={INPUT} />
+          </Row>
+          <Row label="Designation" htmlFor="contact_designation_id">
+            <select id="contact_designation_id" name="contact_designation_id" value={form.contact_designation_id} onChange={onInput} className={INPUT}>
+              <option value="">— Select —</option>{option(designations)}
+            </select>
+          </Row>
+          <Row label="Email" htmlFor="email">
+            <input id="email" name="email" type="email" maxLength={150} value={form.email} onChange={onInput} placeholder="john@abcfashion.com" className={INPUT} />
+          </Row>
+          <Row label="Mobile" htmlFor="mobile">
+            <input id="mobile" name="mobile" type="text" maxLength={30} value={form.mobile} onChange={onInput} placeholder="+44 987654321" className={INPUT} />
+          </Row>
+          <Row label="GST / VAT No." htmlFor="gst_vat_no">
+            <input id="gst_vat_no" name="gst_vat_no" type="text" maxLength={15} value={form.gst_vat_no} onChange={onInput} placeholder="33ABCDE1234F1Z5" className={`${INPUT} font-mono uppercase`} />
+          </Row>
+        </Section>
 
-      {/* Agent & Commission */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-person-lines-fill text-gray-500"></i>
-          <h3 className="text-base font-semibold">Agent & Commission</h3>
-        </div>
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Secondary contact persons */}
+        <Section title="Secondary Contact Person" icon="bi-people" subtitle="Optional — add as many as needed, beyond the contact person above.">
+          <label className="flex items-center gap-2 text-sm mb-3">
+            <input type="checkbox" checked={secondary} onChange={(e) => setSecondary(e.target.checked)} className="rounded border-gray-300" />
+            Add a secondary contact person
+          </label>
+          {secondary && (
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Agent</label>
-              <select name="agent_id" value={formData.agent_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
-                <option value="">— Select —</option>
-                {agents.map(a => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
-                ))}
+              <div className="overflow-x-auto border border-gray-200 rounded-md">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-gray-50 text-gray-600 text-left">
+                    <tr><th className="px-2 py-2 font-medium">Name</th><th className="px-2 py-2 font-medium">Designation</th><th className="px-2 py-2 font-medium">Mobile</th><th className="px-2 py-2 font-medium">Email</th><th className="w-10"></th></tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {contacts.map((c, i) => (
+                      <tr key={i}>
+                        <td className="px-2 py-1.5"><input type="text" maxLength={120} value={c.name} onChange={(e) => setContact(i, 'name', e.target.value)} placeholder="Full name" className={INPUT} /></td>
+                        <td className="px-2 py-1.5"><select value={c.designation_id} onChange={(e) => setContact(i, 'designation_id', e.target.value)} className={INPUT}><option value="">— Select —</option>{option(designations)}</select></td>
+                        <td className="px-2 py-1.5"><input type="text" maxLength={30} value={c.mobile} onChange={(e) => setContact(i, 'mobile', e.target.value)} placeholder="9876543210" className={INPUT} /></td>
+                        <td className="px-2 py-1.5"><input type="email" maxLength={150} value={c.email} onChange={(e) => setContact(i, 'email', e.target.value)} placeholder="name@company.com" className={INPUT} /></td>
+                        <td className="px-2 py-1.5 text-right"><button type="button" onClick={() => setContacts((rows) => (rows.length > 1 ? rows.filter((_, idx) => idx !== i) : [{ ...EMPTY_CONTACT }]))} className="text-red-600 hover:text-red-800" title="Remove contact"><i className="bi bi-x-lg"></i></button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <button type="button" onClick={() => setContacts((rows) => [...rows, { ...EMPTY_CONTACT }])} className="mt-2 px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"><i className="bi bi-plus-lg mr-1"></i>Add contact</button>
+              <p className="mt-1 text-xs text-gray-500">Rows with no name are not saved.</p>
+            </div>
+          )}
+        </Section>
+
+        {/* I–N · Address & Destination */}
+        <Section title="Address & Destination" icon="bi-geo-alt" subtitle="Prints on the export invoice and the packing list.">
+          <Row label="Address" htmlFor="address">
+            <textarea id="address" name="address" rows={2} maxLength={255} value={form.address} onChange={onInput} placeholder="12 Fashion Street" className={INPUT}></textarea>
+          </Row>
+          <Row label="Country" htmlFor="country_id">
+            <select id="country_id" name="country_id" value={form.country_id} onChange={onCountry} className={INPUT}>
+              <option value="">— Select —</option>{option(lookups.countries)}
+            </select>
+          </Row>
+          <Row label="State" htmlFor="state_id">
+            <select id="state_id" name="state_id" value={form.state_id} onChange={onState} disabled={!form.country_id} className={`${INPUT} disabled:bg-gray-50`}>
+              <option value="">{form.country_id ? '— Select —' : 'Select a country first'}</option>{option(states)}
+            </select>
+          </Row>
+          <Row label="City" htmlFor="city_id">
+            <select id="city_id" name="city_id" value={form.city_id} onChange={onInput} disabled={!form.state_id} className={`${INPUT} disabled:bg-gray-50`}>
+              <option value="">{form.state_id ? '— Select —' : 'Select a state first'}</option>{option(cities)}
+            </select>
+          </Row>
+          <Row label="PIN / ZIP Code" htmlFor="pincode">
+            <input id="pincode" name="pincode" type="text" maxLength={20} value={form.pincode} onChange={onInput} placeholder="EC1A1AA" className={`${INPUT} md:w-1/3`} />
+          </Row>
+          <Row label="Destination Port" htmlFor="port_id">
+            <select id="port_id" name="port_id" value={form.port_id} onChange={onInput} className={INPUT}>
+              <option value="">— Select —</option>{option(lookups.ports, (p) => (p.code ? `${p.name} (${p.code})` : p.name))}
+            </select>
+          </Row>
+        </Section>
+
+        {/* O–P · Agent */}
+        <Section title="Agent" icon="bi-person-badge" subtitle="Optional — only agents marked as buyer-side are listed.">
+          <Row label="Agent" htmlFor="agent_id" hint={toList(lookups.agents).length ? null : 'No buyer-side agents exist yet.'}>
+            <select id="agent_id" name="agent_id" value={form.agent_id} onChange={onInput} className={INPUT}>
+              <option value="">— None —</option>{option(lookups.agents, (a) => (a.display_code ? `${a.name} (${a.display_code})` : a.name))}
+            </select>
+          </Row>
+          <Row label="Agent Commission" htmlFor="agent_commission_value">
+            <div className="flex gap-2">
+              <input id="agent_commission_value" name="agent_commission_value" type="number" step="0.0001" min="0" value={form.agent_commission_value} onChange={onInput} placeholder="0.0000" className={INPUT} />
+              <select name="agent_commission_type" value={form.agent_commission_type} onChange={onInput} className={`${INPUT} max-w-[160px]`}>
+                <option value="percent">% Percent</option>
+                <option value="amount">Fixed amount</option>
               </select>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Commission %</label>
-              <input type="number" step="0.01" min="0" max="100" name="commission_percent" value={formData.commission_percent} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Commission Percent"/>
-            </div>
-          </div>
-        </div>
-      </div>
+          </Row>
+        </Section>
 
-      {/* Trade Terms */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-cash text-gray-500"></i>
-          <h3 className="text-base font-semibold">Trade Terms</h3>
-        </div>
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Payment Term</label>
-              <select name="payment_term_id" value={formData.payment_term_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
-                <option value="">— Select —</option>
-                {(Array.isArray(paymentTerms) ? paymentTerms : Object.entries(paymentTerms || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Currency</label>
-              <select name="currency_id" value={formData.currency_id} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm">
-                <option value="">— Select —</option>
-                {(Array.isArray(currencies) ? currencies : Object.entries(currencies || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Advance %</label>
-              <input type="number" step="0.01" min="0" max="100" name="advance_percent" value={formData.advance_percent} onChange={handleChange} className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${advanceSightError ? 'border-red-500' : ''}`}  placeholder="Enter Advance Percent"/>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Sight %</label>
-              <input type="number" step="0.01" min="0" max="100" name="sight_percent" value={formData.sight_percent} onChange={handleChange} className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${advanceSightError ? 'border-red-500' : ''}`}  placeholder="Enter Sight Percent"/>
-            </div>
-          </div>
-          {advanceSightError && <p className="text-sm text-red-600">{advanceSightError}</p>}
-        </div>
-      </div>
+        {/* Q–T · Trade Terms */}
+        <Section title="Trade Terms" icon="bi-file-earmark-text" subtitle="Defaults copied onto this buyer's quotations and order confirmations.">
+          <Row label="Payment Terms" htmlFor="payment_term_id">
+            <select id="payment_term_id" name="payment_term_id" value={form.payment_term_id} onChange={onInput} className={INPUT}>
+              <option value="">— Select —</option>{option(lookups.paymentTerms)}
+            </select>
+          </Row>
+          {splitVisible && (
+            <Row label="Advance / At Sight Split" required>
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <input name="advance_percent" type="number" step="0.01" min="0.01" max="99.99" value={form.advance_percent} onChange={onInput} aria-label="Advance percentage" className={`${INPUT} w-28`} />
+                <span className="text-gray-500">% advance +</span>
+                <input name="sight_percent" type="number" step="0.01" min="0.01" max="99.99" value={form.sight_percent} onChange={onInput} aria-label="At-sight percentage" className={`${INPUT} w-28`} />
+                <span className="text-gray-500">% at sight</span>
+                <span className={`text-xs ${Math.round(splitTotal * 100) === 10000 ? 'text-green-700' : 'text-red-600'}`}>= {splitTotal.toFixed(2)}% (must be 100)</span>
+              </div>
+            </Row>
+          )}
+          <Row label="Default Inco Term" htmlFor="incoterm_id">
+            <select id="incoterm_id" name="incoterm_id" value={form.incoterm_id} onChange={onInput} className={INPUT}>
+              <option value="">— Select —</option>{option(lookups.incoterms, (i) => `${i.code} — ${i.name}`)}
+            </select>
+          </Row>
+          <Row label="Shipment Method" htmlFor="shipment_method_id">
+            <select id="shipment_method_id" name="shipment_method_id" value={form.shipment_method_id} onChange={onInput} className={INPUT}>
+              <option value="">— Select —</option>{option(lookups.shipmentMethods)}
+            </select>
+          </Row>
+          <Row label="Default Currency" htmlFor="currency_id">
+            <select id="currency_id" name="currency_id" value={form.currency_id} onChange={onInput} className={INPUT}>
+              <option value="">— Select —</option>{option(lookups.currencies, (c) => `${c.iso_code} — ${c.name}`)}
+            </select>
+          </Row>
+        </Section>
 
-      {/* Bank Details */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-bank text-gray-500"></i>
-          <h3 className="text-base font-semibold">Bank Details</h3>
-        </div>
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Bank Name</label>
-              <input type="text" name="bank_name" value={formData.bank_name} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Bank Name"/>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Branch</label>
-              <input type="text" name="branch_name" value={formData.branch_name} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Branch Name"/>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Account Number</label>
-              <input type="text" name="account_number" value={formData.account_number} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"  placeholder="Enter Account Number"/>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">IFSC Code</label>
-                <input type="text" name="ifsc_code" value={formData.ifsc_code} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"  placeholder="Enter Ifsc Code"/>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">SWIFT Code</label>
-                <input type="text" name="swift_code" value={formData.swift_code} onChange={handleChange} className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase"  placeholder="Enter Swift Code"/>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        {/* U–W · Bank Details */}
+        <Section title="Bank Details" icon="bi-bank" subtitle="Where this buyer remits payment from.">
+          <Row label="Bank Name" htmlFor="bank_name"><input id="bank_name" name="bank_name" type="text" maxLength={120} value={form.bank_name} onChange={onInput} placeholder="HSBC UK" className={INPUT} /></Row>
+          <Row label="Account Number" htmlFor="account_number"><input id="account_number" name="account_number" type="text" maxLength={40} value={form.account_number} onChange={onInput} placeholder="12345678" className={INPUT} /></Row>
+          <Row label="SWIFT Code" htmlFor="swift_code"><input id="swift_code" name="swift_code" type="text" maxLength={20} value={form.swift_code} onChange={onInput} placeholder="HBUKGB4B" className={`${INPUT} uppercase`} /></Row>
+        </Section>
 
-      {/* Carton Marking Details */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <i className="bi bi-box text-gray-500"></i>
-            <h3 className="text-base font-semibold">Carton Marking Details</h3>
-          </div>
-          <button type="button" onClick={addCartonLine} className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-2 py-1 rounded hover:bg-blue-100">
-            <i className="bi bi-plus-lg"></i> Add Line
-          </button>
-        </div>
-        <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-3">
-            {formData.carton_markings.map((marking, index) => (
-              <div key={index} className="flex gap-2 items-center">
-                <div className="w-1/3">
-                  <input 
-                    type="text" 
-                    value={marking.label} 
-                    onChange={(e) => handleCartonChange(index, 'label', e.target.value)}
-                    className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm bg-gray-50"
-                    placeholder="Label"
-                  />
-                </div>
-                <div className="flex-1">
-                  <input 
-                    type="text" 
-                    value={marking.value} 
-                    onChange={(e) => handleCartonChange(index, 'value', e.target.value)}
-                    className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-                    placeholder="Value (e.g. Mens Shirt)"
-                  />
-                </div>
-                <div>
-                  {index > 2 && (
-                    <button type="button" onClick={() => removeCartonLine(index)} className="text-red-500 hover:text-red-700 px-2 py-1">
-                      <i className="bi bi-x-circle"></i>
-                    </button>
-                  )}
-                  {index <= 2 && (
-                    <div className="w-8 text-center text-gray-300"><i className="bi bi-lock-fill"></i></div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Live Preview */}
-          <div>
-            <h4 className="text-sm font-medium mb-3 text-gray-700">Live Preview</h4>
-            <div className="border-2 border-dashed border-gray-400 p-6 bg-[url('https://www.transparenttextures.com/patterns/cardboard.png')] bg-[#cdb08a] rounded min-h-[250px] shadow-inner font-mono text-gray-900 leading-relaxed max-w-sm mx-auto flex flex-col items-center justify-center text-center">
-              {formData.carton_markings.filter(m => m.label || m.value).map((marking, index) => (
-                <div key={index} className="w-full flex justify-between gap-4 py-0.5">
-                  <span className="font-bold text-black opacity-80 uppercase tracking-wider">{marking.label || `LINE ${index + 1}`}:</span>
-                  <span className="font-semibold">{marking.value || '_________'}</span>
+        {/* X · Carton Marking Details */}
+        <Section title="Carton Marking Details" icon="bi-box-seam" subtitle="Enter each line as it should appear on the carton / shipping marks.">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-7">
+              {carton.map((line, i) => (
+                <div key={i} className="mb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <input type="text" maxLength={60} value={line.label} onChange={(e) => setCartonLine(i, 'label', e.target.value)} placeholder="LINE LABEL" aria-label="Line label" className="text-xs font-semibold uppercase tracking-wide text-gray-600 border-0 border-b border-dashed border-gray-300 focus:outline-none focus:border-blue-500 px-0" />
+                    <button type="button" onClick={() => setCarton((rows) => rows.filter((_, idx) => idx !== i))} className="text-red-600 hover:text-red-800 text-sm" title="Remove line"><i className="bi bi-x-lg"></i></button>
+                  </div>
+                  <input type="text" maxLength={120} value={line.value} onChange={(e) => setCartonLine(i, 'value', e.target.value)} placeholder={DEFAULT_CARTON_LINES[i]?.placeholder || 'e.g. MADE IN INDIA'} aria-label="Line value" className={INPUT} />
                 </div>
               ))}
+              <button type="button" onClick={() => setCarton((rows) => [...rows, { label: '', value: '' }])} className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"><i className="bi bi-plus-lg mr-1"></i>Add line</button>
+              <p className="mt-1 text-xs text-gray-500">Blank lines are not saved.</p>
+            </div>
+            <div className="lg:col-span-5">
+              <div className="border border-gray-300 rounded-md bg-amber-50/40">
+                <div className="px-3 py-1.5 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">Live preview</div>
+                <pre className="p-3 m-0 text-sm font-mono whitespace-pre-wrap text-gray-800">{carton.filter((l) => l.value.trim()).map((l) => l.value.trim()).join('\n') || '—'}</pre>
+              </div>
             </div>
           </div>
+        </Section>
+
+        {/* Other Details */}
+        <Section title="Other Details" icon="bi-card-text">
+          <Row label="Status" required htmlFor="status">
+            <select id="status" name="status" value={form.status} onChange={onInput} required className={`${INPUT} md:w-1/3`}>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </Row>
+          <Row label="Remarks" htmlFor="remarks"><textarea id="remarks" name="remarks" rows={2} maxLength={1000} value={form.remarks} onChange={onInput} placeholder="Optional notes" className={INPUT}></textarea></Row>
+          <Row label="Comments" htmlFor="comments"><textarea id="comments" name="comments" rows={2} maxLength={1000} value={form.comments} onChange={onInput} placeholder="Optional comments" className={INPUT}></textarea></Row>
+        </Section>
+
         </div>
+        <div className="bg-gray-50 px-6 py-4 flex items-center gap-2 border-t border-gray-200">
+          <button type="submit" disabled={saving}
+            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}>
+            <i className="bi bi-check-lg mr-1"></i> {buyerId ? 'Update' : 'Save'} Buyer
+          </button>
+          <Link href={API} className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 no-underline">Cancel</Link>
+        </div>
+      </form>
       </div>
-
-      <div className="flex gap-3">
-        <button 
-          type="submit" 
-          disabled={saving || (parseFloat(formData.advance_percent) + parseFloat(formData.sight_percent) !== 100 && (formData.advance_percent || formData.sight_percent))}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
-        >
-          <i className="bi bi-check-lg me-1"></i> {buyerId ? 'Update' : 'Save'} Buyer
-        </button>
-        <Link href="/masters/buyers" className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium">
-          Cancel
-        </Link>
-      </div>
-
-    </form>
+    </DashboardLayout>
   );
 }

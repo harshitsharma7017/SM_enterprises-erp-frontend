@@ -5,17 +5,60 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Card from '@/components/ui/Card';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, COMMERCIAL_STATUS_BADGES, DISPATCH_TYPE_LABELS } from '@/components/ui/Badge';
+import { WorkflowBadge, COMMERCIAL_STATUS_BADGES, PI_STAGE_BADGES, DISPATCH_TYPE_LABELS } from '@/components/ui/Badge';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, formatAmount, toDateInputValue } from '@/components/sales/shared/format';
+import ArchivedCopyButton from '@/components/ui/ArchivedCopyButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 const LINK = 'font-mono text-blue-600 hover:underline';
 const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
 const EMPTY_REF = { confirmation_reference: '', confirmation_date: '', payment_reference: '', payment_date: '', commercial_remarks: '' };
+
+/**
+ * Customer Order → Proforma Invoice → Confirmation / Payment → Final Invoice,
+ * marked from what is recorded on the PI and its issued invoices.
+ */
+const PI_STEPS = [
+  { key: 'order', label: 'Order confirmed' },
+  { key: 'issued', label: 'PI issued' },
+  { key: 'confirmed', label: 'Buyer confirmation' },
+  { key: 'payment', label: 'Payment reference' },
+  { key: 'invoiced', label: 'Final invoice' },
+];
+function PiProgress({ pi }) {
+  if (pi.status === 'cancelled') return null;
+  const issued = pi.status === 'issued';
+  const done = {
+    order: true,
+    issued,
+    confirmed: issued && !!pi.confirmation_reference,
+    payment: issued && !!pi.payment_reference,
+    invoiced: pi.stage === 'invoiced',
+  };
+  const partly = pi.stage === 'partly_invoiced';
+  return (
+    <div className="bg-white rounded-lg border border-[var(--card-border)] shadow-sm px-4 py-3 mb-4">
+      <ol className="flex flex-wrap items-center gap-2 text-xs m-0 p-0 list-none">
+        {PI_STEPS.map((step, i) => {
+          const state = done[step.key] ? 'done' : step.key === 'invoiced' && partly ? 'part' : 'todo';
+          return (
+            <li key={step.key} className="flex items-center gap-2">
+              {i > 0 && <span className="text-gray-300">→</span>}
+              <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${state === 'done' ? 'bg-green-50 border-green-300 text-green-800' : state === 'part' ? 'bg-yellow-50 border-yellow-300 text-yellow-800' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
+                <i className={`bi ${state === 'done' ? 'bi-check-circle-fill' : state === 'part' ? 'bi-circle-half' : 'bi-circle'}`}></i>
+                {step.label}{state === 'part' ? ' (part)' : ''}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
 
 export default function ProformaInvoiceShowPage({ params }) {
   const { id } = use(params);
@@ -93,9 +136,10 @@ export default function ProformaInvoiceShowPage({ params }) {
         actions={(
           <>
             <button type="button" onClick={download} className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}><i className="bi bi-file-earmark-pdf me-1"></i> Document</button>
+            <ArchivedCopyButton entityType="proforma_invoice" entityId={id} onError={setError} />
             {isDraft && can('proforma-invoice.edit') && <Link href={`/finance/proforma-invoices/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-pencil me-1"></i> Edit</Link>}
             {isDraft && can('proforma-invoice.issue') && <button type="button" disabled={busy} onClick={issue} className={`${BTN} bg-green-600 hover:bg-green-700 text-white`}><i className="bi bi-send-check me-1"></i> Issue</button>}
-            {isIssued && can('invoice.create') && <Link href={`/finance/invoices/create?order_confirmation_id=${pi.order_confirmation_id}`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-file-earmark-check me-1"></i> New Invoice</Link>}
+            {isIssued && pi.stage !== 'invoiced' && can('invoice.create') && <Link href={`/finance/invoices/create?order_confirmation_id=${pi.order_confirmation_id}&proforma_invoice_id=${pi.id}`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-file-earmark-check me-1"></i> Create Invoice</Link>}
             {pi.status !== 'cancelled' && can('proforma-invoice.cancel') && <button type="button" disabled={busy} onClick={cancel} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>}
             <Link href="/finance/proforma-invoices" className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>Back</Link>
           </>
@@ -106,10 +150,12 @@ export default function ProformaInvoiceShowPage({ params }) {
       {notice && <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded mb-4 text-sm">{notice}</div>}
       {isDraft && <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded mb-4 text-sm">Draft — editable, and its quantities are not counted against the order until it is issued.</div>}
 
+      <PiProgress pi={pi} />
+
       <Card title="Proforma Invoice" variant="primary">
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
           <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={pi.company_label} code={pi.company_code} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={pi.status} config={COMMERCIAL_STATUS_BADGES} /></dd></div>
+          <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={pi.status} config={COMMERCIAL_STATUS_BADGES} /> <WorkflowBadge status={pi.stage} config={PI_STAGE_BADGES} /></dd></div>
           <div><dt className="text-gray-500 text-xs">PI date</dt><dd className="mt-1 text-gray-900">{formatDate(pi.pi_date)}</dd></div>
           <div><dt className="text-gray-500 text-xs">Valid until</dt><dd className="mt-1 text-gray-900">{formatDate(pi.valid_until)}</dd></div>
           <div><dt className="text-gray-500 text-xs">Customer</dt><dd className="mt-1 text-gray-900">{pi.buyer_name}</dd></div>
@@ -136,6 +182,8 @@ export default function ProformaInvoiceShowPage({ params }) {
               <th className="py-1.5 font-medium text-right">PI quantity</th>
               <th className="py-1.5 font-medium text-right">Unit price</th>
               <th className="py-1.5 font-medium text-right">Amount</th>
+              <th className="py-1.5 font-medium text-right">Invoiced</th>
+              <th className="py-1.5 font-medium text-right">To invoice</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -146,11 +194,14 @@ export default function ProformaInvoiceShowPage({ params }) {
                 <td className="py-1.5 text-right font-semibold whitespace-nowrap">{formatQuantity(i.quantity, i.uom_decimal_places)} {i.unit}</td>
                 <td className="py-1.5 text-right">{i.unit_price === null ? <span className="text-amber-700 text-xs">Not priced</span> : formatAmount(i.unit_price)}</td>
                 <td className="py-1.5 text-right">{i.amount === null ? '—' : formatAmount(i.amount)}</td>
+                <td className="py-1.5 text-right text-gray-700">{formatQuantity(i.invoiced_quantity, i.uom_decimal_places)}</td>
+                <td className="py-1.5 text-right font-medium">{formatQuantity(Math.max(Number(i.quantity) - Number(i.invoiced_quantity || 0), 0), i.uom_decimal_places)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr><td colSpan="4" className="py-2 text-right text-xs text-gray-500">Total of priced lines {pi.currency_code ? `(${pi.currency_code})` : ''}</td><td className="py-2 text-right font-semibold">{formatAmount(pi.total_amount || 0)}</td></tr>
+            <tr><td colSpan="4" className="py-2 text-right text-xs text-gray-500">Total of priced lines {pi.currency_code ? `(${pi.currency_code})` : ''}</td><td className="py-2 text-right font-semibold">{formatAmount(pi.total_amount || 0)}</td><td colSpan="2"></td></tr>
+            {Number(pi.invoiced_amount) > 0 && <tr><td colSpan="4" className="py-1 text-right text-xs text-gray-500">Invoiced on issued invoices against this PI</td><td className="py-1 text-right text-gray-700">{formatAmount(pi.invoiced_amount)}</td><td colSpan="2"></td></tr>}
           </tfoot>
         </table>
         <p className="text-xs text-gray-500 mt-2 mb-0">Unit price is the order item&apos;s price; amount = quantity × unit price. No tax, discount, freight or other charge is calculated{pi.unpriced_lines_count > 0 ? `; ${pi.unpriced_lines_count} line(s) have no price on the order` : ''}.</p>

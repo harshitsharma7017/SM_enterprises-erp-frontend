@@ -42,6 +42,7 @@ export default function AgentForm({ agentId = null }) {
     calculation_basis_id: '',
     status: 'active',
     remarks: '',
+    comments: '',
     commissions: [{ commission_type: 'percent', amount: '', currency_id: '' }]
   });
 
@@ -75,6 +76,7 @@ export default function AgentForm({ agentId = null }) {
               calculation_basis_id: a.calculation_basis_id || '',
               status: a.status || 'active',
               remarks: a.remarks || '',
+              comments: a.comments || '',
               commissions: a.commissions?.length > 0 ? a.commissions.map(c => ({
                 commission_type: c.commission_type,
                 amount: c.amount,
@@ -271,6 +273,9 @@ export default function AgentForm({ agentId = null }) {
                 </Row>
                 <Row label="Remarks">
                   <textarea name="remarks" value={formData.remarks} onChange={handleChange} rows="2" className={INPUT} placeholder="Enter Remarks"></textarea>
+                </Row>
+                <Row label="Comments">
+                  <textarea name="comments" value={formData.comments} onChange={handleChange} rows="2" maxLength={1000} className={INPUT} placeholder="Optional comments"></textarea>
                 </Row>
               </div>
             </FormSection>

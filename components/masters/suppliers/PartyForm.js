@@ -5,12 +5,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import CompanySelect from '@/components/company/CompanySelect';
-import FormSection from '@/components/ui/FormSection';
 import SearchMultiSelect from '@/components/masters/suppliers/SearchMultiSelect';
+import { INPUT, Section, Row, toList } from '@/components/masters/shared/MasterFormParts';
 import { apiClient } from '@/lib/api-client';
 
-// Same field styling as the other master forms (Brand, Material Type, UOM).
-const INPUT = 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
 const SELECT = INPUT;
 const MONO = 'font-mono uppercase';
 
@@ -37,32 +35,6 @@ const KINDS = {
 };
 
 const EMPTY_CONTACT = { name: '', designation_id: '', mobile: '', email: '' };
-
-/** A dropdown list sent as an array of { id, name } or as an { id: name } map. */
-const toList = (v) => (Array.isArray(v) ? v : Object.entries(v || {}).map(([id, name]) => ({ id, name })));
-
-/** A form section, laid out like the other master forms (FormSection + an 860px field column). */
-function Section({ title, subtitle, icon, children }) {
-  return (
-    <FormSection title={title} icon={icon} subtitle={subtitle}>
-      <div className="max-w-[860px]">{children}</div>
-    </FormSection>
-  );
-}
-
-function Row({ label, required = false, htmlFor, hint, children }) {
-  return (
-    <div className="flex flex-col sm:flex-row mb-4">
-      <label htmlFor={htmlFor} className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-gray-700 pt-1">
-        {label} {required && <span className="text-red-500 font-normal">*</span>}
-      </label>
-      <div className="sm:w-3/4">
-        {children}
-        {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
-      </div>
-    </div>
-  );
-}
 
 export default function PartyForm({ kind = 'supplier', id = null }) {
   const k = KINDS[kind];

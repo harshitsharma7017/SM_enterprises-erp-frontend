@@ -17,6 +17,7 @@ const REPORT_LINKS = [
   ['/reports/finished-material', 'bi-box-seam', 'Finished Material', ['processing.view', 'stock.view']],
   ['/reports/brand-requirements', 'bi-list-check', 'Brand Requirements', 'material-requirement.view'],
   ['/reports/traceability', 'bi-diagram-3', 'Lot Traceability', 'inward-entry.view'],
+  ['/reports/documents', 'bi-archive', 'Document Archive', 'document.view'],
 ];
 
 /**
@@ -174,9 +175,10 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
           )}
 
           {/* ═══════ PRODUCTION ═══════ */}
-          {canAny(['material-issue.view', 'processing.view']) && (
+          {canAny(['production-plan.view', 'material-issue.view', 'processing.view']) && (
             <>
               {!collapsed && <li className="nav-header">Production</li>}
+              <NavItem href="/production/plans" icon="bi-kanban" label="Production Plans" permission="production-plan.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/production/material-issues" icon="bi-box-arrow-right" label="Material Issues" permission="material-issue.view" can={can} collapsed={collapsed} isActive={isActive} />
               <NavItem href="/production/processing" icon="bi-gear-wide-connected" label="Processing" permission="processing.view" can={can} collapsed={collapsed} isActive={isActive} />
             </>

@@ -8,7 +8,7 @@ import InvoiceForm from '@/components/finance/InvoiceForm';
 
 function CreateInvoiceForm() {
   const searchParams = useSearchParams();
-  return <InvoiceForm initialOrderId={searchParams.get('order_confirmation_id') || ''} initialDispatchId={searchParams.get('dispatch_id') || ''} />;
+  return <InvoiceForm initialOrderId={searchParams.get('order_confirmation_id') || ''} initialDispatchId={searchParams.get('dispatch_id') || ''} initialProformaId={searchParams.get('proforma_invoice_id') || ''} />;
 }
 
 export default function CreateInvoicePage() {

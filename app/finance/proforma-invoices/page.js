@@ -7,7 +7,7 @@ import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
 import Pagination from '@/components/ui/Pagination';
 import PageHeading from '@/components/sales/shared/PageHeading';
-import { WorkflowBadge, COMMERCIAL_STATUS_BADGES } from '@/components/ui/Badge';
+import { WorkflowBadge, COMMERCIAL_STATUS_BADGES, PI_STAGE_BADGES } from '@/components/ui/Badge';
 import CompanyFilter from '@/components/company/CompanyFilter';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
@@ -16,7 +16,7 @@ import { formatDate, formatAmount } from '@/components/sales/shared/format';
 import { toPaginationFromPageLimit } from '@/components/sales/shared/pagination';
 
 const INPUT = 'w-full px-3 py-1.5 border border-gray-300 rounded text-sm';
-const EMPTY_FILTERS = { search: '', company_id: '', status: '', buyer_id: '', order: '', date_from: '', date_to: '' };
+const EMPTY_FILTERS = { search: '', company_id: '', status: '', stage: '', buyer_id: '', order: '', date_from: '', date_to: '' };
 
 export default function ProformaInvoiceListPage() {
   const { can } = useAuth(true);
@@ -97,6 +97,13 @@ export default function ProformaInvoiceListPage() {
               {Object.entries(COMMERCIAL_STATUS_BADGES).map(([value, b]) => <option key={value} value={value}>{b.label}</option>)}
             </select>
           </div>
+          <div className="w-44">
+            <label className="block text-xs text-gray-500 mb-1">Stage</label>
+            <select value={filters.stage} onChange={(e) => setFilter('stage', e.target.value)} className={INPUT}>
+              <option value="">All</option>
+              {Object.entries(PI_STAGE_BADGES).map(([value, b]) => <option key={value} value={value}>{b.label}</option>)}
+            </select>
+          </div>
           <div className="w-36">
             <label className="block text-xs text-gray-500 mb-1">From</label>
             <input type="date" value={filters.date_from} onChange={(e) => setFilter('date_from', e.target.value)} className={INPUT} />
@@ -136,7 +143,7 @@ export default function ProformaInvoiceListPage() {
                   <td className="px-4 py-2 font-mono text-xs">{d.oc_num}</td>
                   <td className="px-4 py-2 text-center">{d.lines_count}</td>
                   <td className="px-4 py-2 text-right whitespace-nowrap">{d.total_amount === null ? '—' : formatAmount(d.total_amount)} <span className="text-xs text-gray-500">{d.currency_code || ''}</span>{d.unpriced_lines_count > 0 && <div className="text-xs text-amber-700">{d.unpriced_lines_count} unpriced line(s)</div>}</td>
-                  <td className="px-4 py-2"><WorkflowBadge status={d.status} config={COMMERCIAL_STATUS_BADGES} />{d.payment_reference && <div className="text-xs text-gray-500">Payment ref. {d.payment_reference}</div>}</td>
+                  <td className="px-4 py-2"><WorkflowBadge status={d.stage} config={PI_STAGE_BADGES} />{d.payment_reference && <div className="text-xs text-gray-500">Payment ref. {d.payment_reference}</div>}</td>
                 </tr>
               ))}
             </tbody>

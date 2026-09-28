@@ -22,6 +22,7 @@ const LINE_FIELDS = [['consumed_quantity', 'Consumed'], ['wastage_quantity', 'Wa
 const formFrom = (record) => ({
   start_date: toDateInputValue(record.start_date),
   produced_product_id: record.produced_product_id || '',
+  production_plan_item_id: record.production_plan_item_id || '',
   produced_uom_id: record.produced_uom_id || '',
   produced_quantity: asInput(record.produced_quantity),
   remarks: record.remarks || '',
@@ -73,6 +74,15 @@ export default function ProcessingShowPage({ params }) {
     apiClient.get(`/production/processing/form-data?company_id=${companyId}`)
       .then((res) => setOptions(res.data || { products: [], uoms: [] }))
       .catch(() => setOptions({ products: [], uoms: [] }));
+  }, [companyId, editable]);
+
+  // Lines of the company's PLANNED production plans, for booking this record against one.
+  const [planLines, setPlanLines] = useState([]);
+  useEffect(() => {
+    if (!companyId || !editable) return;
+    apiClient.get(`/production/plans/open-lines?company_id=${companyId}`)
+      .then((res) => setPlanLines(res.data || []))
+      .catch(() => setPlanLines([]));
   }, [companyId, editable]);
 
   // Active locations of the record's company, for Post Output to Stock.
@@ -147,6 +157,7 @@ export default function ProcessingShowPage({ params }) {
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
           <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={record.company_label} code={record.company_code} /></dd></div>
           <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={record.status} config={PROCESSING_STATUS_BADGES} /></dd></div>
+          {record.production_plan_id && <div><dt className="text-gray-500 text-xs">Production plan</dt><dd className="mt-1"><Link href={`/production/plans/${record.production_plan_id}`} className="font-mono text-blue-600 hover:underline">{record.production_plan_no}</Link></dd></div>}
           <div><dt className="text-gray-500 text-xs">Material Issue</dt><dd className="mt-1"><Link href={`/production/material-issues/${record.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{record.issue_no}</Link> <span className="text-xs text-gray-500">{formatDate(record.issue_date)} · {record.location_code}</span></dd></div>
           <div><dt className="text-gray-500 text-xs">Job Reference</dt><dd className="mt-1 text-gray-900">{record.job_reference || '—'}</dd></div>
           <div><dt className="text-gray-500 text-xs">Received by</dt><dd className="mt-1 text-gray-900">{record.receiver_name || '—'}</dd></div>
@@ -228,6 +239,16 @@ export default function ProcessingShowPage({ params }) {
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Start date *</label>
                 <input type="date" required value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} className={INPUT} />
+              </div>
+              <div className="md:col-span-3">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Production plan line (optional)</label>
+                <select value={form.production_plan_item_id} onChange={(e) => setForm({ ...form, production_plan_item_id: e.target.value })} className="form-select w-full rounded border-gray-300 text-sm">
+                  <option value="">— Not booked to a plan —</option>
+                  {planLines
+                    .filter((l) => !form.produced_product_id || String(l.product_id) === String(form.produced_product_id) || String(l.id) === String(form.production_plan_item_id))
+                    .map((l) => <option key={l.id} value={l.id}>{l.product_name} · planned {Number(l.planned_quantity)} {l.uom_code} · produced {Number(l.produced_quantity)}{l.oc_num ? ` · ${l.oc_num}` : ''}</option>)}
+                </select>
+                <p className="text-xs text-gray-500 mt-1 mb-0">Only lines of planned production plans for the produced product are listed; the posted output counts as produced on the plan.</p>
               </div>
               <div className="md:col-span-5">
                 <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
