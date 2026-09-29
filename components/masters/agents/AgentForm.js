@@ -211,7 +211,7 @@ export default function AgentForm({ agentId = null }) {
                   <input type="text" name="name" value={formData.name} onChange={handleChange} required maxLength="200" className="form-input" placeholder="Enter Name" />
                 </Row>
                 <Row label="Categories" required hint="Hold Ctrl/Cmd to select multiple. Filters agents in other forms.">
-                  <select name="categories" multiple value={formData.categories} onChange={handleChange} required className="form-select">
+                  <select name="categories" multiple value={formData.categories} onChange={handleChange} required className="form-select min-h-[120px]">
                     {toList(categories).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
                   </select>
                 </Row>

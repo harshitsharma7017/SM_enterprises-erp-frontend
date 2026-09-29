@@ -11,7 +11,6 @@ import { LOT_SOURCE_LABELS } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
 import { formatDate, formatQuantity } from '@/components/sales/shared/format';
 
-const SELECT = 'form-select w-full rounded border-line-strong text-sm';
 
 /** Pick a received lot (of one company) that has no active barcode, and generate one. */
 export default function GenerateBarcodePage() {
@@ -54,7 +53,7 @@ export default function GenerateBarcodePage() {
         <form className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4" onSubmit={(e) => { e.preventDefault(); load(companyId, search); }}>
           <div>
             <label className="block text-xs font-medium text-fg-muted mb-1">Company *</label>
-            <CompanySelect value={companyId} onChange={(e) => { setCompanyId(e.target.value); setLots([]); setLoaded(false); load(e.target.value, search); }} required className={SELECT} />
+            <CompanySelect value={companyId} onChange={(e) => { setCompanyId(e.target.value); setLots([]); setLoaded(false); load(e.target.value, search); }} required />
           </div>
           <div>
             <label className="block text-xs font-medium text-fg-muted mb-1">Lot, material, GRN or processing</label>

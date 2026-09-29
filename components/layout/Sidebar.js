@@ -78,12 +78,12 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
               color: 'var(--accent-fg)', fontWeight: 700, fontSize: '0.85rem',
             }}
           >
-            GT
+            SM
           </span>
           {!collapsed && (
             <span className="flex flex-col leading-tight">
               <span style={{ fontWeight: 600, fontSize: '0.98rem', color: 'var(--sidebar-brand-color)' }}>
-                Guru Traders
+                SM Enterprises
               </span>
               <small style={{ fontSize: '0.68rem', fontWeight: 500, color: 'var(--sidebar-brand-subtitle)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Export ERP

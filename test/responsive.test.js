@@ -236,23 +236,11 @@ function findFixedGrids() {
 }
 
 describe('no unresponsive grids remain', () => {
-  // The single grid in the codebase with a pinned column count and no
-  // breakpoints at all. Scheduled for the final punch list.
-  const KNOWN_EXCEPTIONS = ['app/barcode/codes/[id]/page.js'];
-
   it('no grid pins a column count without any breakpoint', () => {
-    const unexpected = findFixedGrids()
-      .filter((entry) => !KNOWN_EXCEPTIONS.includes(entry.file))
-      .map((entry) => `${entry.file}: ${entry.classes}`);
-
-    expect(unexpected).toEqual([]);
-  });
-
-  it('keeps the exception list honest', () => {
-    // Fails once an exception is fixed, prompting its removal from the list.
-    const offending = new Set(findFixedGrids().map((entry) => entry.file));
-    for (const file of KNOWN_EXCEPTIONS) {
-      expect(offending.has(file), `${file} is fixed — remove it from KNOWN_EXCEPTIONS`).toBe(true);
-    }
+    // The last offender was the barcode detail page's definition list, which
+    // pinned two columns at every width; it now starts at one and goes to two
+    // from `sm` up. There is no exception list any more.
+    const offenders = findFixedGrids().map((entry) => `${entry.file}: ${entry.classes}`);
+    expect(offenders).toEqual([]);
   });
 });

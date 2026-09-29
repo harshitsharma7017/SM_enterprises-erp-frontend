@@ -85,7 +85,7 @@ export default function BarcodeShowPage({ params }) {
             <Code128Svg value={barcode.barcode_value} height={50} className="w-full h-16" />
             <div className="text-center font-mono tracking-widest text-sm mt-1">{barcode.barcode_value}</div>
           </div>
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
             <div><dt className="text-fg-subtle text-xs">Status</dt><dd className="mt-0.5"><WorkflowBadge status={barcode.status} config={BARCODE_STATUS_BADGES} /></dd></div>
             <div><dt className="text-fg-subtle text-xs">Identifies</dt><dd className="mt-0.5">One lot (Code 128)</dd></div>
             <div><dt className="text-fg-subtle text-xs">Created</dt><dd className="mt-0.5">{formatDateTime(barcode.created_at)} · {barcode.creator_name || '—'}</dd></div>

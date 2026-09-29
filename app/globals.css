@@ -33,9 +33,17 @@
   --surface-raised: #f8fafc;
   --surface-hover: #f3f6fa;
 
-  /* Borders */
+  /* Borders.
+   *
+   * `--border-subtle` separates content — a card edge, a row divider — and is
+   * decorative, so it stays light.
+   *
+   * `--border-strong` is what makes a form control identifiable as one, so it
+   * has to clear 3:1 against its surface (WCAG 1.4.11, non-text contrast). The
+   * usual `border-gray-300` sits near 1.4:1 and fails; this is darker on
+   * purpose. A contrast test holds both to those thresholds. */
   --border-subtle: #e9edf2;
-  --border-strong: #d4dae2;
+  --border-strong: #8a929e;
 
   /* Text, in descending emphasis */
   --text-primary: #111827;
@@ -151,11 +159,12 @@
   --surface-hover: #262b34;
 
   --border-subtle: #2b313b;
-  --border-strong: #3a4150;
+  --border-strong: #656e7c;
 
   --text-primary: #f2f4f7;
   --text-secondary: #9aa4b2;
-  --text-muted: #6b7480;
+  /* Lifted from #6b7480, which only reached 3.49:1 on a dark surface. */
+  --text-muted: #7f8896;
 
   --link: #93c5fd;
   --link-hover: #bfdbfe;
@@ -445,28 +454,15 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
- * COMPATIBILITY BRIDGE — remove as the sweep lands
+ * A compatibility bridge used to live here, rewriting `bg-white` to the surface
+ * token inside `.dark` so that pages not yet migrated still read correctly. The
+ * sweep is complete — `bg-white` no longer appears in any page or component —
+ * so the bridge has been removed rather than left as dead weight in every
+ * stylesheet. A repo-wide test now keeps it that way.
  *
- * `bg-white` appears 193 times and is the surface colour for cards, table
- * bodies and button groups. Redefining `--color-white` would break the 129
- * `text-white` uses on saturated buttons, so the background utility is
- * rewritten on its own instead.
- *
- * Each of these is a stopgap for pages not yet converted to semantic tokens.
- * They are scoped to `.dark`, so light mode is untouched. Delete each line
- * once its underlying utility has been swept out of the codebase.
+ * `--color-white` was never redefined, and still is not: `text-white` sits on
+ * saturated buttons and has to stay white in both themes.
  * ------------------------------------------------------------------------- */
-.dark .bg-white {
-  background-color: var(--surface);
-}
-
-.dark .divide-white > :not([hidden]) ~ :not([hidden]) {
-  border-color: var(--border-subtle);
-}
-
-.dark .border-white {
-  border-color: var(--border-subtle);
-}
 
 /* Sidebar section headers */
 .nav-header {

@@ -217,7 +217,7 @@ export default function MarkupForm({ markupId = null }) {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                   <label className="md:col-span-1 font-medium text-sm text-fg-muted">Status <span className="text-[var(--danger)]">*</span></label>
                   <div className="md:col-span-3">
-                    <select name="status" value={formData.status} onChange={handleChange} required className="form-select">
+                    <select name="status" value={formData.status} onChange={handleChange} required className="form-select md:w-1/3">
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>

@@ -72,7 +72,7 @@ export default function BarcodeLabelPage({ params }) {
   ].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-surface-raised print:bg-surface">
+    <div className="min-h-screen bg-surface-raised print:bg-white">
       <style>{`
         @page { size: ${s.width}mm ${s.height}mm; margin: 0; }
         @media print {

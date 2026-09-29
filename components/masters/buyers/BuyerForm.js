@@ -280,7 +280,7 @@ export default function BuyerForm({ buyerId = null }) {
           <Row label="Agent Commission" htmlFor="agent_commission_value">
             <div className="flex gap-2">
               <input id="agent_commission_value" name="agent_commission_value" type="number" step="0.0001" min="0" value={form.agent_commission_value} onChange={onInput} placeholder="0.0000" className="form-input" />
-              <select name="agent_commission_type" value={form.agent_commission_type} onChange={onInput} className="form-select">
+              <select name="agent_commission_type" value={form.agent_commission_type} onChange={onInput} className="form-select max-w-[160px]">
                 <option value="percent">% Percent</option>
                 <option value="amount">Fixed amount</option>
               </select>

@@ -1,3 +1,8 @@
 'use client';
+import { use } from 'react';
 import AgentForm from '@/components/masters/agents/AgentForm';
-export default function EditAgentPage({ params }) { return <AgentForm agentId={params.id} />; }
+
+export default function EditAgentPage({ params }) {
+  const { id } = use(params);
+  return <AgentForm agentId={id} />;
+}

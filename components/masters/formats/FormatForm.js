@@ -49,7 +49,8 @@ export default function FormatForm({ formatId }) {
         delivery_details: f.delivery_details || '',
         packing_details: f.packing_details || ''
       });
-      setUnits(f.units || []);
+      // The API returns units as { id, name } rows; the form works with the names.
+      setUnits((f.units || []).map((u) => (typeof u === 'string' ? u : u.name)).filter(Boolean));
       if (f.columns) setColumns(Array.isArray(f.columns) ? f.columns : Object.values(f.columns));
       if (f.images) {
         setExistingImages(f.images);

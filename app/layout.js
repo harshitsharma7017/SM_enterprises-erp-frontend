@@ -12,8 +12,8 @@ const sourceSans = Source_Sans_3({
 });
 
 export const metadata = {
-  title: 'Guru Traders Export ERP',
-  description: 'Guru Traders Export ERP — Garment export management system',
+  title: 'SM Enterprises Export ERP',
+  description: 'SM Enterprises Export ERP — Garment export management system',
 };
 
 export default function RootLayout({ children }) {

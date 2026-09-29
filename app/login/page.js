@@ -46,16 +46,16 @@ export default function LoginPage() {
             className="grid place-items-center rounded-xl"
             style={{
               width: 48, height: 48,
-              background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)',
-              color: '#fff', fontWeight: 700, fontSize: '1.1rem',
+              background: 'linear-gradient(135deg, var(--sidebar-logo-from), var(--sidebar-logo-to))',
+              boxShadow: 'var(--sidebar-logo-shadow)',
+              color: 'var(--accent-fg)', fontWeight: 700, fontSize: '1.1rem',
             }}
           >
-            GT
+            SM
           </span>
           <div>
             <h2 className="text-2xl font-bold text-fg tracking-tight" style={{ margin: 0 }}>
-              Guru Traders
+              SM Enterprises
             </h2>
             <p className="text-xs text-fg-subtle uppercase tracking-wider font-medium" style={{ margin: 0 }}>
               Export ERP

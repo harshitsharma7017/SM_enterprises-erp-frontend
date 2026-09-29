@@ -38,8 +38,9 @@ const EXCLUDED = [
 
 // Order matters: longer, more specific patterns first.
 const COLOUR_SWAPS = [
-  // Surfaces
-  [/\bbg-white\b/g, 'bg-surface'],
+  // Surfaces. `print:bg-white` is left alone — printed output goes on white
+  // paper whatever the on-screen theme is.
+  [/(?<!print:)\bbg-white\b/g, 'bg-surface'],
   [/\bhover:bg-gray-50\b/g, 'hover:bg-surface-hover'],
   [/\bhover:bg-gray-100\b/g, 'hover:bg-surface-hover'],
   [/\bbg-gray-50\b/g, 'bg-surface-raised'],

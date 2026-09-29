@@ -537,7 +537,7 @@ export default function PartyForm({ kind = 'supplier', id = null }) {
               hint={isJobber ? '"Fixed amount / piece" feeds the per-piece × quantity commission shown on this jobber\'s Purchase Orders.' : 'This supplier\'s rate for this agent. The same agent can carry a different rate for another supplier.'}>
               <div className="flex gap-2">
                 <input id="agent_commission_value" name="agent_commission_value" type="number" step="0.0001" min="0" value={form.agent_commission_value} onChange={onInput} placeholder="0.0000" className="form-input" />
-                <select name="agent_commission_type" value={form.agent_commission_type} onChange={onInput} className="form-select">
+                <select name="agent_commission_type" value={form.agent_commission_type} onChange={onInput} className="form-select max-w-[180px]">
                   <option value="percent">% Percent</option>
                   <option value="amount">{isJobber ? 'Fixed amount / piece' : 'Fixed amount (INR)'}</option>
                 </select>
@@ -550,7 +550,7 @@ export default function PartyForm({ kind = 'supplier', id = null }) {
         <Section title="Other Details" icon="bi-card-text">
           <div>
             <Row label="Status" required htmlFor="status">
-              <select id="status" name="status" value={form.status} onChange={onInput} required className="form-select">
+              <select id="status" name="status" value={form.status} onChange={onInput} required className="form-select md:w-1/3">
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>

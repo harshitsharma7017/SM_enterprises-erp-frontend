@@ -172,7 +172,7 @@ export default function PoItemsEditor({ items, onChange, format, products }) {
                             {sizeSubColumns.map((tag) => (
                               <div key={tag}>
                                 <label className="block text-[11px] text-fg-subtle mb-0.5">{tag}</label>
-                                <input type="number" min="0" value={gridQtyFor(colour, tag)} onChange={(e) => setGridQty(index, colourIndex, tag, e.target.value)} className="form-input" style={{ background: '#f4f6fd' }} />
+                                <input type="number" min="0" value={gridQtyFor(colour, tag)} onChange={(e) => setGridQty(index, colourIndex, tag, e.target.value)} className="form-input" style={{ background: 'var(--surface-raised)' }} />
                               </div>
                             ))}
                           </div>

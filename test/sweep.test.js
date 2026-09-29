@@ -113,14 +113,24 @@ describe('sweep: the token layer is used everywhere', () => {
   });
 
   it.each(BANNED_UTILITIES)('no file uses %s', (utility) => {
-    const offenders = FILES.filter((f) => f.source.includes(utility)).map((f) => f.path);
+    const offenders = FILES.filter(({ source }) => {
+      // `print:bg-white` is correct and deliberate: printed output goes on white
+      // paper whatever the on-screen theme is.
+      const scrubbed = source.replace(/print:bg-white/g, '');
+      return scrubbed.includes(utility);
+    }).map((f) => f.path);
     expect(offenders).toEqual([]);
   });
 
   it('leaves no raw hex or rgb colour in a component', () => {
+    // A barcode has to be pure black on pure white to be scannable, so its SVG
+    // is exempt — theming it would break the thing it exists to do.
+    const EXEMPT_FILES = ['components/barcode/code128.js'];
+
     const offenders = [];
     for (const { path, source } of FILES) {
-      // Skip data-URI SVGs, where the colour is part of an encoded image.
+      if (EXEMPT_FILES.includes(path)) continue;
+      // Colours inside a data-URI are part of an encoded image, not styling.
       const scrubbed = source.replace(/data:image\/svg\+xml[^"'`)]*/g, '');
       const hex = scrubbed.match(/#[0-9a-fA-F]{3,8}\b/g) || [];
       if (hex.length) offenders.push(`${path}: ${hex.slice(0, 3).join(', ')}`);
@@ -213,14 +223,22 @@ describe('sweep: tables', () => {
   });
 
   it('no cell re-declares the padding density controls', () => {
+    // Only horizontal padding and the small vertical steps compete with
+    // `--cell-pad-*`. A large `py-8`/`py-12` on a full-width empty or loading row
+    // is deliberate breathing room, not cell density, so it is allowed.
+    const DENSITY_PADDING = /\bpx-\d|\bpy-[0-6]\b/;
     const offenders = [];
+
     for (const { path, source } of FILES) {
       for (const tag of ['th', 'td']) {
         for (const openTag of findOpenTags(source, tag)) {
-          if (/\bp[xy]-\d/.test(openTag)) offenders.push(`${path}: <${tag}> has padding utility`);
+          if (DENSITY_PADDING.test(openTag)) {
+            offenders.push(`${path}: <${tag}> has padding utility`);
+          }
         }
       }
     }
+
     expect(offenders).toEqual([]);
   });
 });

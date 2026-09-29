@@ -98,7 +98,7 @@ export default function KitchenSink() {
           <div>
             <p className="text-xs text-fg-subtle mb-2">Locally drawn avatars (no third-party request)</p>
             <div className="flex items-center gap-3">
-              {['Harshit Sharma', 'Guru Traders', 'Anita Desai', 'R', 'Vikram Singh Rathore'].map((name) => (
+              {['Harshit Sharma', 'SM Enterprises', 'Anita Desai', 'R', 'Vikram Singh Rathore'].map((name) => (
                 <span key={name} className="flex flex-col items-center gap-1">
                   <InitialsAvatar name={name} size={40} />
                   <span className="text-xs text-fg-subtle">{name.split(' ')[0]}</span>

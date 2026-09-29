@@ -106,7 +106,7 @@ describe('Sidebar', () => {
 
   it('renders the brand and dashboard link', () => {
     renderSidebar();
-    expect(screen.getByText('Guru Traders')).toBeInTheDocument();
+    expect(screen.getByText('SM Enterprises')).toBeInTheDocument();
     expect(screen.getByText('Export ERP')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Dashboard/ })).toBeInTheDocument();
   });
@@ -145,7 +145,7 @@ describe('Sidebar', () => {
   it('hides labels and headers when collapsed', () => {
     renderSidebar({ collapsed: true });
     expect(screen.queryByText('Masters')).not.toBeInTheDocument();
-    expect(screen.queryByText('Guru Traders')).not.toBeInTheDocument();
+    expect(screen.queryByText('SM Enterprises')).not.toBeInTheDocument();
   });
 
   it('keeps every nav item named when collapsed to an icon', () => {

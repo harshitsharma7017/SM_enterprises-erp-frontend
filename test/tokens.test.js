@@ -79,8 +79,13 @@ describe('token layer', () => {
     }
   });
 
-  it('bridges bg-white to a surface token for unswept pages', () => {
-    expect(CSS).toMatch(/\.dark\s+\.bg-white\s*\{[^}]*background-color:\s*var\(--surface\)/);
+  it('no longer needs a bg-white compatibility bridge', () => {
+    // The bridge rewrote `bg-white` to the surface token inside `.dark` while
+    // pages were still being migrated. The sweep removed every `bg-white`, so
+    // the bridge is gone; test/sweep.test.js keeps the utility from returning.
+    expect(CSS).not.toMatch(/\.dark\s+\.bg-white\s*\{/);
+    expect(CSS).not.toMatch(/\.dark\s+\.border-white\s*\{/);
+    expect(CSS).not.toMatch(/\.dark\s+\.divide-white\s*>/);
   });
 
   it('defines both density steps plus a root font-size hook', () => {

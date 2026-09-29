@@ -9,6 +9,15 @@ import { StatusBadge } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 
+/**
+ * Some list endpoints return a lookup field as a plain value, others expand it
+ * to `{ id, name }`. Rendering the expanded form directly throws
+ * "Objects are not valid as a React child", so unwrap it to its label.
+ * The same ambiguity is already handled for `categories` in AgentForm.
+ */
+const scalar = (value) =>
+  value && typeof value === 'object' ? (value.name ?? value.id ?? '') : value;
+
 export default function AgentIndex() {
   const { can } = useAuth(true);
   const [items, setItems] = useState([]);
@@ -129,7 +138,7 @@ export default function AgentIndex() {
                   <tr key={item.id}>
                     <td className="font-mono text-fg-muted">{item.display_code}</td>
                     <td className="cell-strong">{item.name}</td>
-                    <td className="capitalize">{item.agent_type}</td>
+                    <td className="capitalize">{scalar(item.agent_type)}</td>
                     <td><StatusBadge status={item.status} onClick={can('agent.edit') ? () => toggleStatus(item) : undefined} /></td>
                     <td className="text-right">
                       <div className="inline-flex rounded-md shadow-sm">
