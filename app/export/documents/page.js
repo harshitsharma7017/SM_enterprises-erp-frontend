@@ -86,8 +86,8 @@ export default function ExportDocumentsPage() {
       <Card title="Export Documents" variant="primary">
         <div className="flex flex-wrap items-end gap-3 mb-4">
           <div className="w-64">
-            <label className="block text-xs text-gray-500 mb-1">Buyer</label>
-            <select value={buyerFilter} onChange={(e) => { setBuyerFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+            <label className="block text-xs text-fg-subtle mb-1">Buyer</label>
+            <select value={buyerFilter} onChange={(e) => { setBuyerFilter(e.target.value); setPage(1); }} className="form-select">
               <option value="">All Buyers</option>
               {buyers.map((b) => <option key={b.id} value={b.id}>{b.company_name}</option>)}
             </select>
@@ -99,49 +99,49 @@ export default function ExportDocumentsPage() {
             className="w-56"
           />
           <div className="w-48">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
-            <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
+            <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="form-select">
               <option value="">All</option>
               {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{EXPORT_DOC_STATUS_BADGES[s].label}</option>)}
             </select>
           </div>
-          <button type="button" onClick={handleReset} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
+          <button type="button" onClick={handleReset} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">
             Reset
           </button>
         </div>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Doc No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">OC No.</th>
-                <th className="px-4 py-2 font-medium">Buyer</th>
-                <th className="px-4 py-2 font-medium">Shipment Date</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium text-right w-20">Actions</th>
+                <th>Doc No.</th>
+                <th>Company</th>
+                <th>OC No.</th>
+                <th>Buyer</th>
+                <th>Shipment Date</th>
+                <th>Status</th>
+                <th className="text-right w-20">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="7" className="text-center py-8 text-gray-500">Loading Export Documents...</td></tr>
+                <tr><td colSpan="7" className="text-center">Loading Export Documents...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={7} icon="bi-files" title="No Export Documents yet" message="Raise one from a confirmed Order Confirmation's item list." />
               ) : (
                 rows.map((doc) => (
-                  <tr key={doc.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-mono font-semibold text-gray-900">{doc.doc_num}</td>
-                    <td className="px-4 py-2"><CompanyBadge label={doc.company_label} code={doc.company_code} /></td>
-                    <td className="px-4 py-2 text-gray-700">{doc.order_confirmation_num || '—'}</td>
-                    <td className="px-4 py-2 text-gray-700">{doc.buyer_name || '—'}</td>
-                    <td className="px-4 py-2 text-gray-500">{doc.shipment_date ? formatDate(doc.shipment_date) : '—'}</td>
-                    <td className="px-4 py-2"><WorkflowBadge status={doc.status} config={EXPORT_DOC_STATUS_BADGES} /></td>
-                    <td className="px-4 py-2 text-right">
+                  <tr key={doc.id}>
+                    <td className="font-mono cell-strong">{doc.doc_num}</td>
+                    <td><CompanyBadge label={doc.company_label} code={doc.company_code} /></td>
+                    <td className="text-fg-muted">{doc.order_confirmation_num || '—'}</td>
+                    <td className="text-fg-muted">{doc.buyer_name || '—'}</td>
+                    <td>{doc.shipment_date ? formatDate(doc.shipment_date) : '—'}</td>
+                    <td><WorkflowBadge status={doc.status} config={EXPORT_DOC_STATUS_BADGES} /></td>
+                    <td className="text-right">
                       {can('export-document.view') && (
-                        <Link href={`/export/documents/${doc.id}`} className="text-gray-500 hover:text-gray-900" title="View"><i className="bi bi-eye"></i></Link>
+                        <Link href={`/export/documents/${doc.id}`} className="text-fg-subtle hover:text-fg" title="View"><i className="bi bi-eye"></i></Link>
                       )}
                     </td>
                   </tr>

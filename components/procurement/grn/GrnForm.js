@@ -9,8 +9,6 @@ import CompanyBadge from '@/components/company/CompanyBadge';
 import { PO_ORIGIN_LABELS } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
 import { toDateInputValue, todayDateInputValue, formatQuantity } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 const newSplit = (poLineId, values = {}) => ({
   key: Math.random().toString(36).slice(2),
@@ -149,7 +147,7 @@ export default function GrnForm({ grnId = null }) {
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading goods receipt...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading goods receipt...</div>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
@@ -162,19 +160,19 @@ export default function GrnForm({ grnId = null }) {
       <FormSection title="Purchase Order" icon="bi-cart-check" subtitle="A goods receipt is always recorded against a confirmed purchase order.">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Company <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Company <span className="text-[var(--danger)]">*</span></label>
             {grnId ? (
               <div className="py-1.5"><CompanyBadge label={saved?.company_label} code={saved?.company_code} /></div>
             ) : (
-              <CompanySelect value={companyId} onChange={handleCompanyChange} required className="form-select w-full rounded border-gray-300 text-sm" />
+              <CompanySelect value={companyId} onChange={handleCompanyChange} required />
             )}
           </div>
           <div className="md:col-span-2">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Purchase Order <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Purchase Order <span className="text-[var(--danger)]">*</span></label>
             {grnId ? (
               <div className="py-1.5 font-mono text-sm">{saved?.purchase_order_num}</div>
             ) : (
-              <select value={poId} onChange={handlePoChange} required disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <select value={poId} onChange={handlePoChange} required disabled={!companyId} className="form-select">
                 <option value="">{companyId ? (pos.length ? '— Select a confirmed PO with quantity to receive —' : 'No purchase orders awaiting receipt') : 'Select a company first'}</option>
                 {pos.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -183,30 +181,30 @@ export default function GrnForm({ grnId = null }) {
                 ))}
               </select>
             )}
-            {po && <p className="text-xs text-gray-500 mt-1">Supplier: {po.supplier_name} — taken from the PO.</p>}
+            {po && <p className="text-xs text-fg-subtle mt-1">Supplier: {po.supplier_name} — taken from the PO.</p>}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">GRN Date <span className="text-red-500">*</span></label>
-            <input type="date" required value={header.inward_date} onChange={(e) => setHeader({ ...header, inward_date: e.target.value })} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">GRN Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" required value={header.inward_date} onChange={(e) => setHeader({ ...header, inward_date: e.target.value })} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Challan / Bill No.</label>
-            <input type="text" maxLength={255} value={header.challan_no} onChange={(e) => setHeader({ ...header, challan_no: e.target.value })} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Challan / Bill No.</label>
+            <input type="text" maxLength={255} value={header.challan_no} onChange={(e) => setHeader({ ...header, challan_no: e.target.value })} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Challan Date</label>
-            <input type="date" value={header.challan_date} onChange={(e) => setHeader({ ...header, challan_date: e.target.value })} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Challan Date</label>
+            <input type="date" value={header.challan_date} onChange={(e) => setHeader({ ...header, challan_date: e.target.value })} className="form-input" />
           </div>
           <div className="md:col-span-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-            <textarea rows={2} maxLength={1000} value={header.remarks} onChange={(e) => setHeader({ ...header, remarks: e.target.value })} className={INPUT}></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+            <textarea rows={2} maxLength={1000} value={header.remarks} onChange={(e) => setHeader({ ...header, remarks: e.target.value })} className="form-textarea"></textarea>
           </div>
         </div>
       </FormSection>
 
       <FormSection title="Received Material" icon="bi-box-arrow-in-down" subtitle="Add a receipt split per width. Width (inches) is required; one PO line may be received at several widths.">
         {poLines.length === 0 ? (
-          <p className="text-sm text-gray-500 m-0">{poId ? 'This purchase order has no lines.' : 'Select a purchase order to load its lines.'}</p>
+          <p className="text-sm text-fg-subtle m-0">{poId ? 'This purchase order has no lines.' : 'Select a purchase order to load its lines.'}</p>
         ) : (
           <div className="space-y-4">
             {poLines.map((line) => {
@@ -215,44 +213,44 @@ export default function GrnForm({ grnId = null }) {
               const pending = Number(line.pending_quantity);
               const over = entered > pending + 1e-9;
               return (
-                <div key={line.id} className="border border-gray-200 rounded-md">
-                  <div className="flex flex-wrap items-center justify-between gap-2 bg-gray-50 px-3 py-2 border-b border-gray-200">
+                <div key={line.id} className="border border-line rounded-md">
+                  <div className="flex flex-wrap items-center justify-between gap-2 bg-surface-raised px-3 py-2 border-b border-line">
                     <div>
-                      <div className="font-medium text-gray-900">{line.product_name || line.description || `PO line ${line.id}`}</div>
-                      <div className="text-xs text-gray-500">
-                        {line.requirement_no ? `${line.requirement_no} · ` : ''}Ordered {formatQuantity(line.ordered_quantity, line.uom_decimal_places)} · Received {formatQuantity(line.received_quantity, line.uom_decimal_places)} · <span className="font-medium text-gray-700">Pending {formatQuantity(pending, line.uom_decimal_places)}</span> {line.unit}
+                      <div className="font-medium text-fg">{line.product_name || line.description || `PO line ${line.id}`}</div>
+                      <div className="text-xs text-fg-subtle">
+                        {line.requirement_no ? `${line.requirement_no} · ` : ''}Ordered {formatQuantity(line.ordered_quantity, line.uom_decimal_places)} · Received {formatQuantity(line.received_quantity, line.uom_decimal_places)} · <span className="font-medium text-fg-muted">Pending {formatQuantity(pending, line.uom_decimal_places)}</span> {line.unit}
                         {Number(line.draft_quantity) > 0 && <> · on draft GRNs {formatQuantity(line.draft_quantity, line.uom_decimal_places)}</>}
                       </div>
                     </div>
-                    <button type="button" onClick={() => addSplit(line)} disabled={pending <= 0 || !line.product_id} className="px-2.5 py-1 border border-gray-300 rounded text-xs text-gray-700 hover:bg-white disabled:opacity-50">
+                    <button type="button" onClick={() => addSplit(line)} disabled={pending <= 0 || !line.product_id} className="px-2.5 py-1 border border-line-strong rounded text-xs text-fg-muted hover:bg-surface disabled:opacity-50">
                       <i className="bi bi-plus-lg mr-1"></i> Add receipt
                     </button>
                   </div>
                   {lineSplits.length > 0 && (
-                    <table className="min-w-full text-sm">
-                      <thead className="text-gray-500 text-xs">
+                    <table className="data-table">
+                      <thead>
                         <tr>
-                          <th className="px-3 py-1.5 text-left font-medium w-40">Received Qty ({line.unit})</th>
-                          <th className="px-3 py-1.5 text-left font-medium w-32">Width (inch) *</th>
-                          <th className="px-3 py-1.5 text-left font-medium w-40">Mill Lot No.</th>
-                          <th className="px-3 py-1.5 text-left font-medium">Remarks</th>
+                          <th className="w-40">Received Qty ({line.unit})</th>
+                          <th className="w-32">Width (inch) *</th>
+                          <th className="w-40">Mill Lot No.</th>
+                          <th>Remarks</th>
                           <th className="w-10"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {lineSplits.map((s) => (
                           <tr key={s.key}>
-                            <td className="px-3 py-1.5"><input type="number" required min="0" step={stepFor(line.uom_decimal_places)} value={s.received_quantity} onChange={(e) => updateSplit(s.key, { received_quantity: e.target.value })} className={`${INPUT} text-right`} /></td>
-                            <td className="px-3 py-1.5"><input type="number" required min="0" step="0.001" value={s.width_inch} onChange={(e) => updateSplit(s.key, { width_inch: e.target.value })} className={`${INPUT} text-right`} /></td>
-                            <td className="px-3 py-1.5"><input type="text" maxLength={60} value={s.supplier_lot_no} onChange={(e) => updateSplit(s.key, { supplier_lot_no: e.target.value })} className={INPUT} /></td>
-                            <td className="px-3 py-1.5"><input type="text" maxLength={1000} value={s.remarks} onChange={(e) => updateSplit(s.key, { remarks: e.target.value })} className={INPUT} /></td>
-                            <td className="px-3 py-1.5 text-right"><button type="button" onClick={() => removeSplit(s.key)} className="text-red-500 hover:text-red-700" title="Remove"><i className="bi bi-x-lg"></i></button></td>
+                            <td><input type="number" required min="0" step={stepFor(line.uom_decimal_places)} value={s.received_quantity} onChange={(e) => updateSplit(s.key, { received_quantity: e.target.value })} className={`form-input text-right`} /></td>
+                            <td><input type="number" required min="0" step="0.001" value={s.width_inch} onChange={(e) => updateSplit(s.key, { width_inch: e.target.value })} className={`form-input text-right`} /></td>
+                            <td><input type="text" maxLength={60} value={s.supplier_lot_no} onChange={(e) => updateSplit(s.key, { supplier_lot_no: e.target.value })} className="form-input" /></td>
+                            <td><input type="text" maxLength={1000} value={s.remarks} onChange={(e) => updateSplit(s.key, { remarks: e.target.value })} className="form-input" /></td>
+                            <td className="text-right"><button type="button" onClick={() => removeSplit(s.key)} className="text-[var(--danger)] hover:text-[var(--danger)]" title="Remove"><i className="bi bi-x-lg"></i></button></td>
                           </tr>
                         ))}
                       </tbody>
                       <tfoot>
                         <tr>
-                          <td colSpan={5} className={`px-3 py-1.5 text-xs ${over ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
+                          <td colSpan={5} className={`${over ? 'text-[var(--danger)] font-medium' : 'text-fg-subtle'}`}>
                             This receipt: {formatQuantity(entered, line.uom_decimal_places)} of {formatQuantity(pending, line.uom_decimal_places)} {line.unit} pending{over ? ' — more than pending; it will be rejected' : ''}
                           </td>
                         </tr>
@@ -266,11 +264,11 @@ export default function GrnForm({ grnId = null }) {
         )}
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving || splits.length === 0} className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm ${saving || splits.length === 0 ? 'opacity-70 cursor-not-allowed' : ''}`}>
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving || splits.length === 0} className={`bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm ${saving || splits.length === 0 ? 'opacity-70 cursor-not-allowed' : ''}`}>
           <i className="bi bi-check-lg mr-1"></i> {grnId ? 'Update' : 'Save'} Draft
         </button>
-        <Link href={grnId ? `/procurement/grn/${grnId}` : '/procurement/grn'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={grnId ? `/procurement/grn/${grnId}` : '/procurement/grn'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
       </div>

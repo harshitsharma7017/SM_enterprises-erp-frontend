@@ -173,7 +173,7 @@ export default function PurchaseOrderForm({ poId = null }) {
   };
 
   if (loading) {
-    return <div className="p-4 text-gray-500">Loading form data...</div>;
+    return <div className="p-4 text-fg-subtle">Loading form data...</div>;
   }
 
   return (
@@ -189,52 +189,52 @@ export default function PurchaseOrderForm({ poId = null }) {
       <FormSection title="PO Identity" icon="bi-cart-check" subtitle="→ Supplier Master · Contract / OC module">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">PO No.</label>
-            <input type="text" readOnly value={poId ? poNum : 'GT/PO/[seq]/[FY]'} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">PO No.</label>
+            <input type="text" readOnly value={poId ? poNum : 'GT/PO/[seq]/[FY]'} className="form-input border-dashed" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">PO Date <span className="text-red-500">*</span></label>
-            <input type="date" name="po_date" required value={formData.po_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Po Date"/>
+            <label className="block text-xs font-medium text-fg-muted mb-1">PO Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" name="po_date" required value={formData.po_date} onChange={handleChange} className="form-input"  placeholder="Enter Po Date"/>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Company</label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Company</label>
             <div className="py-1.5">
-              {company ? <CompanyBadge label={company.label} code={company.code} /> : <span className="text-sm text-gray-400">From the selected contract</span>}
+              {company ? <CompanyBadge label={company.label} code={company.code} /> : <span className="text-sm text-fg-subtle">From the selected contract</span>}
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Buyer</label>
-            <input type="text" readOnly value={selectedOc?.buyer_company_name || ''} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Buyer</label>
+            <input type="text" readOnly value={selectedOc?.buyer_company_name || ''} className="form-input border-dashed" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Contract No. <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Contract No. <span className="text-[var(--danger)]">*</span></label>
             {poId ? (
-              <input type="text" readOnly value={selectedOc?.oc_num || `#${formData.order_confirmation_id}`} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
+              <input type="text" readOnly value={selectedOc?.oc_num || `#${formData.order_confirmation_id}`} className="form-input border-dashed" />
             ) : (
-              <select name="order_confirmation_id" required value={formData.order_confirmation_id} onChange={handleOcChange} className="form-select w-full rounded border-gray-300 text-sm">
+              <select name="order_confirmation_id" required value={formData.order_confirmation_id} onChange={handleOcChange} className="form-select">
                 <option value="">— Select —</option>
                 {ocs.map((oc) => <option key={oc.id} value={oc.id}>{oc.oc_num}</option>)}
               </select>
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Supplier <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Supplier <span className="text-[var(--danger)]">*</span></label>
             {poId ? (
-              <input type="text" readOnly value={suppliers.find((s) => String(s.id) === String(formData.supplier_id))?.company_name || `#${formData.supplier_id}`} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
+              <input type="text" readOnly value={suppliers.find((s) => String(s.id) === String(formData.supplier_id))?.company_name || `#${formData.supplier_id}`} className="form-input border-dashed" />
             ) : (
-              <select name="supplier_id" required value={formData.supplier_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+              <select name="supplier_id" required value={formData.supplier_id} onChange={handleChange} className="form-select">
                 <option value="">— Select —</option>
                 {supplierOptions.map((s) => <option key={s.id} value={s.id}>{s.company_name}{s.display_code ? ` (${s.display_code})` : ''}</option>)}
               </select>
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Dispatch Date</label>
-            <input type="date" name="dispatch_date" value={formData.dispatch_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Dispatch Date"/>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Dispatch Date</label>
+            <input type="date" name="dispatch_date" value={formData.dispatch_date} onChange={handleChange} className="form-input"  placeholder="Enter Dispatch Date"/>
           </div>
           <div className="md:col-span-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-            <input type="text" name="remarks" maxLength={1000} value={formData.remarks} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Remarks"/>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+            <input type="text" name="remarks" maxLength={1000} value={formData.remarks} onChange={handleChange} className="form-input"  placeholder="Enter Remarks"/>
           </div>
         </div>
       </FormSection>
@@ -246,25 +246,25 @@ export default function PurchaseOrderForm({ poId = null }) {
       <FormSection title="Delivery & Packing Details" icon="bi-box-seam">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Details</label>
-            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Delivery Details"></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Delivery Details</label>
+            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea" placeholder="Enter Delivery Details"></textarea>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Packing Details</label>
-            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Packing Details"></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Packing Details</label>
+            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea" placeholder="Enter Packing Details"></textarea>
           </div>
         </div>
       </FormSection>
 
-      <div className="bg-white border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">
+      <div className="bg-surface border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">
         <div className="flex-1" />
-        <Link href={poId ? `/procurement/purchase-orders/${poId}` : '/procurement/purchase-orders'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={poId ? `/procurement/purchase-orders/${poId}` : '/procurement/purchase-orders'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
-        <button type="button" disabled={saving} onClick={() => submit('draft')} className="px-4 py-2 border border-gray-400 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm disabled:opacity-50">
+        <button type="button" disabled={saving} onClick={() => submit('draft')} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm disabled:opacity-50">
           Save Draft
         </button>
-        <button type="button" disabled={saving} onClick={() => submit('raised')} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-50">
+        <button type="button" disabled={saving} onClick={() => submit('raised')} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-50">
           <i className="bi bi-check-lg me-1"></i> {saving ? 'Saving…' : 'Raise PO'}
         </button>
       </div>

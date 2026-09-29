@@ -45,7 +45,7 @@ export default function RoleShowPage({ params }) {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="p-4 text-gray-500">Loading role...</div>
+        <div className="p-4 text-fg-subtle">Loading role...</div>
       </DashboardLayout>
     );
   }
@@ -53,7 +53,7 @@ export default function RoleShowPage({ params }) {
   if (error || !role) {
     return (
       <DashboardLayout>
-        <div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Role not found'}</div>
+        <div className="alert alert-danger">{error || 'Role not found'}</div>
       </DashboardLayout>
     );
   }
@@ -70,40 +70,40 @@ export default function RoleShowPage({ params }) {
         actions={(
           <>
             {can('role.edit') && !isSystem && (
-              <Link href={`/user-management/roles/${id}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium">
+              <Link href={`/user-management/roles/${id}/edit`} className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded text-sm font-medium">
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
             )}
-            <Link href="/user-management/roles" className="border border-gray-300 px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
+            <Link href="/user-management/roles" className="border border-line-strong px-3 py-1.5 rounded text-sm text-fg-muted hover:bg-surface-hover">
               Back
             </Link>
           </>
         )}
       />
 
-      <div className="bg-white border rounded shadow-sm p-4 mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+      <div className="bg-surface border rounded shadow-sm p-4 mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
         {isSystem && (
           <span className="inline-flex items-center gap-1 text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-xs">
             <i className="bi bi-shield-lock-fill"></i> System role
           </span>
         )}
-        <span className="text-gray-500">{assignedUsers.length} user(s) assigned</span>
-        <span className="text-gray-500">{isSuperAdmin ? 'All permissions' : `${selectedNames.length} permission(s)`}</span>
+        <span className="text-fg-subtle">{assignedUsers.length} user(s) assigned</span>
+        <span className="text-fg-subtle">{isSuperAdmin ? 'All permissions' : `${selectedNames.length} permission(s)`}</span>
       </div>
 
       {assignedUsers.length > 0 && (
-        <div className="bg-white border rounded shadow-sm p-4 mb-4">
-          <div className="text-sm font-semibold text-gray-700 mb-2">Assigned Users</div>
+        <div className="bg-surface border rounded shadow-sm p-4 mb-4">
+          <div className="text-sm font-semibold text-fg-muted mb-2">Assigned Users</div>
           <div className="flex flex-wrap gap-2">
             {assignedUsers.map((u) => (
-              <span key={u.id} className="text-xs bg-gray-100 border border-gray-200 text-gray-700 px-2 py-1 rounded">{u.name}</span>
+              <span key={u.id} className="text-xs bg-surface-raised border border-line text-fg-muted px-2 py-1 rounded">{u.name}</span>
             ))}
           </div>
         </div>
       )}
 
-      <div className="bg-white border rounded shadow-sm p-4">
-        <div className="text-sm font-semibold text-gray-700 mb-3">Permissions</div>
+      <div className="bg-surface border rounded shadow-sm p-4">
+        <div className="text-sm font-semibold text-fg-muted mb-3">Permissions</div>
         <PermissionMatrix permissions={allPermissions} selected={selectedNames} onChange={() => {}} readonly />
       </div>
     </DashboardLayout>

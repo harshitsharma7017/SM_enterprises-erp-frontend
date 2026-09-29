@@ -70,7 +70,7 @@ export default function BuyersPage() {
   };
 
   const Actions = (
-    <Link href="/masters/buyers/create" className="btn btn-sm btn-primary bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+    <Link href="/masters/buyers/create" className="btn btn-sm btn-primary bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
       <i className="bi bi-plus-lg mr-1"></i> Add Buyer
     </Link>
   );
@@ -78,31 +78,31 @@ export default function BuyersPage() {
   return (
     <DashboardLayout>
       <div className="mb-4">
-        <h2 className="text-2xl font-semibold text-gray-900 m-0">Buyers</h2>
+        <h2 className="text-2xl font-semibold text-fg m-0">Buyers</h2>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
-          <h3 className="text-lg font-semibold text-gray-800 m-0">Buyer Master</h3>
+      <div className="bg-surface rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden">
+        <div className="px-6 py-4 border-b border-line flex justify-between items-center bg-surface-raised/50">
+          <h3 className="text-lg font-semibold text-fg m-0">Buyer Master</h3>
           {Actions}
         </div>
         
         <div className="p-6">
-          {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+          {error && <div className="alert alert-danger">{error}</div>}
 
-          <div className="flex flex-wrap items-end gap-3 mb-4">
+          <div className="filter-bar mb-4">
             <form onSubmit={handleSearch} className="flex-1 min-w-[200px] flex gap-2">
               <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">Search</label>
+                <label className="block text-xs text-fg-subtle mb-1">Search</label>
                 <div className="flex">
                   <input 
                     type="text" 
                     placeholder="Search..." 
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded-l text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input rounded-l focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                   />
-                  <button type="submit" className="bg-gray-100 hover:bg-gray-200 border border-gray-300 border-l-0 rounded-r px-3 py-1.5 text-sm text-gray-600">
+                  <button type="submit" className="bg-surface-raised hover:bg-gray-200 border border-line-strong border-l-0 rounded-r px-3 py-1.5 text-sm text-fg-muted">
                     <i className="bi bi-search"></i>
                   </button>
                 </div>
@@ -110,12 +110,11 @@ export default function BuyersPage() {
             </form>
             
             <div className="w-48">
-              <label className="block text-xs text-gray-500 mb-1">Category</label>
+              <label className="block text-xs text-fg-subtle mb-1">Category</label>
               <select 
                 value={categoryFilter} 
-                onChange={e => setCategoryFilter(e.target.value)} 
-                className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              >
+                onChange={e => setCategoryFilter(e.target.value)}
+              className="form-select">
                 <option value="">All Categories</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
@@ -131,12 +130,11 @@ export default function BuyersPage() {
             />
 
             <div className="w-48">
-              <label className="block text-xs text-gray-500 mb-1">Status</label>
+              <label className="block text-xs text-fg-subtle mb-1">Status</label>
               <select 
                 value={statusFilter} 
-                onChange={e => setStatusFilter(e.target.value)} 
-                className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              >
+                onChange={e => setStatusFilter(e.target.value)}
+              className="form-select">
                 <option value="">All Statuses</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -144,43 +142,43 @@ export default function BuyersPage() {
             </div>
           </div>
 
-          <div className="overflow-x-auto border border-gray-200 rounded-md">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 text-gray-700">
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="px-4 py-2 text-left text-sm font-medium">Buyer Code</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium">Our Company</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium">Company Name</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium">Destination</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium">Port</th>
-                  <th className="px-4 py-2 text-center text-sm font-medium">Status</th>
-                  <th className="px-4 py-2 text-center text-sm font-medium">Actions</th>
+                  <th>Buyer Code</th>
+                  <th>Our Company</th>
+                  <th>Company Name</th>
+                  <th>Destination</th>
+                  <th>Port</th>
+                  <th className="text-center">Status</th>
+                  <th className="text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody>
                 {loading ? (
-                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">Loading buyers...</td></tr>
+                  <tr><td colSpan="7" className="text-center">Loading buyers...</td></tr>
                 ) : buyers.length === 0 ? (
-                  <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">No buyers found.</td></tr>
+                  <tr><td colSpan="7" className="text-center">No buyers found.</td></tr>
                 ) : (
                   buyers.map(b => (
-                    <tr key={b.id} className="hover:bg-gray-50 text-sm">
-                      <td className="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{b.display_code}</td>
-                      <td className="px-4 py-3 whitespace-nowrap"><CompanyBadge label={b.company_label} code={b.company_code} emptyLabel="Shared" /></td>
-                      <td className="px-4 py-3 whitespace-nowrap text-gray-900">{b.company_name}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-gray-500">{b.destination || '-'}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-gray-500">{b.port_name || '-'}</td>
-                      <td className="px-4 py-3 whitespace-nowrap text-center">
+                    <tr key={b.id}>
+                      <td className="whitespace-nowrap cell-strong">{b.display_code}</td>
+                      <td className="whitespace-nowrap"><CompanyBadge label={b.company_label} code={b.company_code} emptyLabel="Shared" /></td>
+                      <td className="whitespace-nowrap cell-strong">{b.company_name}</td>
+                      <td className="whitespace-nowrap">{b.destination || '-'}</td>
+                      <td className="whitespace-nowrap">{b.port_name || '-'}</td>
+                      <td className="whitespace-nowrap text-center">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${b.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {b.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-center">
+                      <td className="whitespace-nowrap text-center">
                         <div className="inline-flex rounded-md shadow-sm" role="group">
-                          <Link href={`/masters/buyers/${b.id}`} className="px-2 py-1 text-sm bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 rounded-l-md border-r-0" title="Edit">
+                          <Link href={`/masters/buyers/${b.id}`} className="px-2 py-1 text-sm bg-surface border border-line-strong text-link hover:bg-surface-hover rounded-l-md border-r-0" title="Edit">
                             <i className="bi bi-pencil-square"></i>
                           </Link>
-                          <button onClick={() => deleteBuyer(b.id, b.company_name)} className="px-2 py-1 text-sm bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-r-md" title="Delete">
+                          <button onClick={() => deleteBuyer(b.id, b.company_name)} className="px-2 py-1 text-sm bg-surface border border-line-strong text-[var(--danger)] hover:bg-red-50 rounded-r-md" title="Delete">
                             <i className="bi bi-trash"></i>
                           </button>
                         </div>

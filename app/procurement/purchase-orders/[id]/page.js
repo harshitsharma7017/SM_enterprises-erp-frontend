@@ -81,7 +81,7 @@ export default function PurchaseOrderShowPage({ params }) {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="p-4 text-gray-500">Loading Purchase Order...</div>
+        <div className="p-4 text-fg-subtle">Loading Purchase Order...</div>
       </DashboardLayout>
     );
   }
@@ -89,7 +89,7 @@ export default function PurchaseOrderShowPage({ params }) {
   if (error || !po) {
     return (
       <DashboardLayout>
-        <div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Purchase Order not found'}</div>
+        <div className="alert alert-danger">{error || 'Purchase Order not found'}</div>
       </DashboardLayout>
     );
   }
@@ -107,7 +107,7 @@ export default function PurchaseOrderShowPage({ params }) {
           <>
             <DocumentButton endpoint={`/procurement/purchase-orders/${id}/document`} number={po.po_num} onError={setError} />
             {can('purchase-order.edit') && po.status !== 'cancelled' && (!isPlanning || ['draft', 'raised'].includes(po.status)) && (
-              <Link href={`/procurement/purchase-orders/${id}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium">
+              <Link href={`/procurement/purchase-orders/${id}/edit`} className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded text-sm font-medium">
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
             )}
@@ -117,11 +117,11 @@ export default function PurchaseOrderShowPage({ params }) {
               </button>
             )}
             {can('purchase-order.approve') && ['draft', 'raised'].includes(po.status) && (
-              <button type="button" disabled={busy} onClick={() => runAction('cancel', `Cancel ${po.po_num}? Its quantities are released and it cannot be reopened.`)} className="border border-red-300 text-red-600 hover:bg-red-50 px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60">
+              <button type="button" disabled={busy} onClick={() => runAction('cancel', `Cancel ${po.po_num}? Its quantities are released and it cannot be reopened.`)} className="border border-line-strong text-[var(--danger)] hover:bg-red-50 px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60">
                 <i className="bi bi-x-circle me-1"></i> Cancel PO
               </button>
             )}
-            <Link href="/procurement/purchase-orders" className="border border-gray-300 px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
+            <Link href="/procurement/purchase-orders" className="border border-line-strong px-3 py-1.5 rounded text-sm text-fg-muted hover:bg-surface-hover">
               Back
             </Link>
           </>
@@ -145,106 +145,106 @@ export default function PurchaseOrderShowPage({ params }) {
         </div>
       )}
 
-      <div className="bg-white border rounded shadow-sm p-4 mb-4">
+      <div className="bg-surface border rounded shadow-sm p-4 mb-4">
         <dl className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500">Company</dt><dd className="mt-0.5"><CompanyBadge label={po.company_label} code={po.company_code} /></dd></div>
-          <div><dt className="text-gray-500">Origin</dt><dd className="mt-0.5 text-gray-900">{PO_ORIGIN_LABELS[po.origin] || '—'}</dd></div>
-          <div><dt className="text-gray-500">Status</dt><dd className="mt-0.5"><WorkflowBadge status={po.status} config={PO_STATUS_BADGES} /></dd></div>
-          <div><dt className="text-gray-500">PO Date</dt><dd className="mt-0.5 text-gray-900">{formatDate(po.po_date)}</dd></div>
-          <div><dt className="text-gray-500">Dispatch Date</dt><dd className="mt-0.5 text-gray-900">{po.dispatch_date ? formatDate(po.dispatch_date) : '—'}</dd></div>
-          <div><dt className="text-gray-500">Supplier</dt><dd className="mt-0.5 text-gray-900">{po.supplier_company_name
+          <div><dt className="text-fg-subtle">Company</dt><dd className="mt-0.5"><CompanyBadge label={po.company_label} code={po.company_code} /></dd></div>
+          <div><dt className="text-fg-subtle">Origin</dt><dd className="mt-0.5 text-fg">{PO_ORIGIN_LABELS[po.origin] || '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Status</dt><dd className="mt-0.5"><WorkflowBadge status={po.status} config={PO_STATUS_BADGES} /></dd></div>
+          <div><dt className="text-fg-subtle">PO Date</dt><dd className="mt-0.5 text-fg">{formatDate(po.po_date)}</dd></div>
+          <div><dt className="text-fg-subtle">Dispatch Date</dt><dd className="mt-0.5 text-fg">{po.dispatch_date ? formatDate(po.dispatch_date) : '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Supplier</dt><dd className="mt-0.5 text-fg">{po.supplier_company_name
             ? `${po.supplier_company_name}${po.supplier_display_code ? ` (${po.supplier_display_code})` : ''}`
             : (supplier ? `${supplier.company_name}${supplier.display_code ? ` (${supplier.display_code})` : ''}` : `#${po.supplier_id}`)}</dd></div>
-          <div className="md:col-span-2"><dt className="text-gray-500">Remarks</dt><dd className="mt-0.5 text-gray-900">{po.remarks || '—'}</dd></div>
-          {po.confirmed_at && <div><dt className="text-gray-500">Confirmed</dt><dd className="mt-0.5 text-gray-900">{formatDateTime(po.confirmed_at)} · {po.confirmer_name || '—'}</dd></div>}
-          {po.cancelled_at && <div><dt className="text-gray-500">Cancelled</dt><dd className="mt-0.5 text-gray-900">{formatDateTime(po.cancelled_at)} · {po.canceller_name || '—'}</dd></div>}
+          <div className="md:col-span-2"><dt className="text-fg-subtle">Remarks</dt><dd className="mt-0.5 text-fg">{po.remarks || '—'}</dd></div>
+          {po.confirmed_at && <div><dt className="text-fg-subtle">Confirmed</dt><dd className="mt-0.5 text-fg">{formatDateTime(po.confirmed_at)} · {po.confirmer_name || '—'}</dd></div>}
+          {po.cancelled_at && <div><dt className="text-fg-subtle">Cancelled</dt><dd className="mt-0.5 text-fg">{formatDateTime(po.cancelled_at)} · {po.canceller_name || '—'}</dd></div>}
         </dl>
       </div>
 
-      <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
-        <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700">Items</div>
+      <div className="bg-surface border rounded shadow-sm mb-4 overflow-hidden">
+        <div className="bg-surface-raised px-4 py-2.5 border-b font-semibold text-sm text-fg-muted">Items</div>
         {(po.items || []).length === 0 ? (
-          <div className="p-4 text-sm text-gray-500">No items.</div>
+          <div className="p-4 text-sm text-fg-subtle">No items.</div>
         ) : isPlanning ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-50 text-gray-600">
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">#</th>
-                  <th className="px-3 py-2 font-medium">Material</th>
-                  <th className="px-3 py-2 font-medium">Requirement</th>
-                  <th className="px-3 py-2 font-medium">Projection / Brand</th>
-                  {po.origin === 'material_plan' && <th className="px-3 py-2 font-medium">Plan</th>}
-                  <th className="px-3 py-2 font-medium text-right">₹/Unit</th>
-                  <th className="px-3 py-2 font-medium text-right">Ordered Qty</th>
-                  <th className="px-3 py-2 font-medium text-right">Received</th>
-                  <th className="px-3 py-2 font-medium text-right">Direct Disp.</th>
-                  <th className="px-3 py-2 font-medium text-right">Pending</th>
-                  <th className="px-3 py-2 font-medium">UOM</th>
-                  <th className="px-3 py-2 font-medium text-right">Amount</th>
+                  <th>#</th>
+                  <th>Material</th>
+                  <th>Requirement</th>
+                  <th>Projection / Brand</th>
+                  {po.origin === 'material_plan' && <th>Plan</th>}
+                  <th className="text-right">₹/Unit</th>
+                  <th className="text-right">Ordered Qty</th>
+                  <th className="text-right">Received</th>
+                  <th className="text-right">Direct Disp.</th>
+                  <th className="text-right">Pending</th>
+                  <th>UOM</th>
+                  <th className="text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {po.items.map((item, i) => (
                   <tr key={item.id}>
-                    <td className="px-3 py-2 text-gray-500">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-900">{item.trace?.product_name || '—'} <span className="text-xs text-gray-500">{item.trace?.item_group_code ? `(${item.trace.item_group_code})` : ''}</span><BrandSpecNote spec={item.brand_spec} /></td>
-                    <td className="px-3 py-2 font-mono">
+                    <td>{i + 1}</td>
+                    <td className="cell-strong">{item.trace?.product_name || '—'} <span className="text-xs text-fg-subtle">{item.trace?.item_group_code ? `(${item.trace.item_group_code})` : ''}</span><BrandSpecNote spec={item.brand_spec} /></td>
+                    <td className="font-mono">
                       {can('material-requirement.view')
-                        ? <Link href={`/planning/material-requirements/${item.material_requirement_id}`} className="text-blue-600 hover:underline">{item.trace?.requirement_no}</Link>
+                        ? <Link href={`/planning/material-requirements/${item.material_requirement_id}`} className="text-link hover:underline">{item.trace?.requirement_no}</Link>
                         : item.trace?.requirement_no}
                     </td>
-                    <td className="px-3 py-2 text-gray-700">
+                    <td className="text-fg-muted">
                       <div className="font-mono">
                         {can('brand-projection.view')
-                          ? <Link href={`/planning/brand-projections/${item.trace?.brand_projection_id}`} className="text-blue-600 hover:underline">{item.trace?.projection_no}</Link>
+                          ? <Link href={`/planning/brand-projections/${item.trace?.brand_projection_id}`} className="text-link hover:underline">{item.trace?.projection_no}</Link>
                           : item.trace?.projection_no}
                       </div>
-                      <div className="text-xs text-gray-500">{item.trace?.brand_name}</div>
+                      <div className="text-xs text-fg-subtle">{item.trace?.brand_name}</div>
                     </td>
-                    {po.origin === 'material_plan' && <td className="px-3 py-2 font-mono text-gray-700">{item.trace?.plan_no || '—'}</td>}
-                    <td className="px-3 py-2 text-right text-gray-900">{item.cost_price == null ? '—' : formatAmount(item.cost_price)}</td>
-                    <td className="px-3 py-2 text-right font-medium text-gray-900">{formatQuantity(item.ordered_quantity, item.trace?.uom_decimal_places)}</td>
-                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.received_quantity, item.trace?.uom_decimal_places)}</td>
-                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.direct_dispatched_quantity, item.trace?.uom_decimal_places)}</td>
-                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.pending_quantity, item.trace?.uom_decimal_places)}</td>
-                    <td className="px-3 py-2 font-mono text-gray-700">{item.unit}</td>
-                    <td className="px-3 py-2 text-right text-gray-900 font-medium">{formatAmount(item.amount)}</td>
+                    {po.origin === 'material_plan' && <td className="font-mono text-fg-muted">{item.trace?.plan_no || '—'}</td>}
+                    <td className="text-right cell-strong">{item.cost_price == null ? '—' : formatAmount(item.cost_price)}</td>
+                    <td className="text-right cell-strong">{formatQuantity(item.ordered_quantity, item.trace?.uom_decimal_places)}</td>
+                    <td className="text-right text-fg-muted">{formatQuantity(item.received_quantity, item.trace?.uom_decimal_places)}</td>
+                    <td className="text-right text-fg-muted">{formatQuantity(item.direct_dispatched_quantity, item.trace?.uom_decimal_places)}</td>
+                    <td className="text-right text-fg-muted">{formatQuantity(item.pending_quantity, item.trace?.uom_decimal_places)}</td>
+                    <td className="font-mono text-fg-muted">{item.unit}</td>
+                    <td className="text-right cell-strong">{formatAmount(item.amount)}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t bg-gray-50">
-                  <td colSpan={po.origin === 'material_plan' ? 10 : 9} className="px-3 py-2 text-right font-semibold text-gray-700">Total</td>
-                  <td className="px-3 py-2 text-right font-semibold text-gray-900">{formatAmount(totalAmount)}</td>
+                <tr className="border-t">
+                  <td colSpan={po.origin === 'material_plan' ? 10 : 9} className="text-right font-semibold text-fg-muted">Total</td>
+                  <td className="text-right cell-strong">{formatAmount(totalAmount)}</td>
                 </tr>
               </tfoot>
             </table>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-50 text-gray-600">
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">#</th>
-                  <th className="px-3 py-2 font-medium">Design No.</th>
-                  <th className="px-3 py-2 font-medium">Product</th>
-                  <th className="px-3 py-2 font-medium">Colour / Size</th>
-                  <th className="px-3 py-2 font-medium">Unit</th>
-                  <th className="px-3 py-2 font-medium text-right">₹/Unit</th>
-                  <th className="px-3 py-2 font-medium text-right">Qty</th>
-                  <th className="px-3 py-2 font-medium text-right">Received</th>
-                  <th className="px-3 py-2 font-medium text-right">Direct Disp.</th>
-                  <th className="px-3 py-2 font-medium text-right">Amount</th>
+                  <th>#</th>
+                  <th>Design No.</th>
+                  <th>Product</th>
+                  <th>Colour / Size</th>
+                  <th>Unit</th>
+                  <th className="text-right">₹/Unit</th>
+                  <th className="text-right">Qty</th>
+                  <th className="text-right">Received</th>
+                  <th className="text-right">Direct Disp.</th>
+                  <th className="text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {po.items.map((item, i) => (
                   <tr key={item.id}>
-                    <td className="px-3 py-2 text-gray-500">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-900">{item.design_no || '—'}<BrandSpecNote spec={item.brand_spec} /></td>
-                    <td className="px-3 py-2 text-gray-700">{item.product_id ? `#${item.product_id}` : '—'}</td>
-                    <td className="px-3 py-2 text-gray-700">
+                    <td>{i + 1}</td>
+                    <td className="cell-strong">{item.design_no || '—'}<BrandSpecNote spec={item.brand_spec} /></td>
+                    <td className="text-fg-muted">{item.product_id ? `#${item.product_id}` : '—'}</td>
+                    <td className="text-fg-muted">
                       {(item.colours || []).map((c, ci) => (
                         <div key={ci} className="mb-0.5">
                           {c.colour && <span className="font-medium">{c.colour}: </span>}
@@ -252,22 +252,22 @@ export default function PurchaseOrderShowPage({ params }) {
                         </div>
                       ))}
                     </td>
-                    <td className="px-3 py-2 text-gray-700">{item.unit || '—'}</td>
-                    <td className="px-3 py-2 text-right text-gray-900">{formatAmount(item.cost_price)}</td>
-                    <td className="px-3 py-2 text-right text-gray-900">{item.qty}</td>
-                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.received_quantity, 3)}</td>
-                    <td className="px-3 py-2 text-right text-gray-700">{formatQuantity(item.direct_dispatched_quantity, 3)}</td>
-                    <td className="px-3 py-2 text-right text-gray-900 font-medium">{formatAmount(item.amount)}</td>
+                    <td className="text-fg-muted">{item.unit || '—'}</td>
+                    <td className="text-right cell-strong">{formatAmount(item.cost_price)}</td>
+                    <td className="text-right cell-strong">{item.qty}</td>
+                    <td className="text-right text-fg-muted">{formatQuantity(item.received_quantity, 3)}</td>
+                    <td className="text-right text-fg-muted">{formatQuantity(item.direct_dispatched_quantity, 3)}</td>
+                    <td className="text-right cell-strong">{formatAmount(item.amount)}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t bg-gray-50">
-                  <td colSpan="6" className="px-3 py-2 text-right font-semibold text-gray-700">Total</td>
-                  <td className="px-3 py-2 text-right font-semibold text-gray-900">{totalQty}</td>
+                <tr className="border-t">
+                  <td colSpan="6" className="text-right font-semibold text-fg-muted">Total</td>
+                  <td className="text-right cell-strong">{totalQty}</td>
                   <td></td>
                   <td></td>
-                  <td className="px-3 py-2 text-right font-semibold text-gray-900">{formatAmount(totalAmount)}</td>
+                  <td className="text-right cell-strong">{formatAmount(totalAmount)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -275,22 +275,22 @@ export default function PurchaseOrderShowPage({ params }) {
         )}
       </div>
 
-      <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
-        <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700 flex items-center justify-between">
+      <div className="bg-surface border rounded shadow-sm mb-4 overflow-hidden">
+        <div className="bg-surface-raised px-4 py-2.5 border-b font-semibold text-sm text-fg-muted flex items-center justify-between">
           <span>Goods Receipts</span>
           {can('inward-entry.create') && ['raised', 'partial'].includes(po.status) && (
-            <Link href="/procurement/grn/create" className="text-xs font-medium text-blue-600 hover:underline">Receive goods</Link>
+            <Link href="/procurement/grn/create" className="text-xs font-medium text-link hover:underline">Receive goods</Link>
           )}
         </div>
         {(po.receipts || []).length === 0 ? (
-          <div className="p-4 text-sm text-gray-500">No goods received against this purchase order yet.</div>
+          <div className="p-4 text-sm text-fg-subtle">No goods received against this purchase order yet.</div>
         ) : (
           <ul className="divide-y divide-gray-100">
             {po.receipts.map((g) => (
               <li key={g.id} className="px-4 py-2 text-sm flex items-center justify-between gap-2">
                 <span>
-                  <Link href={g.entry_type === 'legacy_inward' ? `/procurement/inward-entries/${g.id}` : `/procurement/grn/${g.id}`} className="font-mono text-blue-600 hover:underline">{g.inward_no}</Link>
-                  <span className="text-gray-500"> · {formatDate(g.inward_date)}{g.entry_type === 'legacy_inward' ? ' · legacy inward' : ''} · {g.lots_count} lot(s)</span>
+                  <Link href={g.entry_type === 'legacy_inward' ? `/procurement/inward-entries/${g.id}` : `/procurement/grn/${g.id}`} className="font-mono text-link hover:underline">{g.inward_no}</Link>
+                  <span className="text-fg-subtle"> · {formatDate(g.inward_date)}{g.entry_type === 'legacy_inward' ? ' · legacy inward' : ''} · {g.lots_count} lot(s)</span>
                 </span>
                 <WorkflowBadge status={g.receipt_status} config={GRN_STATUS_BADGES} />
               </li>
@@ -299,22 +299,22 @@ export default function PurchaseOrderShowPage({ params }) {
         )}
       </div>
 
-      <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
-        <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700 flex items-center justify-between">
+      <div className="bg-surface border rounded shadow-sm mb-4 overflow-hidden">
+        <div className="bg-surface-raised px-4 py-2.5 border-b font-semibold text-sm text-fg-muted flex items-center justify-between">
           <span>Direct Supplier Dispatches</span>
           {can('dispatch.create') && ['raised', 'partial'].includes(po.status) && po.company_id && (
-            <Link href={`/dispatch/create?type=DIRECT_SUPPLIER_DISPATCH&purchase_order_id=${po.id}`} className="text-xs font-medium text-blue-600 hover:underline">Direct dispatch</Link>
+            <Link href={`/dispatch/create?type=DIRECT_SUPPLIER_DISPATCH&purchase_order_id=${po.id}`} className="text-xs font-medium text-link hover:underline">Direct dispatch</Link>
           )}
         </div>
         {(po.direct_dispatches || []).length === 0 ? (
-          <div className="p-4 text-sm text-gray-500">The mill has not dispatched this purchase order directly to a customer. A line is fulfilled by receipt (GRN) or direct dispatch — together never above its ordered quantity.</div>
+          <div className="p-4 text-sm text-fg-subtle">The mill has not dispatched this purchase order directly to a customer. A line is fulfilled by receipt (GRN) or direct dispatch — together never above its ordered quantity.</div>
         ) : (
           <ul className="divide-y divide-gray-100">
             {po.direct_dispatches.map((d) => (
               <li key={d.id} className="px-4 py-2 text-sm flex items-center justify-between gap-2">
                 <span>
-                  {can('dispatch.view') ? <Link href={`/dispatch/${d.id}`} className="font-mono text-blue-600 hover:underline">{d.dispatch_no}</Link> : <span className="font-mono">{d.dispatch_no}</span>}
-                  <span className="text-gray-500"> · {formatDate(d.dispatch_date)} · {d.buyer_name || d.destination_name || '—'}</span>
+                  {can('dispatch.view') ? <Link href={`/dispatch/${d.id}`} className="font-mono text-link hover:underline">{d.dispatch_no}</Link> : <span className="font-mono">{d.dispatch_no}</span>}
+                  <span className="text-fg-subtle"> · {formatDate(d.dispatch_date)} · {d.buyer_name || d.destination_name || '—'}</span>
                 </span>
                 <WorkflowBadge status={d.status} config={POSTING_STATUS_BADGES} />
               </li>
@@ -324,13 +324,13 @@ export default function PurchaseOrderShowPage({ params }) {
       </div>
 
       {(po.timeline || []).length > 0 && (
-        <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
-          <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700">Delivery Timeline</div>
+        <div className="bg-surface border rounded shadow-sm mb-4 overflow-hidden">
+          <div className="bg-surface-raised px-4 py-2.5 border-b font-semibold text-sm text-fg-muted">Delivery Timeline</div>
           <ul className="divide-y divide-gray-100">
             {po.timeline.map((t) => (
               <li key={t.id} className="px-4 py-2 text-sm flex items-center justify-between">
-                <span className="text-gray-700">{formatDate(t.entry_date)} — {t.note}</span>
-                {t.qty != null && <span className="text-gray-500">{t.qty} pcs</span>}
+                <span className="text-fg-muted">{formatDate(t.entry_date)} — {t.note}</span>
+                {t.qty != null && <span className="text-fg-subtle">{t.qty} pcs</span>}
               </li>
             ))}
           </ul>
@@ -338,17 +338,17 @@ export default function PurchaseOrderShowPage({ params }) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div className="bg-gray-50 border rounded p-3">
-          <div className="text-xs font-semibold text-gray-500 mb-1">Delivery Details</div>
-          <div className="text-sm text-gray-800 whitespace-pre-wrap">{po.delivery_details || 'None recorded.'}</div>
+        <div className="bg-surface-raised border rounded p-3">
+          <div className="text-xs font-semibold text-fg-subtle mb-1">Delivery Details</div>
+          <div className="text-sm text-fg whitespace-pre-wrap">{po.delivery_details || 'None recorded.'}</div>
         </div>
-        <div className="bg-gray-50 border rounded p-3">
-          <div className="text-xs font-semibold text-gray-500 mb-1">Packing Details</div>
-          <div className="text-sm text-gray-800 whitespace-pre-wrap">{po.packing_details || 'None recorded.'}</div>
+        <div className="bg-surface-raised border rounded p-3">
+          <div className="text-xs font-semibold text-fg-subtle mb-1">Packing Details</div>
+          <div className="text-sm text-fg whitespace-pre-wrap">{po.packing_details || 'None recorded.'}</div>
         </div>
       </div>
 
-      <div className="text-xs text-gray-400">
+      <div className="text-xs text-fg-subtle">
         Created {formatDateTime(po.created_at)} · Last updated {formatDateTime(po.updated_at)}
       </div>
     </DashboardLayout>

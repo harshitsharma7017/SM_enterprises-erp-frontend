@@ -11,9 +11,7 @@ import BarcodeScanInput from '@/components/barcode/BarcodeScanInput';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { toDateInputValue, todayDateInputValue, formatQuantity } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
-const LABEL = 'block text-xs font-medium text-gray-700 mb-1';
+const LABEL = 'block text-xs font-medium text-fg-muted mb-1';
 const STOCK = 'STOCK_DISPATCH';
 const DIRECT = 'DIRECT_SUPPLIER_DISPATCH';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
@@ -196,7 +194,7 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading...</div>;
 
   const hasQuantity = Object.values(quantities).some((v) => String(v || '').trim() !== '');
   const orderLinked = type === DIRECT && source?.order_confirmation_id;
@@ -216,7 +214,7 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
             {dispatchId ? (
               <div className="py-1.5 text-sm">{DISPATCH_TYPE_LABELS[type]}</div>
             ) : (
-              <select value={type} onChange={(e) => changeType(e.target.value)} className="form-select w-full rounded border-gray-300 text-sm">
+              <select value={type} onChange={(e) => changeType(e.target.value)} className="form-select">
                 {Object.entries(DISPATCH_TYPE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
               </select>
             )}
@@ -226,7 +224,7 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
             {dispatchId ? (
               <div className="py-1.5"><CompanyBadge label={saved?.company_label} code={saved?.company_code} /></div>
             ) : (
-              <CompanySelect value={companyId} onChange={changeCompany} required className="form-select w-full rounded border-gray-300 text-sm" />
+              <CompanySelect value={companyId} onChange={changeCompany} required />
             )}
           </div>
           <div>
@@ -234,28 +232,28 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
             {dispatchId ? (
               <div className="py-1.5 font-mono text-sm">{type === STOCK ? saved?.oc_num : saved?.po_num}</div>
             ) : type === STOCK ? (
-              <select required value={sourceId} onChange={changeSource} disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <select required value={sourceId} onChange={changeSource} disabled={!companyId} className="form-select">
                 <option value="">{companyId ? (options.orders?.length ? '— Select a confirmed order —' : 'No order with allocated production to dispatch') : 'Select a company first'}</option>
                 {(options.orders || []).map((o) => <option key={o.id} value={o.id}>{o.oc_num} · {o.buyer_name}</option>)}
                 {source && !(options.orders || []).some((o) => String(o.id) === String(sourceId)) && <option value={sourceId}>{source.oc_num}</option>}
               </select>
             ) : (
-              <select required value={sourceId} onChange={changeSource} disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <select required value={sourceId} onChange={changeSource} disabled={!companyId} className="form-select">
                 <option value="">{companyId ? (options.purchase_orders?.length ? '— Select a confirmed PO —' : 'No PO with quantity outstanding') : 'Select a company first'}</option>
                 {(options.purchase_orders || []).map((p) => <option key={p.id} value={p.id}>{p.po_num} · {p.supplier_name}</option>)}
                 {source && !(options.purchase_orders || []).some((p) => String(p.id) === String(sourceId)) && <option value={sourceId}>{source.po_num}</option>}
               </select>
             )}
-            {type === DIRECT && source && <p className="text-xs text-gray-500 mt-1">Supplier / mill: {source.supplier_name}{source.oc_num ? ` · order ${source.oc_num} (${source.order_buyer_name})` : ''}</p>}
+            {type === DIRECT && source && <p className="text-xs text-fg-subtle mt-1">Supplier / mill: {source.supplier_name}{source.oc_num ? ` · order ${source.oc_num} (${source.order_buyer_name})` : ''}</p>}
           </div>
           <div>
             <label className={LABEL}>Dispatch Date *</label>
-            <input type="date" required value={header.dispatch_date} onChange={set('dispatch_date')} className={INPUT} />
+            <input type="date" required value={header.dispatch_date} onChange={set('dispatch_date')} className="form-input" />
           </div>
           {type === STOCK && (
             <div>
               <label className={LABEL}>Source Location *</label>
-              <select required value={header.location_id} onChange={changeLocation} disabled={!sourceId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <select required value={header.location_id} onChange={changeLocation} disabled={!sourceId} className="form-select">
                 <option value="">— Select —</option>
                 {(options.locations || []).map((l) => <option key={l.id} value={l.id}>{l.code} · {l.name}</option>)}
               </select>
@@ -264,7 +262,7 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
           {type === DIRECT && !orderLinked && (
             <div>
               <label className={LABEL}>Customer (buyer)</label>
-              <select value={header.buyer_id} onChange={set('buyer_id')} className="form-select w-full rounded border-gray-300 text-sm">
+              <select value={header.buyer_id} onChange={set('buyer_id')} className="form-select">
                 <option value="">—</option>
                 {(options.buyers || []).map((b) => <option key={b.id} value={b.id}>{b.company_name}</option>)}
               </select>
@@ -272,34 +270,34 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
           )}
           <div>
             <label className={LABEL}>Destination (customer / vendor){type === DIRECT && !orderLinked ? ' — or select a buyer' : ''}</label>
-            <input type="text" maxLength={200} value={header.destination_name} onChange={set('destination_name')} className={INPUT} />
+            <input type="text" maxLength={200} value={header.destination_name} onChange={set('destination_name')} className="form-input" />
           </div>
           <div className="md:col-span-3">
             <label className={LABEL}>Destination address</label>
-            <textarea rows={2} maxLength={1000} value={header.destination_address} onChange={set('destination_address')} className={INPUT}></textarea>
+            <textarea rows={2} maxLength={1000} value={header.destination_address} onChange={set('destination_address')} className="form-textarea"></textarea>
           </div>
           <div>
             <label className={LABEL}>Transporter</label>
-            <input type="text" maxLength={150} value={header.transporter} onChange={set('transporter')} className={INPUT} />
+            <input type="text" maxLength={150} value={header.transporter} onChange={set('transporter')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Vehicle No.</label>
-            <input type="text" maxLength={50} value={header.vehicle_no} onChange={set('vehicle_no')} className={INPUT} />
+            <input type="text" maxLength={50} value={header.vehicle_no} onChange={set('vehicle_no')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Document ref. (LR / challan)</label>
-            <input type="text" maxLength={100} value={header.document_reference} onChange={set('document_reference')} className={INPUT} />
+            <input type="text" maxLength={100} value={header.document_reference} onChange={set('document_reference')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Invoice / bill ref.</label>
-            <input type="text" maxLength={100} value={header.invoice_reference} onChange={set('invoice_reference')} className={INPUT} />
+            <input type="text" maxLength={100} value={header.invoice_reference} onChange={set('invoice_reference')} className="form-input" />
           </div>
           <div className="md:col-span-2">
             <label className={LABEL}>Remarks</label>
-            <input type="text" maxLength={2000} value={header.remarks} onChange={set('remarks')} className={INPUT} />
+            <input type="text" maxLength={2000} value={header.remarks} onChange={set('remarks')} className="form-input" />
           </div>
         </div>
-        {type === STOCK && <p className="text-xs text-gray-500 mt-2 mb-0">The customer is the order&apos;s buyer.</p>}
+        {type === STOCK && <p className="text-xs text-fg-subtle mt-2 mb-0">The customer is the order&apos;s buyer.</p>}
       </FormSection>
 
       <FormSection title="Lines" icon="bi-list-check" subtitle={type === STOCK ? 'Finished lots allocated to the order. Enter a quantity for each line to dispatch.' : 'PO lines. A line can be received (GRN) or direct-dispatched; together never above its ordered quantity.'}>
@@ -307,16 +305,16 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
           <div className="mb-3 max-w-xl">
             <label className={LABEL}>Scan a finished-lot barcode</label>
             <BarcodeScanInput companyId={companyId} context="dispatch" locationId={header.location_id} onResult={onScan} onError={(message) => { setScannedLotId(null); setScanNote({ error: true, text: message }); }} />
-            {scanNote && <p className={`text-xs mt-1 mb-0 ${scanNote.error ? 'text-red-600' : 'text-green-700'}`}>{scanNote.text}</p>}
+            {scanNote && <p className={`text-xs mt-1 mb-0 ${scanNote.error ? 'text-[var(--danger)]' : 'text-green-700'}`}>{scanNote.text}</p>}
           </div>
         )}
-        {!sourceId ? <p className="text-sm text-gray-500 m-0">Select {type === STOCK ? 'an order' : 'a purchase order'} first.</p>
-          : type === STOCK && !header.location_id ? <p className="text-sm text-gray-500 m-0">Select the source location to see its stock.</p>
-          : lines.length === 0 ? <p className="text-sm text-gray-500 m-0">{type === STOCK ? 'No finished production is allocated to this order.' : 'This PO has no lines.'}</p>
+        {!sourceId ? <p className="text-sm text-fg-subtle m-0">Select {type === STOCK ? 'an order' : 'a purchase order'} first.</p>
+          : type === STOCK && !header.location_id ? <p className="text-sm text-fg-subtle m-0">Select the source location to see its stock.</p>
+          : lines.length === 0 ? <p className="text-sm text-fg-subtle m-0">{type === STOCK ? 'No finished production is allocated to this order.' : 'This PO has no lines.'}</p>
           : type === STOCK ? (
-            <table className="min-w-full text-sm">
-              <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Order item</th><th className="py-1.5 font-medium">Finished lot</th><th className="py-1.5 font-medium text-right">Allocated</th><th className="py-1.5 font-medium text-right">Dispatched</th><th className="py-1.5 font-medium text-right">Left to dispatch</th><th className="py-1.5 font-medium text-right">In stock here</th><th className="py-1.5 font-medium w-36">Dispatch qty</th></tr></thead>
-              <tbody className="divide-y divide-gray-100">
+            <table className="data-table">
+              <thead><tr><th>Order item</th><th>Finished lot</th><th className="text-right">Allocated</th><th className="text-right">Dispatched</th><th className="text-right">Left to dispatch</th><th className="text-right">In stock here</th><th className="w-36">Dispatch qty</th></tr></thead>
+              <tbody>
                 {lines.map((l) => {
                   const key = stockKey(l);
                   const left = Number(l.allocated_quantity) - Number(l.dispatched_quantity);
@@ -324,15 +322,15 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
                   const over = value !== '' && (micro(value) > micro(left) || micro(value) > micro(l.stock_at_location));
                   return (
                     <tr key={key} className={String(l.lot_id) === String(scannedLotId) ? 'bg-yellow-50' : ''}>
-                      <td className="py-1.5">{l.design_no || l.item_description || l.product_name}</td>
-                      <td className="py-1.5 font-mono text-xs">{l.lot_no} <span className="font-sans text-gray-500">({l.processing_no || (l.inward_no ? `GRN ${l.inward_no}` : l.lot_source_type === 'opening' ? 'opening stock' : 'bought-in')})</span></td>
-                      <td className="py-1.5 text-right">{formatQuantity(l.allocated_quantity, l.uom_decimal_places)}</td>
-                      <td className="py-1.5 text-right text-gray-600">{formatQuantity(l.dispatched_quantity, l.uom_decimal_places)}</td>
-                      <td className="py-1.5 text-right font-semibold">{formatQuantity(left, l.uom_decimal_places)} {l.unit}</td>
-                      <td className="py-1.5 text-right">{formatQuantity(l.stock_at_location, l.uom_decimal_places)}</td>
-                      <td className="py-1.5">
-                        <input type="number" min="0" step={stepFor(l.uom_decimal_places)} value={value} onChange={(e) => setQuantities({ ...quantities, [key]: e.target.value })} disabled={left <= 0} className={`${INPUT} text-right`} />
-                        {over && <div className="text-xs text-red-600">Above what is available</div>}
+                      <td>{l.design_no || l.item_description || l.product_name}</td>
+                      <td className="font-mono">{l.lot_no} <span className="font-sans text-fg-subtle">({l.processing_no || (l.inward_no ? `GRN ${l.inward_no}` : l.lot_source_type === 'opening' ? 'opening stock' : 'bought-in')})</span></td>
+                      <td className="text-right">{formatQuantity(l.allocated_quantity, l.uom_decimal_places)}</td>
+                      <td className="text-right text-fg-muted">{formatQuantity(l.dispatched_quantity, l.uom_decimal_places)}</td>
+                      <td className="text-right font-semibold">{formatQuantity(left, l.uom_decimal_places)} {l.unit}</td>
+                      <td className="text-right">{formatQuantity(l.stock_at_location, l.uom_decimal_places)}</td>
+                      <td>
+                        <input type="number" min="0" step={stepFor(l.uom_decimal_places)} value={value} onChange={(e) => setQuantities({ ...quantities, [key]: e.target.value })} disabled={left <= 0} className={`form-input text-right`} />
+                        {over && <div className="text-xs text-[var(--danger)]">Above what is available</div>}
                       </td>
                     </tr>
                   );
@@ -340,22 +338,22 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
               </tbody>
             </table>
           ) : (
-            <table className="min-w-full text-sm">
-              <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">PO line</th><th className="py-1.5 font-medium text-right">Ordered</th><th className="py-1.5 font-medium text-right">Received (GRN)</th><th className="py-1.5 font-medium text-right">Direct-dispatched</th><th className="py-1.5 font-medium text-right">Remaining</th><th className="py-1.5 font-medium w-36">Dispatch qty</th></tr></thead>
-              <tbody className="divide-y divide-gray-100">
+            <table className="data-table">
+              <thead><tr><th>PO line</th><th className="text-right">Ordered</th><th className="text-right">Received (GRN)</th><th className="text-right">Direct-dispatched</th><th className="text-right">Remaining</th><th className="w-36">Dispatch qty</th></tr></thead>
+              <tbody>
                 {lines.map((l) => {
                   const value = quantities[String(l.id)] || '';
                   const over = value !== '' && micro(value) > micro(l.pending_quantity);
                   return (
                     <tr key={l.id}>
-                      <td className="py-1.5">{l.product_name || l.description || `Line ${l.id}`}</td>
-                      <td className="py-1.5 text-right">{formatQuantity(l.ordered_quantity, l.uom_decimal_places)}</td>
-                      <td className="py-1.5 text-right text-gray-600">{formatQuantity(l.received_quantity, l.uom_decimal_places)}</td>
-                      <td className="py-1.5 text-right text-gray-600">{formatQuantity(l.direct_dispatched_quantity, l.uom_decimal_places)}</td>
-                      <td className="py-1.5 text-right font-semibold">{formatQuantity(Math.max(Number(l.pending_quantity), 0), l.uom_decimal_places)} {l.unit}</td>
-                      <td className="py-1.5">
-                        <input type="number" min="0" step={stepFor(l.uom_decimal_places)} value={value} onChange={(e) => setQuantities({ ...quantities, [String(l.id)]: e.target.value })} disabled={!l.product_id || Number(l.pending_quantity) <= 0} className={`${INPUT} text-right`} />
-                        {over && <div className="text-xs text-red-600">Above the remaining quantity</div>}
+                      <td>{l.product_name || l.description || `Line ${l.id}`}</td>
+                      <td className="text-right">{formatQuantity(l.ordered_quantity, l.uom_decimal_places)}</td>
+                      <td className="text-right text-fg-muted">{formatQuantity(l.received_quantity, l.uom_decimal_places)}</td>
+                      <td className="text-right text-fg-muted">{formatQuantity(l.direct_dispatched_quantity, l.uom_decimal_places)}</td>
+                      <td className="text-right font-semibold">{formatQuantity(Math.max(Number(l.pending_quantity), 0), l.uom_decimal_places)} {l.unit}</td>
+                      <td>
+                        <input type="number" min="0" step={stepFor(l.uom_decimal_places)} value={value} onChange={(e) => setQuantities({ ...quantities, [String(l.id)]: e.target.value })} disabled={!l.product_id || Number(l.pending_quantity) <= 0} className={`form-input text-right`} />
+                        {over && <div className="text-xs text-[var(--danger)]">Above the remaining quantity</div>}
                       </td>
                     </tr>
                   );
@@ -365,11 +363,11 @@ export default function DispatchForm({ dispatchId = null, initialType = STOCK, i
           )}
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving || !hasQuantity} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving || !hasQuantity} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
           <i className="bi bi-check-lg mr-1"></i> {dispatchId ? 'Update' : 'Save'} Draft
         </button>
-        <Link href={dispatchId ? `/dispatch/${dispatchId}` : '/dispatch'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">Cancel</Link>
+        <Link href={dispatchId ? `/dispatch/${dispatchId}` : '/dispatch'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">Cancel</Link>
       </div>
     </form>
   );

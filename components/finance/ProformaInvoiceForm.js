@@ -8,9 +8,7 @@ import CompanySelect from '@/components/company/CompanySelect';
 import CompanyBadge from '@/components/company/CompanyBadge';
 import { apiClient } from '@/lib/api-client';
 import { toDateInputValue, todayDateInputValue, formatQuantity, formatAmount } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
-const LABEL = 'block text-xs font-medium text-gray-700 mb-1';
+const LABEL = 'block text-xs font-medium text-fg-muted mb-1';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 const micro = (v) => Math.round(Number(v || 0) * 1e6);
 const EMPTY_HEADER = { pi_date: todayDateInputValue(), valid_until: '', reference: '', payment_terms: '', remarks: '' };
@@ -135,7 +133,7 @@ export default function ProformaInvoiceForm({ piId = null, initialOrderId = '' }
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading...</div>;
 
   const hasQuantity = Object.values(quantities).some((v) => String(v || '').trim() !== '');
   const total = lines.reduce((sum, l) => {
@@ -158,7 +156,7 @@ export default function ProformaInvoiceForm({ piId = null, initialOrderId = '' }
             {piId ? (
               <div className="py-1.5"><CompanyBadge label={saved?.company_label} code={saved?.company_code} /></div>
             ) : (
-              <CompanySelect value={companyId} onChange={changeCompany} required className="form-select w-full rounded border-gray-300 text-sm" />
+              <CompanySelect value={companyId} onChange={changeCompany} required />
             )}
           </div>
           <div>
@@ -166,33 +164,33 @@ export default function ProformaInvoiceForm({ piId = null, initialOrderId = '' }
             {piId ? (
               <div className="py-1.5 font-mono text-sm">{saved?.oc_num}</div>
             ) : (
-              <select required value={orderId} onChange={changeOrder} disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <select required value={orderId} onChange={changeOrder} disabled={!companyId} className="form-select">
                 <option value="">{companyId ? (orders.length ? '— Select a confirmed order —' : 'No confirmed order') : 'Select a company first'}</option>
                 {orders.map((o) => <option key={o.id} value={o.id}>{o.oc_num} · {o.buyer_name}</option>)}
                 {order && !orders.some((o) => String(o.id) === String(orderId)) && <option value={orderId}>{order.oc_num}</option>}
               </select>
             )}
-            {order && <p className="text-xs text-gray-500 mt-1">Customer: {order.buyer_name} · Currency: {order.currency_code || '—'}{order.status !== 'confirmed' ? ` · order is ${order.status}` : ''}</p>}
+            {order && <p className="text-xs text-fg-subtle mt-1">Customer: {order.buyer_name} · Currency: {order.currency_code || '—'}{order.status !== 'confirmed' ? ` · order is ${order.status}` : ''}</p>}
           </div>
           <div>
             <label className={LABEL}>PI Date *</label>
-            <input type="date" required value={header.pi_date} onChange={set('pi_date')} className={INPUT} />
+            <input type="date" required value={header.pi_date} onChange={set('pi_date')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Valid until</label>
-            <input type="date" value={header.valid_until} onChange={set('valid_until')} className={INPUT} />
+            <input type="date" value={header.valid_until} onChange={set('valid_until')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Customer reference</label>
-            <input type="text" maxLength={100} value={header.reference} onChange={set('reference')} className={INPUT} />
+            <input type="text" maxLength={100} value={header.reference} onChange={set('reference')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Payment terms (from the order)</label>
-            <input type="text" maxLength={255} value={header.payment_terms} onChange={set('payment_terms')} className={INPUT} />
+            <input type="text" maxLength={255} value={header.payment_terms} onChange={set('payment_terms')} className="form-input" />
           </div>
           <div className="md:col-span-3">
             <label className={LABEL}>Remarks</label>
-            <input type="text" maxLength={2000} value={header.remarks} onChange={set('remarks')} className={INPUT} />
+            <input type="text" maxLength={2000} value={header.remarks} onChange={set('remarks')} className="form-input" />
           </div>
         </div>
       </FormSection>
@@ -203,44 +201,44 @@ export default function ProformaInvoiceForm({ piId = null, initialOrderId = '' }
         subtitle="Order items. Together, issued proforma invoices never exceed an item's ordered quantity."
       >
         {lines.some((l) => remaining(l) > 0) && (
-          <div className="text-right mb-2"><button type="button" onClick={fillRemaining} className="px-2 py-1 border border-gray-300 rounded text-xs text-gray-700 hover:bg-gray-50">Fill remaining</button></div>
+          <div className="text-right mb-2"><button type="button" onClick={fillRemaining} className="px-2 py-1 border border-line-strong rounded text-xs text-fg-muted hover:bg-surface-hover">Fill remaining</button></div>
         )}
-        {!orderId ? <p className="text-sm text-gray-500 m-0">Select an order first.</p>
-          : lines.length === 0 ? <p className="text-sm text-gray-500 m-0">This order has no lines.</p>
+        {!orderId ? <p className="text-sm text-fg-subtle m-0">Select an order first.</p>
+          : lines.length === 0 ? <p className="text-sm text-fg-subtle m-0">This order has no lines.</p>
           : (
-            <table className="min-w-full text-sm">
-              <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Order item</th><th className="py-1.5 font-medium text-right">Ordered</th><th className="py-1.5 font-medium text-right">On issued PIs</th><th className="py-1.5 font-medium text-right">Remaining</th><th className="py-1.5 font-medium text-right">Unit price</th><th className="py-1.5 font-medium w-36">PI qty</th><th className="py-1.5 font-medium text-right">Amount</th></tr></thead>
-              <tbody className="divide-y divide-gray-100">
+            <table className="data-table">
+              <thead><tr><th>Order item</th><th className="text-right">Ordered</th><th className="text-right">On issued PIs</th><th className="text-right">Remaining</th><th className="text-right">Unit price</th><th className="w-36">PI qty</th><th className="text-right">Amount</th></tr></thead>
+              <tbody>
                 {lines.map((l) => {
                   const value = quantities[String(l.id)] || '';
                   const left = remaining(l);
                   const over = value !== '' && micro(value) > micro(left);
                   return (
                     <tr key={l.id}>
-                      <td className="py-1.5">{l.product_name || l.design_no || l.description || `Item ${l.id}`}{l.product_name && (l.design_no || l.description) && <div className="text-xs text-gray-500">{[l.design_no, l.description].filter(Boolean).join(' — ')}</div>}</td>
-                      <td className="py-1.5 text-right">{formatQuantity(l.ordered_quantity, l.uom_decimal_places)} {l.unit}</td>
-                      <td className="py-1.5 text-right text-gray-600">{formatQuantity(l.proforma_quantity, l.uom_decimal_places)}</td>
-                      <td className="py-1.5 text-right font-semibold">{formatQuantity(left, l.uom_decimal_places)}</td>
-                      <td className="py-1.5 text-right">{l.price === null ? <span className="text-amber-700 text-xs">Not priced on the order</span> : formatAmount(l.price)}</td>
-                      <td className="py-1.5">
-                        <input type="number" min="0" step={stepFor(l.uom_decimal_places)} value={value} onChange={(e) => setQuantities({ ...quantities, [String(l.id)]: e.target.value })} disabled={left <= 0 && value === ''} className={`${INPUT} text-right`} />
-                        {over && <div className="text-xs text-red-600">Above the remaining quantity</div>}
+                      <td>{l.product_name || l.design_no || l.description || `Item ${l.id}`}{l.product_name && (l.design_no || l.description) && <div className="text-xs text-fg-subtle">{[l.design_no, l.description].filter(Boolean).join(' — ')}</div>}</td>
+                      <td className="text-right">{formatQuantity(l.ordered_quantity, l.uom_decimal_places)} {l.unit}</td>
+                      <td className="text-right text-fg-muted">{formatQuantity(l.proforma_quantity, l.uom_decimal_places)}</td>
+                      <td className="text-right font-semibold">{formatQuantity(left, l.uom_decimal_places)}</td>
+                      <td className="text-right">{l.price === null ? <span className="text-amber-700 text-xs">Not priced on the order</span> : formatAmount(l.price)}</td>
+                      <td>
+                        <input type="number" min="0" step={stepFor(l.uom_decimal_places)} value={value} onChange={(e) => setQuantities({ ...quantities, [String(l.id)]: e.target.value })} disabled={left <= 0 && value === ''} className={`form-input text-right`} />
+                        {over && <div className="text-xs text-[var(--danger)]">Above the remaining quantity</div>}
                       </td>
-                      <td className="py-1.5 text-right">{l.price === null || value === '' ? '—' : formatAmount(Number(value) * Number(l.price))}</td>
+                      <td className="text-right">{l.price === null || value === '' ? '—' : formatAmount(Number(value) * Number(l.price))}</td>
                     </tr>
                   );
                 })}
               </tbody>
-              <tfoot><tr><td colSpan="6" className="py-2 text-right text-xs text-gray-500">Total of priced lines {order?.currency_code ? `(${order.currency_code})` : ''}</td><td className="py-2 text-right font-semibold">{formatAmount(total / 100)}</td></tr></tfoot>
+              <tfoot><tr><td colSpan="6" className="text-right">Total of priced lines {order?.currency_code ? `(${order.currency_code})` : ''}</td><td className="text-right font-semibold">{formatAmount(total / 100)}</td></tr></tfoot>
             </table>
           )}
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving || !hasQuantity} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving || !hasQuantity} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
           <i className="bi bi-check-lg mr-1"></i> {piId ? 'Update' : 'Save'} Draft
         </button>
-        <Link href={piId ? `/finance/proforma-invoices/${piId}` : '/finance/proforma-invoices'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">Cancel</Link>
+        <Link href={piId ? `/finance/proforma-invoices/${piId}` : '/finance/proforma-invoices'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">Cancel</Link>
       </div>
     </form>
   );

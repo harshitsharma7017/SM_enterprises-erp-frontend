@@ -1,7 +1,47 @@
+const BADGE_BASE = 'badge border rounded-md px-2 py-1 text-xs font-medium';
+
+/**
+ * Every colour name any status map may use, mapped to a tint class.
+ *
+ * Tints carry a light and a dark value each, unlike the `bg-*-100 text-*-800`
+ * pairs this replaces, which only worked in light mode.
+ */
+export const WORKFLOW_TINTS = {
+  gray: 'tint-gray',
+  cyan: 'tint-cyan',
+  blue: 'tint-blue',
+  green: 'tint-green',
+  red: 'tint-red',
+  amber: 'tint-amber',
+  indigo: 'tint-indigo',
+  purple: 'tint-purple',
+  yellow: 'tint-yellow',
+};
+
+/**
+ * Resolves a status colour to a tint class, falling back to gray.
+ *
+ * The previous lookup returned `undefined` for any colour missing from the map,
+ * which rendered the badge with no background at all — `indigo`, `purple` and
+ * `yellow` were all used by status maps but absent from the colour table, so
+ * four badges were invisible. Falling back means a future unknown colour is
+ * merely plain instead of broken.
+ */
+export function workflowTint(color) {
+  return WORKFLOW_TINTS[color] || WORKFLOW_TINTS.gray;
+}
+
 export function StatusBadge({ status, onClick }) {
   const isActive = status === 'active';
+  const tint = isActive ? WORKFLOW_TINTS.green : WORKFLOW_TINTS.gray;
   const Component = onClick ? 'button' : 'span';
-  const props = onClick ? { type: 'button', onClick, className: `badge border rounded-md px-2 py-1 text-xs font-medium ${isActive ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'} hover:opacity-80 transition-opacity cursor-pointer` } : { className: `badge border rounded-md px-2 py-1 text-xs font-medium ${isActive ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}` };
+  const props = onClick
+    ? {
+        type: 'button',
+        onClick,
+        className: `${BADGE_BASE} ${tint} hover:opacity-80 transition-opacity cursor-pointer`,
+      }
+    : { className: `${BADGE_BASE} ${tint}` };
 
   return (
     <Component {...props}>
@@ -12,20 +52,13 @@ export function StatusBadge({ status, onClick }) {
 
 export function StandardBadge({ children, className = '' }) {
   return (
-    <span className={`inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ${className}`}>
+    <span
+      className={`inline-flex items-center rounded-md border tint-gray px-2 py-1 text-xs font-medium ${className}`}
+    >
       {children}
     </span>
   );
 }
-
-const WORKFLOW_COLORS = {
-  gray: 'bg-gray-100 text-gray-800 border-gray-200',
-  cyan: 'bg-cyan-100 text-cyan-800 border-cyan-200',
-  blue: 'bg-blue-100 text-blue-800 border-blue-200',
-  green: 'bg-green-100 text-green-800 border-green-200',
-  red: 'bg-red-100 text-red-800 border-red-200',
-  amber: 'bg-amber-100 text-amber-800 border-amber-200',
-};
 
 // Mirrors Inquiry::STATUSES / STATUS_COLORS in the original ERP.
 export const INQUIRY_STATUS_BADGES = {
@@ -239,7 +272,7 @@ export const PRODUCTION_LINE_BADGES = {
 export function WorkflowBadge({ status, config }) {
   const entry = config[status] || { label: status || '—', color: 'gray' };
   return (
-    <span className={`badge border rounded-md px-2 py-1 text-xs font-medium ${WORKFLOW_COLORS[entry.color]}`}>
+    <span className={`${BADGE_BASE} ${workflowTint(entry.color)}`}>
       {entry.label}
     </span>
   );

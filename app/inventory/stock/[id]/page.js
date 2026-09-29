@@ -11,15 +11,13 @@ import ProductionTrace from '@/components/production/ProductionTrace';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatDateTime, formatQuantity, todayDateInputValue } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 const EMPTY_ADJUSTMENT = { location_id: '', direction: 'out', quantity: '', reason: '', movement_date: todayDateInputValue(), remarks: '' };
 
-function Figure({ label, value, tone = 'text-gray-900' }) {
+function Figure({ label, value, tone = 'text-fg' }) {
   return (
-    <div className="rounded border border-gray-200 p-2">
-      <div className="text-xs text-gray-500">{label}</div>
+    <div className="rounded border border-line p-2">
+      <div className="text-xs text-fg-subtle">{label}</div>
       <div className={`font-semibold ${tone}`}>{value}</div>
     </div>
   );
@@ -68,7 +66,7 @@ export default function LotStockPage({ params }) {
   };
 
   if (!data) {
-    return <DashboardLayout>{error ? <div className="bg-red-50 text-red-600 p-3 rounded">{error}</div> : <div className="p-4 text-gray-500">Loading lot stock...</div>}</DashboardLayout>;
+    return <DashboardLayout>{error ? <div className="alert alert-danger">{error}</div> : <div className="p-4 text-fg-subtle">Loading lot stock...</div>}</DashboardLayout>;
   }
 
   const { lot, balances, movements } = data;
@@ -82,8 +80,8 @@ export default function LotStockPage({ params }) {
         breadcrumbs={[{ label: 'Stock', href: '/inventory/stock' }, { label: lot.lot_no }]}
         actions={(
           <>
-            <Link href={`/procurement/lots/${lot.id}`} className="px-3 py-1.5 rounded text-sm font-medium border border-blue-300 text-blue-700 hover:bg-blue-50">Lot</Link>
-            <Link href="/inventory/stock" className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">Back</Link>
+            <Link href={`/procurement/lots/${lot.id}`} className="px-3 py-1.5 rounded text-sm font-medium border border-line-strong text-link hover:bg-surface-hover">Lot</Link>
+            <Link href="/inventory/stock" className="px-3 py-1.5 rounded text-sm font-medium border border-line-strong text-fg-muted hover:bg-surface-hover">Back</Link>
           </>
         )}
       />
@@ -98,7 +96,7 @@ export default function LotStockPage({ params }) {
             <Figure label="Dispatched" value={q(lot.stock_dispatched_quantity)} />
             <Figure label="Usable stock now" value={q(lot.stock_quantity)} tone="text-blue-800" />
           </div>
-          <p className="text-xs text-gray-500 mt-2 mb-0">Finished material posted from a completed processing record, exactly as recorded.</p>
+          <p className="text-xs text-fg-subtle mt-2 mb-0">Finished material posted from a completed processing record, exactly as recorded.</p>
         </Card>
       ) : (
       <Card title="Receipt → Quality → Stock" variant="primary">
@@ -112,30 +110,30 @@ export default function LotStockPage({ params }) {
           <Figure label="Issued to production" value={q(lot.stock_issued_quantity)} />
           <Figure label="Usable stock now" value={q(lot.stock_quantity)} tone="text-blue-800" />
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Only QC-accepted quantity enters usable stock. Rejected material stays outside stock and is tracked through QC and supplier returns.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">Only QC-accepted quantity enters usable stock. Rejected material stays outside stock and is tracked through QC and supplier returns.</p>
       </Card>
       )}
 
       <Card title="Source & Traceability" variant="info">
         {lot.source_type === 'opening'
-          ? <p className="text-sm text-gray-700 m-0">Opening stock (imported) — no PO, GRN, QC or processing record before this lot.{lot.supplier_name ? ` Supplier: ${lot.supplier_name}.` : ''}{lot.supplier_lot_no ? ` Mill lot: ${lot.supplier_lot_no}.` : ''}</p>
+          ? <p className="text-sm text-fg-muted m-0">Opening stock (imported) — no PO, GRN, QC or processing record before this lot.{lot.supplier_name ? ` Supplier: ${lot.supplier_name}.` : ''}{lot.supplier_lot_no ? ` Mill lot: ${lot.supplier_lot_no}.` : ''}</p>
           : lot.source_type === 'production'
           ? <ProductionTrace production={lot.production} companyLabel={lot.company_label} companyCode={lot.company_code} />
           : <TraceChain doc={{ ...lot, lot_id: lot.id, lot_quantity: lot.quantity }} quantityLabel="Received quantity" />}
       </Card>
 
       <Card title="Balance by Location" variant="info">
-        {balances.length === 0 ? <p className="text-sm text-gray-500 m-0">Nothing of this lot has been posted to stock.</p> : (
-          <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Location</th><th className="py-1.5 font-medium text-right">Received into stock</th><th className="py-1.5 font-medium text-right">Available</th><th className="py-1.5 font-medium">Last movement</th><th className="py-1.5 font-medium">Status</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
+        {balances.length === 0 ? <p className="text-sm text-fg-subtle m-0">Nothing of this lot has been posted to stock.</p> : (
+          <table className="data-table">
+            <thead><tr><th>Location</th><th className="text-right">Received into stock</th><th className="text-right">Available</th><th>Last movement</th><th>Status</th></tr></thead>
+            <tbody>
               {balances.map((b) => (
                 <tr key={b.location_id}>
-                  <td className="py-1.5"><span className="font-mono">{b.location_code}</span> <span className="text-gray-500">{b.location_name}</span></td>
-                  <td className="py-1.5 text-right">{q(b.received_quantity)}</td>
-                  <td className="py-1.5 text-right font-semibold">{q(b.quantity)}</td>
-                  <td className="py-1.5 text-gray-600">{formatDate(b.last_movement_date)}</td>
-                  <td className="py-1.5"><WorkflowBadge status={b.stock_status} config={STOCK_STATUS_BADGES} /></td>
+                  <td><span className="font-mono">{b.location_code}</span> <span className="text-fg-subtle">{b.location_name}</span></td>
+                  <td className="text-right">{q(b.received_quantity)}</td>
+                  <td className="text-right font-semibold">{q(b.quantity)}</td>
+                  <td className="text-fg-muted">{formatDate(b.last_movement_date)}</td>
+                  <td><WorkflowBadge status={b.stock_status} config={STOCK_STATUS_BADGES} /></td>
                 </tr>
               ))}
             </tbody>
@@ -145,17 +143,17 @@ export default function LotStockPage({ params }) {
 
       {lot.source_type === 'grn' && (
       <Card title="Inspections" variant="info">
-        {lot.inspections.length === 0 ? <p className="text-sm text-gray-500 m-0">Not inspected yet.</p> : (
-          <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">QC No.</th><th className="py-1.5 font-medium text-right">Accepted</th><th className="py-1.5 font-medium text-right">Rejected</th><th className="py-1.5 font-medium">Status</th><th className="py-1.5 font-medium">Stock</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
+        {lot.inspections.length === 0 ? <p className="text-sm text-fg-subtle m-0">Not inspected yet.</p> : (
+          <table className="data-table">
+            <thead><tr><th>QC No.</th><th className="text-right">Accepted</th><th className="text-right">Rejected</th><th>Status</th><th>Stock</th></tr></thead>
+            <tbody>
               {lot.inspections.map((qc) => (
                 <tr key={qc.id}>
-                  <td className="py-1.5"><Link href={`/quality-control/${qc.id}`} className="font-mono text-blue-600 hover:underline">{qc.qc_no}</Link></td>
-                  <td className="py-1.5 text-right">{qc.accepted_quantity === null ? '—' : q(qc.accepted_quantity)}</td>
-                  <td className="py-1.5 text-right">{qc.rejected_quantity === null ? '—' : q(qc.rejected_quantity)}</td>
-                  <td className="py-1.5"><WorkflowBadge status={qcBadgeStatus(qc)} config={QC_STATUS_BADGES} /></td>
-                  <td className="py-1.5 font-mono text-xs">{qc.stock_movement_no || <span className="font-sans text-gray-400">not posted</span>}</td>
+                  <td><Link href={`/quality-control/${qc.id}`} className="font-mono text-link hover:underline">{qc.qc_no}</Link></td>
+                  <td className="text-right">{qc.accepted_quantity === null ? '—' : q(qc.accepted_quantity)}</td>
+                  <td className="text-right">{qc.rejected_quantity === null ? '—' : q(qc.rejected_quantity)}</td>
+                  <td><WorkflowBadge status={qcBadgeStatus(qc)} config={QC_STATUS_BADGES} /></td>
+                  <td className="font-mono">{qc.stock_movement_no || <span className="font-sans text-fg-subtle">not posted</span>}</td>
                 </tr>
               ))}
             </tbody>
@@ -166,21 +164,21 @@ export default function LotStockPage({ params }) {
       )}
 
       <Card title="Stock Movements" variant="info">
-        {movements.length === 0 ? <p className="text-sm text-gray-500 m-0">No movements.</p> : (
-          <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Movement</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium">Type</th><th className="py-1.5 font-medium">Location</th><th className="py-1.5 font-medium">Source / Reason</th><th className="py-1.5 font-medium text-right">In</th><th className="py-1.5 font-medium text-right">Out</th><th className="py-1.5 font-medium text-right">Balance</th><th className="py-1.5 font-medium">By</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
+        {movements.length === 0 ? <p className="text-sm text-fg-subtle m-0">No movements.</p> : (
+          <table className="data-table">
+            <thead><tr><th>Movement</th><th>Date</th><th>Type</th><th>Location</th><th>Source / Reason</th><th className="text-right">In</th><th className="text-right">Out</th><th className="text-right">Balance</th><th>By</th></tr></thead>
+            <tbody>
               {movements.map((m) => (
                 <tr key={m.id}>
-                  <td className="py-1.5">{can('stock.ledger') ? <Link href={`/inventory/ledger/${m.id}`} className="font-mono text-blue-600 hover:underline">{m.movement_no}</Link> : <span className="font-mono">{m.movement_no}</span>}</td>
-                  <td className="py-1.5 text-gray-600 whitespace-nowrap">{formatDate(m.movement_date)}</td>
-                  <td className="py-1.5">{STOCK_MOVEMENT_LABELS[m.movement_type]}</td>
-                  <td className="py-1.5 font-mono text-xs">{m.location_code}</td>
-                  <td className="py-1.5 text-gray-700">{m.qc_no ? <Link href={`/quality-control/${m.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{m.qc_no}</Link> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{m.issue_no}</Link> : m.processing_no ? <Link href={`/production/processing/${m.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{m.processing_no}</Link> : m.dispatch_no ? <Link href={`/dispatch/${m.dispatch_id}`} className="font-mono text-blue-600 hover:underline">{m.dispatch_no}</Link> : m.reason}</td>
-                  <td className="py-1.5 text-right text-green-700">{Number(m.quantity_in) > 0 ? formatQuantity(m.quantity_in, dp) : ''}</td>
-                  <td className="py-1.5 text-right text-red-700">{Number(m.quantity_out) > 0 ? formatQuantity(m.quantity_out, dp) : ''}</td>
-                  <td className="py-1.5 text-right font-medium">{formatQuantity(m.balance_after, dp)}</td>
-                  <td className="py-1.5 text-xs text-gray-500">{m.creator_name || '—'} · {formatDateTime(m.created_at)}</td>
+                  <td>{can('stock.ledger') ? <Link href={`/inventory/ledger/${m.id}`} className="font-mono text-link hover:underline">{m.movement_no}</Link> : <span className="font-mono">{m.movement_no}</span>}</td>
+                  <td className="text-fg-muted whitespace-nowrap">{formatDate(m.movement_date)}</td>
+                  <td>{STOCK_MOVEMENT_LABELS[m.movement_type]}</td>
+                  <td className="font-mono">{m.location_code}</td>
+                  <td className="text-fg-muted">{m.qc_no ? <Link href={`/quality-control/${m.quality_inspection_id}`} className="font-mono text-link hover:underline">{m.qc_no}</Link> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-link hover:underline">{m.issue_no}</Link> : m.processing_no ? <Link href={`/production/processing/${m.processing_record_id}`} className="font-mono text-link hover:underline">{m.processing_no}</Link> : m.dispatch_no ? <Link href={`/dispatch/${m.dispatch_id}`} className="font-mono text-link hover:underline">{m.dispatch_no}</Link> : m.reason}</td>
+                  <td className="text-right text-green-700">{Number(m.quantity_in) > 0 ? formatQuantity(m.quantity_in, dp) : ''}</td>
+                  <td className="text-right text-red-700">{Number(m.quantity_out) > 0 ? formatQuantity(m.quantity_out, dp) : ''}</td>
+                  <td className="text-right">{formatQuantity(m.balance_after, dp)}</td>
+                  <td>{m.creator_name || '—'} · {formatDateTime(m.created_at)}</td>
                 </tr>
               ))}
             </tbody>
@@ -190,40 +188,40 @@ export default function LotStockPage({ params }) {
 
       {can('stock.adjust') && balances.length > 0 && (
         <Card title="Stock Adjustment (restricted)" variant="info">
-          <p className="text-xs text-gray-500 mt-0 mb-3">
+          <p className="text-xs text-fg-subtle mt-0 mb-3">
             Corrects an existing balance of this lot. Removing cannot make stock negative; adding can only restore stock removed earlier
             (never above the QC-accepted quantity). A reason is required and the movement cannot be edited afterwards.
           </p>
           <form onSubmit={submitAdjustment} className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Location *</label>
-              <select required value={adjustment.location_id} onChange={(e) => setAdjustment({ ...adjustment, location_id: e.target.value })} className={INPUT}>
+              <label className="block text-xs font-medium text-fg-muted mb-1">Location *</label>
+              <select required value={adjustment.location_id} onChange={(e) => setAdjustment({ ...adjustment, location_id: e.target.value })} className="form-select">
                 <option value="">—</option>
                 {balances.map((b) => <option key={b.location_id} value={b.location_id}>{b.location_code} ({formatQuantity(b.quantity, dp)})</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Direction *</label>
-              <select value={adjustment.direction} onChange={(e) => setAdjustment({ ...adjustment, direction: e.target.value })} className={INPUT}>
+              <label className="block text-xs font-medium text-fg-muted mb-1">Direction *</label>
+              <select value={adjustment.direction} onChange={(e) => setAdjustment({ ...adjustment, direction: e.target.value })} className="form-select">
                 <option value="out">Remove (out)</option>
                 <option value="in">Restore (in)</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Quantity ({lot.unit}) *</label>
-              <input type="number" required min="0" step={stepFor(dp)} value={adjustment.quantity} onChange={(e) => setAdjustment({ ...adjustment, quantity: e.target.value })} className={`${INPUT} text-right`} />
+              <label className="block text-xs font-medium text-fg-muted mb-1">Quantity ({lot.unit}) *</label>
+              <input type="number" required min="0" step={stepFor(dp)} value={adjustment.quantity} onChange={(e) => setAdjustment({ ...adjustment, quantity: e.target.value })} className={`form-input text-right`} />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Date *</label>
-              <input type="date" required value={adjustment.movement_date} onChange={(e) => setAdjustment({ ...adjustment, movement_date: e.target.value })} className={INPUT} />
+              <label className="block text-xs font-medium text-fg-muted mb-1">Date *</label>
+              <input type="date" required value={adjustment.movement_date} onChange={(e) => setAdjustment({ ...adjustment, movement_date: e.target.value })} className="form-input" />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Reason *</label>
-              <input type="text" required minLength={3} maxLength={255} value={adjustment.reason} onChange={(e) => setAdjustment({ ...adjustment, reason: e.target.value })} className={INPUT} />
+              <label className="block text-xs font-medium text-fg-muted mb-1">Reason *</label>
+              <input type="text" required minLength={3} maxLength={255} value={adjustment.reason} onChange={(e) => setAdjustment({ ...adjustment, reason: e.target.value })} className="form-input" />
             </div>
             <div className="md:col-span-5">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-              <input type="text" maxLength={2000} value={adjustment.remarks} onChange={(e) => setAdjustment({ ...adjustment, remarks: e.target.value })} className={INPUT} />
+              <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+              <input type="text" maxLength={2000} value={adjustment.remarks} onChange={(e) => setAdjustment({ ...adjustment, remarks: e.target.value })} className="form-input" />
             </div>
             <div>
               <button type="submit" disabled={saving} className="w-full bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded text-sm font-medium disabled:opacity-60">Post Adjustment</button>

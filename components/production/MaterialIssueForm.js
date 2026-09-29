@@ -10,9 +10,7 @@ import BarcodeScanInput from '@/components/barcode/BarcodeScanInput';
 import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { toDateInputValue, todayDateInputValue, formatQuantity } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
-const LABEL = 'block text-xs font-medium text-gray-700 mb-1';
+const LABEL = 'block text-xs font-medium text-fg-muted mb-1';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 const micro = (v) => Math.round(Number(v || 0) * 1e6);
 const EMPTY_HEADER = { issue_date: todayDateInputValue(), location_id: '', job_reference: '', receiver_user_id: '', supervisor_user_id: '', foreman_user_id: '', remarks: '' };
@@ -156,12 +154,12 @@ export default function MaterialIssueForm({ issueId = null }) {
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading material issue...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading material issue...</div>;
 
   const person = (name, label) => (
     <div>
       <label className={LABEL}>{label}</label>
-      <select value={header[name]} onChange={set(name)} disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+      <select value={header[name]} onChange={set(name)} disabled={!companyId} className="form-select">
         <option value="">—</option>
         {users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
       </select>
@@ -180,48 +178,48 @@ export default function MaterialIssueForm({ issueId = null }) {
       <FormSection title="Issue" icon="bi-box-arrow-right" subtitle="Material leaves one stock location; stock is reduced only when the issue is posted.">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className={LABEL}>Company <span className="text-red-500">*</span></label>
+            <label className={LABEL}>Company <span className="text-[var(--danger)]">*</span></label>
             {issueId ? (
               <div className="py-1.5"><CompanyBadge label={saved?.company_label} code={saved?.company_code} /></div>
             ) : (
-              <CompanySelect value={companyId} onChange={handleCompanyChange} required className="form-select w-full rounded border-gray-300 text-sm" />
+              <CompanySelect value={companyId} onChange={handleCompanyChange} required />
             )}
           </div>
           <div>
-            <label className={LABEL}>Source Location <span className="text-red-500">*</span></label>
-            <select value={header.location_id} onChange={handleLocationChange} required disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+            <label className={LABEL}>Source Location <span className="text-[var(--danger)]">*</span></label>
+            <select value={header.location_id} onChange={handleLocationChange} required disabled={!companyId} className="form-select">
               <option value="">{companyId ? (locations.length ? '— Select —' : 'No active location') : 'Select a company first'}</option>
               {locations.map((l) => <option key={l.id} value={l.id}>{l.code} · {l.name}</option>)}
             </select>
           </div>
           <div>
-            <label className={LABEL}>Issue Date <span className="text-red-500">*</span></label>
-            <input type="date" required value={header.issue_date} onChange={set('issue_date')} className={INPUT} />
+            <label className={LABEL}>Issue Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" required value={header.issue_date} onChange={set('issue_date')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Job Reference</label>
-            <input type="text" maxLength={100} value={header.job_reference} onChange={set('job_reference')} className={INPUT} />
+            <input type="text" maxLength={100} value={header.job_reference} onChange={set('job_reference')} className="form-input" />
           </div>
           {person('receiver_user_id', 'Received by (required to post)')}
           {person('supervisor_user_id', 'Supervisor / Cutting')}
           {person('foreman_user_id', 'Foreman')}
           <div className="md:col-span-2">
             <label className={LABEL}>Remarks</label>
-            <input type="text" maxLength={2000} value={header.remarks} onChange={set('remarks')} className={INPUT} />
+            <input type="text" maxLength={2000} value={header.remarks} onChange={set('remarks')} className="form-input" />
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">People are existing ERP users.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">People are existing ERP users.</p>
       </FormSection>
 
       <FormSection title="Lots" icon="bi-stack" subtitle="Only usable (QC-accepted) stock at the selected location can be issued.">
         {!header.location_id ? (
-          <p className="text-sm text-gray-500 m-0">Select a source location to see its stock.</p>
+          <p className="text-sm text-fg-subtle m-0">Select a source location to see its stock.</p>
         ) : (
           <>
             <div className="flex items-end gap-2 mb-3">
               <div className="flex-1">
                 <label className={LABEL}>Add lot</label>
-                <select value="" onChange={(e) => addLine(e.target.value)} className="form-select w-full rounded border-gray-300 text-sm">
+                <select value="" onChange={(e) => addLine(e.target.value)} className="form-select">
                   <option value="">{unused.length ? '— Select a lot in stock here —' : 'No (other) lots in stock at this location'}</option>
                   {unused.map((s) => (
                     <option key={s.lot_id} value={s.lot_id}>
@@ -235,37 +233,37 @@ export default function MaterialIssueForm({ issueId = null }) {
               <div className="mb-3">
                 <label className={LABEL}>…or scan the lot barcode</label>
                 <BarcodeScanInput companyId={companyId} context="material_issue" locationId={header.location_id} onResult={onScan} onError={(message) => setScanNote({ error: true, text: message })} />
-                {scanNote && <p className={`text-xs mt-1 mb-0 ${scanNote.error ? 'text-red-600' : scanNote.warn ? 'text-amber-700' : 'text-green-700'}`}>{scanNote.text}</p>}
+                {scanNote && <p className={`text-xs mt-1 mb-0 ${scanNote.error ? 'text-[var(--danger)]' : scanNote.warn ? 'text-amber-700' : 'text-green-700'}`}>{scanNote.text}</p>}
               </div>
             )}
             {lines.length > 0 && (
-              <table className="min-w-full text-sm">
-                <thead className="text-gray-500 text-xs text-left">
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <th className="py-1.5 font-medium">Lot</th>
-                    <th className="py-1.5 font-medium">Material</th>
-                    <th className="py-1.5 font-medium text-right">Available</th>
-                    <th className="py-1.5 font-medium w-40">Issue Qty *</th>
-                    <th className="py-1.5 font-medium">Remarks</th>
+                    <th>Lot</th>
+                    <th>Material</th>
+                    <th className="text-right">Available</th>
+                    <th className="w-40">Issue Qty *</th>
+                    <th>Remarks</th>
                     <th className="w-8"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody>
                   {lines.map((line) => {
                     const s = stockOf(line.lot_id);
                     const dp = s?.uom_decimal_places ?? 0;
                     const over = s && String(line.quantity).trim() !== '' && micro(line.quantity) > micro(s.quantity);
                     return (
                       <tr key={line.lot_id}>
-                        <td className="py-1.5 font-mono">{s?.lot_no || `Lot ${line.lot_id}`}</td>
-                        <td className="py-1.5">{s ? `${s.product_name} · ${formatQuantity(s.width_inch, 3)}"` : <span className="text-red-600">No stock of this lot at this location</span>}</td>
-                        <td className="py-1.5 text-right whitespace-nowrap">{s ? `${formatQuantity(s.quantity, dp)} ${s.unit}` : '0'}</td>
-                        <td className="py-1.5">
-                          <input type="number" required min="0" step={stepFor(dp)} value={line.quantity} onChange={(e) => updateLine(line.lot_id, { quantity: e.target.value })} className={`${INPUT} text-right`} />
-                          {over && <div className="text-xs text-red-600">More than available</div>}
+                        <td className="font-mono">{s?.lot_no || `Lot ${line.lot_id}`}</td>
+                        <td>{s ? `${s.product_name} · ${formatQuantity(s.width_inch, 3)}"` : <span className="text-[var(--danger)]">No stock of this lot at this location</span>}</td>
+                        <td className="text-right whitespace-nowrap">{s ? `${formatQuantity(s.quantity, dp)} ${s.unit}` : '0'}</td>
+                        <td>
+                          <input type="number" required min="0" step={stepFor(dp)} value={line.quantity} onChange={(e) => updateLine(line.lot_id, { quantity: e.target.value })} className={`form-input text-right`} />
+                          {over && <div className="text-xs text-[var(--danger)]">More than available</div>}
                         </td>
-                        <td className="py-1.5"><input type="text" maxLength={1000} value={line.remarks} onChange={(e) => updateLine(line.lot_id, { remarks: e.target.value })} className={INPUT} /></td>
-                        <td className="py-1.5 text-right"><button type="button" onClick={() => removeLine(line.lot_id)} className="text-red-500 hover:text-red-700" title="Remove"><i className="bi bi-x-lg"></i></button></td>
+                        <td><input type="text" maxLength={1000} value={line.remarks} onChange={(e) => updateLine(line.lot_id, { remarks: e.target.value })} className="form-input" /></td>
+                        <td className="text-right"><button type="button" onClick={() => removeLine(line.lot_id)} className="text-[var(--danger)] hover:text-[var(--danger)]" title="Remove"><i className="bi bi-x-lg"></i></button></td>
                       </tr>
                     );
                   })}
@@ -276,11 +274,11 @@ export default function MaterialIssueForm({ issueId = null }) {
         )}
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving || lines.length === 0} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving || lines.length === 0} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
           <i className="bi bi-check-lg mr-1"></i> {issueId ? 'Update' : 'Save'} Draft
         </button>
-        <Link href={issueId ? `/production/material-issues/${issueId}` : '/production/material-issues'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={issueId ? `/production/material-issues/${issueId}` : '/production/material-issues'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
       </div>

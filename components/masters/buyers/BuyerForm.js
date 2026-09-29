@@ -6,7 +6,7 @@ import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import CompanySelect from '@/components/company/CompanySelect';
 import SearchMultiSelect from '@/components/masters/suppliers/SearchMultiSelect';
-import { INPUT, Section, Row, toList } from '@/components/masters/shared/MasterFormParts';
+import { Section, Row, toList } from '@/components/masters/shared/MasterFormParts';
 import { apiClient } from '@/lib/api-client';
 
 /**
@@ -147,7 +147,7 @@ export default function BuyerForm({ buyerId = null }) {
   };
 
   if (!form) {
-    return <DashboardLayout>{errors.length ? <div className="bg-red-50 text-red-600 p-3 rounded">{errors[0]}</div> : <div className="p-8 text-center text-gray-500">Loading form data…</div>}</DashboardLayout>;
+    return <DashboardLayout>{errors.length ? <div className="alert alert-danger">{errors[0]}</div> : <div className="p-8 text-center text-fg-subtle">Loading form data…</div>}</DashboardLayout>;
   }
 
   const designations = toList(lookups.designations);
@@ -156,10 +156,10 @@ export default function BuyerForm({ buyerId = null }) {
   return (
     <DashboardLayout>
       <div className="mb-4">
-        <h2 className="text-2xl font-semibold text-gray-900 m-0">{buyerId ? 'Edit Buyer' : 'Add Buyer'}</h2>
+        <h2 className="text-2xl font-semibold text-fg m-0">{buyerId ? 'Edit Buyer' : 'Add Buyer'}</h2>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden">
+      <div className="bg-surface rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden">
       <form onSubmit={submit}>
         <div className="p-6">
         {errors.length > 0 && (
@@ -171,16 +171,16 @@ export default function BuyerForm({ buyerId = null }) {
         {/* A–D · Identification */}
         <Section title="Identification" icon="bi-globe-asia-australia" subtitle="Who the buyer is, here and on the export invoice.">
           <Row label="Our Company" htmlFor="company_id" hint="Blank = the buyer is shared by both companies.">
-            <CompanySelect value={form.company_id} onChange={onInput} emptyLabel="Shared (both companies)" className={INPUT} />
+            <CompanySelect value={form.company_id} onChange={onInput} emptyLabel="Shared (both companies)" />
           </Row>
           <Row label="Display Code" hint={buyerId ? 'Codes never change — they appear on documents already sent.' : 'Assigned automatically when you save (BUY01, BUY02…).'}>
-            <input type="text" value={displayCode || 'Auto'} readOnly className={`${INPUT} font-mono bg-gray-50`} />
+            <input type="text" value={displayCode || 'Auto'} readOnly className={`form-input font-mono`} />
           </Row>
           <Row label="Company Name" required htmlFor="company_name">
-            <input id="company_name" name="company_name" type="text" required maxLength={200} value={form.company_name} onChange={onInput} placeholder="ABC Fashion Ltd" className={INPUT} />
+            <input id="company_name" name="company_name" type="text" required maxLength={200} value={form.company_name} onChange={onInput} placeholder="ABC Fashion Ltd" className="form-input" />
           </Row>
           <Row label="Name on Export Invoice" htmlFor="name_on_export_invoice" hint="Leave blank to use the company name.">
-            <input id="name_on_export_invoice" name="name_on_export_invoice" type="text" maxLength={200} value={form.name_on_export_invoice} onChange={onInput} placeholder="Exactly as it must print on the invoice" className={INPUT} />
+            <input id="name_on_export_invoice" name="name_on_export_invoice" type="text" maxLength={200} value={form.name_on_export_invoice} onChange={onInput} placeholder="Exactly as it must print on the invoice" className="form-input" />
           </Row>
           <Row label="Category of Items" required hint="Pick every category this buyer orders.">
             <SearchMultiSelect options={toList(lookups.categories)} value={form.category_ids} onChange={(ids) => setForm((f) => ({ ...f, category_ids: ids }))} placeholder="Search categories…" />
@@ -190,52 +190,52 @@ export default function BuyerForm({ buyerId = null }) {
         {/* E–H · Contact */}
         <Section title="Contact" icon="bi-person-lines-fill">
           <Row label="Contact Person" htmlFor="contact_person">
-            <input id="contact_person" name="contact_person" type="text" maxLength={120} value={form.contact_person} onChange={onInput} placeholder="John Smith" className={INPUT} />
+            <input id="contact_person" name="contact_person" type="text" maxLength={120} value={form.contact_person} onChange={onInput} placeholder="John Smith" className="form-input" />
           </Row>
           <Row label="Designation" htmlFor="contact_designation_id">
-            <select id="contact_designation_id" name="contact_designation_id" value={form.contact_designation_id} onChange={onInput} className={INPUT}>
+            <select id="contact_designation_id" name="contact_designation_id" value={form.contact_designation_id} onChange={onInput} className="form-select">
               <option value="">— Select —</option>{option(designations)}
             </select>
           </Row>
           <Row label="Email" htmlFor="email">
-            <input id="email" name="email" type="email" maxLength={150} value={form.email} onChange={onInput} placeholder="john@abcfashion.com" className={INPUT} />
+            <input id="email" name="email" type="email" maxLength={150} value={form.email} onChange={onInput} placeholder="john@abcfashion.com" className="form-input" />
           </Row>
           <Row label="Mobile" htmlFor="mobile">
-            <input id="mobile" name="mobile" type="text" maxLength={30} value={form.mobile} onChange={onInput} placeholder="+44 987654321" className={INPUT} />
+            <input id="mobile" name="mobile" type="text" maxLength={30} value={form.mobile} onChange={onInput} placeholder="+44 987654321" className="form-input" />
           </Row>
           <Row label="GST / VAT No." htmlFor="gst_vat_no">
-            <input id="gst_vat_no" name="gst_vat_no" type="text" maxLength={15} value={form.gst_vat_no} onChange={onInput} placeholder="33ABCDE1234F1Z5" className={`${INPUT} font-mono uppercase`} />
+            <input id="gst_vat_no" name="gst_vat_no" type="text" maxLength={15} value={form.gst_vat_no} onChange={onInput} placeholder="33ABCDE1234F1Z5" className={`form-input font-mono uppercase`} />
           </Row>
         </Section>
 
         {/* Secondary contact persons */}
         <Section title="Secondary Contact Person" icon="bi-people" subtitle="Optional — add as many as needed, beyond the contact person above.">
           <label className="flex items-center gap-2 text-sm mb-3">
-            <input type="checkbox" checked={secondary} onChange={(e) => setSecondary(e.target.checked)} className="rounded border-gray-300" />
+            <input type="checkbox" checked={secondary} onChange={(e) => setSecondary(e.target.checked)} className="rounded border-line-strong" />
             Add a secondary contact person
           </label>
           {secondary && (
             <div>
-              <div className="overflow-x-auto border border-gray-200 rounded-md">
-                <table className="min-w-full text-sm">
-                  <thead className="bg-gray-50 text-gray-600 text-left">
-                    <tr><th className="px-2 py-2 font-medium">Name</th><th className="px-2 py-2 font-medium">Designation</th><th className="px-2 py-2 font-medium">Mobile</th><th className="px-2 py-2 font-medium">Email</th><th className="w-10"></th></tr>
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
+                    <tr><th>Name</th><th>Designation</th><th>Mobile</th><th>Email</th><th className="w-10"></th></tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody>
                     {contacts.map((c, i) => (
                       <tr key={i}>
-                        <td className="px-2 py-1.5"><input type="text" maxLength={120} value={c.name} onChange={(e) => setContact(i, 'name', e.target.value)} placeholder="Full name" className={INPUT} /></td>
-                        <td className="px-2 py-1.5"><select value={c.designation_id} onChange={(e) => setContact(i, 'designation_id', e.target.value)} className={INPUT}><option value="">— Select —</option>{option(designations)}</select></td>
-                        <td className="px-2 py-1.5"><input type="text" maxLength={30} value={c.mobile} onChange={(e) => setContact(i, 'mobile', e.target.value)} placeholder="9876543210" className={INPUT} /></td>
-                        <td className="px-2 py-1.5"><input type="email" maxLength={150} value={c.email} onChange={(e) => setContact(i, 'email', e.target.value)} placeholder="name@company.com" className={INPUT} /></td>
-                        <td className="px-2 py-1.5 text-right"><button type="button" onClick={() => setContacts((rows) => (rows.length > 1 ? rows.filter((_, idx) => idx !== i) : [{ ...EMPTY_CONTACT }]))} className="text-red-600 hover:text-red-800" title="Remove contact"><i className="bi bi-x-lg"></i></button></td>
+                        <td><input type="text" maxLength={120} value={c.name} onChange={(e) => setContact(i, 'name', e.target.value)} placeholder="Full name" className="form-input" /></td>
+                        <td><select value={c.designation_id} onChange={(e) => setContact(i, 'designation_id', e.target.value)} className="form-select"><option value="">— Select —</option>{option(designations)}</select></td>
+                        <td><input type="text" maxLength={30} value={c.mobile} onChange={(e) => setContact(i, 'mobile', e.target.value)} placeholder="9876543210" className="form-input" /></td>
+                        <td><input type="email" maxLength={150} value={c.email} onChange={(e) => setContact(i, 'email', e.target.value)} placeholder="name@company.com" className="form-input" /></td>
+                        <td className="text-right"><button type="button" onClick={() => setContacts((rows) => (rows.length > 1 ? rows.filter((_, idx) => idx !== i) : [{ ...EMPTY_CONTACT }]))} className="text-[var(--danger)] hover:text-red-800" title="Remove contact"><i className="bi bi-x-lg"></i></button></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              <button type="button" onClick={() => setContacts((rows) => [...rows, { ...EMPTY_CONTACT }])} className="mt-2 px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"><i className="bi bi-plus-lg mr-1"></i>Add contact</button>
-              <p className="mt-1 text-xs text-gray-500">Rows with no name are not saved.</p>
+              <button type="button" onClick={() => setContacts((rows) => [...rows, { ...EMPTY_CONTACT }])} className="mt-2 px-3 py-1.5 border border-line-strong rounded text-sm text-fg-muted hover:bg-surface-hover"><i className="bi bi-plus-lg mr-1"></i>Add contact</button>
+              <p className="mt-1 text-xs text-fg-subtle">Rows with no name are not saved.</p>
             </div>
           )}
         </Section>
@@ -243,28 +243,28 @@ export default function BuyerForm({ buyerId = null }) {
         {/* I–N · Address & Destination */}
         <Section title="Address & Destination" icon="bi-geo-alt" subtitle="Prints on the export invoice and the packing list.">
           <Row label="Address" htmlFor="address">
-            <textarea id="address" name="address" rows={2} maxLength={255} value={form.address} onChange={onInput} placeholder="12 Fashion Street" className={INPUT}></textarea>
+            <textarea id="address" name="address" rows={2} maxLength={255} value={form.address} onChange={onInput} placeholder="12 Fashion Street" className="form-textarea"></textarea>
           </Row>
           <Row label="Country" htmlFor="country_id">
-            <select id="country_id" name="country_id" value={form.country_id} onChange={onCountry} className={INPUT}>
+            <select id="country_id" name="country_id" value={form.country_id} onChange={onCountry} className="form-select">
               <option value="">— Select —</option>{option(lookups.countries)}
             </select>
           </Row>
           <Row label="State" htmlFor="state_id">
-            <select id="state_id" name="state_id" value={form.state_id} onChange={onState} disabled={!form.country_id} className={`${INPUT} disabled:bg-gray-50`}>
+            <select id="state_id" name="state_id" value={form.state_id} onChange={onState} disabled={!form.country_id} className="form-select">
               <option value="">{form.country_id ? '— Select —' : 'Select a country first'}</option>{option(states)}
             </select>
           </Row>
           <Row label="City" htmlFor="city_id">
-            <select id="city_id" name="city_id" value={form.city_id} onChange={onInput} disabled={!form.state_id} className={`${INPUT} disabled:bg-gray-50`}>
+            <select id="city_id" name="city_id" value={form.city_id} onChange={onInput} disabled={!form.state_id} className="form-select">
               <option value="">{form.state_id ? '— Select —' : 'Select a state first'}</option>{option(cities)}
             </select>
           </Row>
           <Row label="PIN / ZIP Code" htmlFor="pincode">
-            <input id="pincode" name="pincode" type="text" maxLength={20} value={form.pincode} onChange={onInput} placeholder="EC1A1AA" className={`${INPUT} md:w-1/3`} />
+            <input id="pincode" name="pincode" type="text" maxLength={20} value={form.pincode} onChange={onInput} placeholder="EC1A1AA" className={`form-input md:w-1/3`} />
           </Row>
           <Row label="Destination Port" htmlFor="port_id">
-            <select id="port_id" name="port_id" value={form.port_id} onChange={onInput} className={INPUT}>
+            <select id="port_id" name="port_id" value={form.port_id} onChange={onInput} className="form-select">
               <option value="">— Select —</option>{option(lookups.ports, (p) => (p.code ? `${p.name} (${p.code})` : p.name))}
             </select>
           </Row>
@@ -273,14 +273,14 @@ export default function BuyerForm({ buyerId = null }) {
         {/* O–P · Agent */}
         <Section title="Agent" icon="bi-person-badge" subtitle="Optional — only agents marked as buyer-side are listed.">
           <Row label="Agent" htmlFor="agent_id" hint={toList(lookups.agents).length ? null : 'No buyer-side agents exist yet.'}>
-            <select id="agent_id" name="agent_id" value={form.agent_id} onChange={onInput} className={INPUT}>
+            <select id="agent_id" name="agent_id" value={form.agent_id} onChange={onInput} className="form-select">
               <option value="">— None —</option>{option(lookups.agents, (a) => (a.display_code ? `${a.name} (${a.display_code})` : a.name))}
             </select>
           </Row>
           <Row label="Agent Commission" htmlFor="agent_commission_value">
             <div className="flex gap-2">
-              <input id="agent_commission_value" name="agent_commission_value" type="number" step="0.0001" min="0" value={form.agent_commission_value} onChange={onInput} placeholder="0.0000" className={INPUT} />
-              <select name="agent_commission_type" value={form.agent_commission_type} onChange={onInput} className={`${INPUT} max-w-[160px]`}>
+              <input id="agent_commission_value" name="agent_commission_value" type="number" step="0.0001" min="0" value={form.agent_commission_value} onChange={onInput} placeholder="0.0000" className="form-input" />
+              <select name="agent_commission_type" value={form.agent_commission_type} onChange={onInput} className="form-select">
                 <option value="percent">% Percent</option>
                 <option value="amount">Fixed amount</option>
               </select>
@@ -291,33 +291,33 @@ export default function BuyerForm({ buyerId = null }) {
         {/* Q–T · Trade Terms */}
         <Section title="Trade Terms" icon="bi-file-earmark-text" subtitle="Defaults copied onto this buyer's quotations and order confirmations.">
           <Row label="Payment Terms" htmlFor="payment_term_id">
-            <select id="payment_term_id" name="payment_term_id" value={form.payment_term_id} onChange={onInput} className={INPUT}>
+            <select id="payment_term_id" name="payment_term_id" value={form.payment_term_id} onChange={onInput} className="form-select">
               <option value="">— Select —</option>{option(lookups.paymentTerms)}
             </select>
           </Row>
           {splitVisible && (
             <Row label="Advance / At Sight Split" required>
               <div className="flex flex-wrap items-center gap-2 text-sm">
-                <input name="advance_percent" type="number" step="0.01" min="0.01" max="99.99" value={form.advance_percent} onChange={onInput} aria-label="Advance percentage" className={`${INPUT} w-28`} />
-                <span className="text-gray-500">% advance +</span>
-                <input name="sight_percent" type="number" step="0.01" min="0.01" max="99.99" value={form.sight_percent} onChange={onInput} aria-label="At-sight percentage" className={`${INPUT} w-28`} />
-                <span className="text-gray-500">% at sight</span>
-                <span className={`text-xs ${Math.round(splitTotal * 100) === 10000 ? 'text-green-700' : 'text-red-600'}`}>= {splitTotal.toFixed(2)}% (must be 100)</span>
+                <input name="advance_percent" type="number" step="0.01" min="0.01" max="99.99" value={form.advance_percent} onChange={onInput} aria-label="Advance percentage" className={`form-input w-28`} />
+                <span className="text-fg-subtle">% advance +</span>
+                <input name="sight_percent" type="number" step="0.01" min="0.01" max="99.99" value={form.sight_percent} onChange={onInput} aria-label="At-sight percentage" className={`form-input w-28`} />
+                <span className="text-fg-subtle">% at sight</span>
+                <span className={`text-xs ${Math.round(splitTotal * 100) === 10000 ? 'text-green-700' : 'text-[var(--danger)]'}`}>= {splitTotal.toFixed(2)}% (must be 100)</span>
               </div>
             </Row>
           )}
           <Row label="Default Inco Term" htmlFor="incoterm_id">
-            <select id="incoterm_id" name="incoterm_id" value={form.incoterm_id} onChange={onInput} className={INPUT}>
+            <select id="incoterm_id" name="incoterm_id" value={form.incoterm_id} onChange={onInput} className="form-select">
               <option value="">— Select —</option>{option(lookups.incoterms, (i) => `${i.code} — ${i.name}`)}
             </select>
           </Row>
           <Row label="Shipment Method" htmlFor="shipment_method_id">
-            <select id="shipment_method_id" name="shipment_method_id" value={form.shipment_method_id} onChange={onInput} className={INPUT}>
+            <select id="shipment_method_id" name="shipment_method_id" value={form.shipment_method_id} onChange={onInput} className="form-select">
               <option value="">— Select —</option>{option(lookups.shipmentMethods)}
             </select>
           </Row>
           <Row label="Default Currency" htmlFor="currency_id">
-            <select id="currency_id" name="currency_id" value={form.currency_id} onChange={onInput} className={INPUT}>
+            <select id="currency_id" name="currency_id" value={form.currency_id} onChange={onInput} className="form-select">
               <option value="">— Select —</option>{option(lookups.currencies, (c) => `${c.iso_code} — ${c.name}`)}
             </select>
           </Row>
@@ -325,9 +325,9 @@ export default function BuyerForm({ buyerId = null }) {
 
         {/* U–W · Bank Details */}
         <Section title="Bank Details" icon="bi-bank" subtitle="Where this buyer remits payment from.">
-          <Row label="Bank Name" htmlFor="bank_name"><input id="bank_name" name="bank_name" type="text" maxLength={120} value={form.bank_name} onChange={onInput} placeholder="HSBC UK" className={INPUT} /></Row>
-          <Row label="Account Number" htmlFor="account_number"><input id="account_number" name="account_number" type="text" maxLength={40} value={form.account_number} onChange={onInput} placeholder="12345678" className={INPUT} /></Row>
-          <Row label="SWIFT Code" htmlFor="swift_code"><input id="swift_code" name="swift_code" type="text" maxLength={20} value={form.swift_code} onChange={onInput} placeholder="HBUKGB4B" className={`${INPUT} uppercase`} /></Row>
+          <Row label="Bank Name" htmlFor="bank_name"><input id="bank_name" name="bank_name" type="text" maxLength={120} value={form.bank_name} onChange={onInput} placeholder="HSBC UK" className="form-input" /></Row>
+          <Row label="Account Number" htmlFor="account_number"><input id="account_number" name="account_number" type="text" maxLength={40} value={form.account_number} onChange={onInput} placeholder="12345678" className="form-input" /></Row>
+          <Row label="SWIFT Code" htmlFor="swift_code"><input id="swift_code" name="swift_code" type="text" maxLength={20} value={form.swift_code} onChange={onInput} placeholder="HBUKGB4B" className={`form-input uppercase`} /></Row>
         </Section>
 
         {/* X · Carton Marking Details */}
@@ -337,19 +337,19 @@ export default function BuyerForm({ buyerId = null }) {
               {carton.map((line, i) => (
                 <div key={i} className="mb-3">
                   <div className="flex items-center justify-between mb-1">
-                    <input type="text" maxLength={60} value={line.label} onChange={(e) => setCartonLine(i, 'label', e.target.value)} placeholder="LINE LABEL" aria-label="Line label" className="text-xs font-semibold uppercase tracking-wide text-gray-600 border-0 border-b border-dashed border-gray-300 focus:outline-none focus:border-blue-500 px-0" />
-                    <button type="button" onClick={() => setCarton((rows) => rows.filter((_, idx) => idx !== i))} className="text-red-600 hover:text-red-800 text-sm" title="Remove line"><i className="bi bi-x-lg"></i></button>
+                    <input type="text" maxLength={60} value={line.label} onChange={(e) => setCartonLine(i, 'label', e.target.value)} placeholder="LINE LABEL" aria-label="Line label" className="form-input font-semibold uppercase tracking-wide border-0 border-b border-dashed focus:border-[var(--focus-ring)]" />
+                    <button type="button" onClick={() => setCarton((rows) => rows.filter((_, idx) => idx !== i))} className="text-[var(--danger)] hover:text-red-800 text-sm" title="Remove line"><i className="bi bi-x-lg"></i></button>
                   </div>
-                  <input type="text" maxLength={120} value={line.value} onChange={(e) => setCartonLine(i, 'value', e.target.value)} placeholder={DEFAULT_CARTON_LINES[i]?.placeholder || 'e.g. MADE IN INDIA'} aria-label="Line value" className={INPUT} />
+                  <input type="text" maxLength={120} value={line.value} onChange={(e) => setCartonLine(i, 'value', e.target.value)} placeholder={DEFAULT_CARTON_LINES[i]?.placeholder || 'e.g. MADE IN INDIA'} aria-label="Line value" className="form-input" />
                 </div>
               ))}
-              <button type="button" onClick={() => setCarton((rows) => [...rows, { label: '', value: '' }])} className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50"><i className="bi bi-plus-lg mr-1"></i>Add line</button>
-              <p className="mt-1 text-xs text-gray-500">Blank lines are not saved.</p>
+              <button type="button" onClick={() => setCarton((rows) => [...rows, { label: '', value: '' }])} className="px-3 py-1.5 border border-line-strong rounded text-sm text-fg-muted hover:bg-surface-hover"><i className="bi bi-plus-lg mr-1"></i>Add line</button>
+              <p className="mt-1 text-xs text-fg-subtle">Blank lines are not saved.</p>
             </div>
             <div className="lg:col-span-5">
-              <div className="border border-gray-300 rounded-md bg-amber-50/40">
-                <div className="px-3 py-1.5 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">Live preview</div>
-                <pre className="p-3 m-0 text-sm font-mono whitespace-pre-wrap text-gray-800">{carton.filter((l) => l.value.trim()).map((l) => l.value.trim()).join('\n') || '—'}</pre>
+              <div className="border border-line-strong rounded-md bg-amber-50/40">
+                <div className="px-3 py-1.5 border-b border-line text-xs font-semibold text-fg-subtle uppercase">Live preview</div>
+                <pre className="p-3 m-0 text-sm font-mono whitespace-pre-wrap text-fg">{carton.filter((l) => l.value.trim()).map((l) => l.value.trim()).join('\n') || '—'}</pre>
               </div>
             </div>
           </div>
@@ -358,22 +358,22 @@ export default function BuyerForm({ buyerId = null }) {
         {/* Other Details */}
         <Section title="Other Details" icon="bi-card-text">
           <Row label="Status" required htmlFor="status">
-            <select id="status" name="status" value={form.status} onChange={onInput} required className={`${INPUT} md:w-1/3`}>
+            <select id="status" name="status" value={form.status} onChange={onInput} required className="form-select">
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
           </Row>
-          <Row label="Remarks" htmlFor="remarks"><textarea id="remarks" name="remarks" rows={2} maxLength={1000} value={form.remarks} onChange={onInput} placeholder="Optional notes" className={INPUT}></textarea></Row>
-          <Row label="Comments" htmlFor="comments"><textarea id="comments" name="comments" rows={2} maxLength={1000} value={form.comments} onChange={onInput} placeholder="Optional comments" className={INPUT}></textarea></Row>
+          <Row label="Remarks" htmlFor="remarks"><textarea id="remarks" name="remarks" rows={2} maxLength={1000} value={form.remarks} onChange={onInput} placeholder="Optional notes" className="form-textarea"></textarea></Row>
+          <Row label="Comments" htmlFor="comments"><textarea id="comments" name="comments" rows={2} maxLength={1000} value={form.comments} onChange={onInput} placeholder="Optional comments" className="form-textarea"></textarea></Row>
         </Section>
 
         </div>
-        <div className="bg-gray-50 px-6 py-4 flex items-center gap-2 border-t border-gray-200">
+        <div className="bg-surface-raised px-6 py-4 flex items-center gap-2 border-t border-line">
           <button type="submit" disabled={saving}
-            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}>
+            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--focus-ring)] ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}>
             <i className="bi bi-check-lg mr-1"></i> {buyerId ? 'Update' : 'Save'} Buyer
           </button>
-          <Link href={API} className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 no-underline">Cancel</Link>
+          <Link href={API} className="inline-flex items-center px-4 py-2 border border-line-strong shadow-sm text-sm font-medium rounded-md text-fg-muted bg-surface hover:bg-surface-hover no-underline">Cancel</Link>
         </div>
       </form>
       </div>

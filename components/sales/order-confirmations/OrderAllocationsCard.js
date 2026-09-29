@@ -10,16 +10,16 @@ export default function OrderAllocationsCard({ allocations, can }) {
   if (!allocations || allocations.length === 0) return null;
   return (
     <Card title="Allocated to Orders" variant="info">
-      <table className="min-w-full text-sm">
-        <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Order</th><th className="py-1.5 font-medium">Customer</th><th className="py-1.5 font-medium">Item</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium">Status</th></tr></thead>
-        <tbody className="divide-y divide-gray-100">
+      <table className="data-table">
+        <thead><tr><th>Order</th><th>Customer</th><th>Item</th><th className="text-right">Quantity</th><th>Status</th></tr></thead>
+        <tbody>
           {allocations.map((a) => (
             <tr key={a.id}>
-              <td className="py-1.5">{can('order-confirmation.view') ? <Link href={`/sales/order-confirmations/${a.order_confirmation_id}`} className="font-mono text-blue-600 hover:underline">{a.oc_num}</Link> : <span className="font-mono">{a.oc_num}</span>}</td>
-              <td className="py-1.5 text-gray-700">{a.buyer_name || '—'}</td>
-              <td className="py-1.5 text-gray-700">{a.design_no || a.item_description || '—'}</td>
-              <td className="py-1.5 text-right">{formatQuantity(a.quantity, 6)} {a.unit}</td>
-              <td className="py-1.5"><WorkflowBadge status={a.status} config={ALLOCATION_STATUS_BADGES} /></td>
+              <td>{can('order-confirmation.view') ? <Link href={`/sales/order-confirmations/${a.order_confirmation_id}`} className="font-mono text-link hover:underline">{a.oc_num}</Link> : <span className="font-mono">{a.oc_num}</span>}</td>
+              <td className="text-fg-muted">{a.buyer_name || '—'}</td>
+              <td className="text-fg-muted">{a.design_no || a.item_description || '—'}</td>
+              <td className="text-right">{formatQuantity(a.quantity, 6)} {a.unit}</td>
+              <td><WorkflowBadge status={a.status} config={ALLOCATION_STATUS_BADGES} /></td>
             </tr>
           ))}
         </tbody>

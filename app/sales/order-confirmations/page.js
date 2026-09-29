@@ -121,27 +121,27 @@ export default function OrderConfirmationsPage() {
       <PageHeading
         title="Order Confirmations"
         actions={can('order-confirmation.create') && (
-          <Link href="/sales/order-confirmations/create" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium">
+          <Link href="/sales/order-confirmations/create" className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded text-sm font-medium">
             <i className="bi bi-plus-lg me-1"></i> New OC
           </Link>
         )}
       />
 
       <Card title="Order Confirmations" variant="primary">
-        <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-3 mb-4">
-          <div className="flex-1 min-w-[220px]">
-            <label className="block text-xs text-gray-500 mb-1">Search</label>
+        <form onSubmit={handleSearch} className="filter-bar mb-4">
+          <div className="filter-bar-wide">
+            <label className="block text-xs text-fg-subtle mb-1">Search</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Contract no., buyer"
-              className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
             />
           </div>
-          <div className="w-56">
-            <label className="block text-xs text-gray-500 mb-1">Buyer</label>
-            <select value={buyerFilter} onChange={(e) => { setBuyerFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Buyer</label>
+            <select value={buyerFilter} onChange={(e) => { setBuyerFilter(e.target.value); setPage(1); }} className="form-select">
               <option value="">All Buyers</option>
               {buyers.map((b) => <option key={b.id} value={b.id}>{b.company_name}</option>)}
             </select>
@@ -150,98 +150,97 @@ export default function OrderConfirmationsPage() {
             value={companyFilter}
             onChange={(e) => { setCompanyFilter(e.target.value); setPage(1); }}
             emptyOptionLabel="Unassigned"
-            className="w-56"
           />
           {can('brand.view') && (
-            <div className="w-44">
-              <label className="block text-xs text-gray-500 mb-1">Brand</label>
-              <select value={brandFilter} onChange={(e) => { setBrandFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+            <div>
+              <label className="block text-xs text-fg-subtle mb-1">Brand</label>
+              <select value={brandFilter} onChange={(e) => { setBrandFilter(e.target.value); setPage(1); }} className="form-select">
                 <option value="">All Brands</option>
                 {brands.filter((b) => !companyFilter || String(b.company_id) === String(companyFilter)).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
             </div>
           )}
-          <div className="w-36">
-            <label className="block text-xs text-gray-500 mb-1">From</label>
-            <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">From</label>
+            <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="form-input" />
           </div>
-          <div className="w-36">
-            <label className="block text-xs text-gray-500 mb-1">To</label>
-            <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">To</label>
+            <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="form-input" />
           </div>
-          <div className="w-48">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
-            <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
+            <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="form-select">
               <option value="">All</option>
               {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{OC_STATUS_BADGES[s].label}</option>)}
             </select>
           </div>
-          <div className="flex gap-2">
-            <button type="submit" className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm flex items-center">
+          <div className="filter-bar-actions">
+            <button type="submit" className="px-3 py-1.5 btn-neutral rounded text-sm flex items-center">
               <i className="bi bi-funnel mr-1"></i>Filter
             </button>
-            <button type="button" onClick={handleReset} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
+            <button type="button" onClick={handleReset} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">
               Reset
             </button>
           </div>
         </form>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Contract No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium">Buyer / Brand</th>
-                <th className="px-4 py-2 font-medium">Type</th>
-                <th className="px-4 py-2 font-medium">Source Inquiry</th>
-                <th className="px-4 py-2 font-medium">Order Status</th>
-                <th className="px-4 py-2 font-medium">Production</th>
-                <th className="px-4 py-2 font-medium text-right w-32">Actions</th>
+                <th>Contract No.</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>Buyer / Brand</th>
+                <th>Type</th>
+                <th>Source Inquiry</th>
+                <th>Order Status</th>
+                <th>Production</th>
+                <th className="text-right w-32">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading Order Confirmations...</td></tr>
+                <tr><td colSpan="9" className="text-center">Loading Order Confirmations...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={9} icon="bi-check2-square" title="No Order Confirmations yet" message="Convert a confirmed inquiry, or raise a direct buyer contract." />
               ) : (
                 rows.map((oc) => (
-                  <tr key={oc.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-mono font-semibold text-gray-900">{oc.oc_num}</td>
-                    <td className="px-4 py-2"><CompanyBadge label={oc.company_label} code={oc.company_code} /></td>
-                    <td className="px-4 py-2 text-gray-500">{formatDate(oc.oc_date)}</td>
-                    <td className="px-4 py-2">
-                      <div className="text-gray-900">{oc.buyer_company_name || '—'}</div>
-                      {oc.buyer_display_code && <div className="text-xs text-gray-500">{oc.buyer_display_code}</div>}
-                      {oc.brand_name && <div className="text-xs text-gray-500">Brand: {oc.brand_name}</div>}
+                  <tr key={oc.id}>
+                    <td className="font-mono cell-strong">{oc.oc_num}</td>
+                    <td><CompanyBadge label={oc.company_label} code={oc.company_code} /></td>
+                    <td>{formatDate(oc.oc_date)}</td>
+                    <td>
+                      <div className="text-fg">{oc.buyer_company_name || '—'}</div>
+                      {oc.buyer_display_code && <div className="text-xs text-fg-subtle">{oc.buyer_display_code}</div>}
+                      {oc.brand_name && <div className="text-xs text-fg-subtle">Brand: {oc.brand_name}</div>}
                     </td>
-                    <td className="px-4 py-2">
+                    <td>
                       {oc.mode === 'direct' ? (
                         <span className="badge rounded-md px-2 py-1 text-xs font-medium bg-gray-800 text-white">{MODE_LABELS.direct}</span>
                       ) : (
                         <StandardBadge>{MODE_LABELS.oc}</StandardBadge>
                       )}
                     </td>
-                    <td className="px-4 py-2 text-gray-500">{oc.source_inquiry_id ? `#${oc.source_inquiry_id}` : '—'}</td>
-                    <td className="px-4 py-2"><WorkflowBadge status={oc.order_status || oc.status} config={oc.order_status ? ORDER_STATUS_BADGES : OC_STATUS_BADGES} /></td>
-                    <td className="px-4 py-2 text-xs text-gray-600 whitespace-nowrap">
+                    <td>{oc.source_inquiry_id ? `#${oc.source_inquiry_id}` : '—'}</td>
+                    <td><WorkflowBadge status={oc.order_status || oc.status} config={oc.order_status ? ORDER_STATUS_BADGES : OC_STATUS_BADGES} /></td>
+                    <td className="text-fg-muted whitespace-nowrap">
                       {oc.items_count > 0 ? `${oc.produced_items_count}/${oc.items_count} lines produced` : '—'}
                       {oc.allocated_items_count > oc.produced_items_count && <div className="text-amber-700">{oc.allocated_items_count - oc.produced_items_count} in progress</div>}
                     </td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="text-right">
                       <div className="inline-flex items-center gap-2">
                         {can('order-confirmation.view') && (
-                          <Link href={`/sales/order-confirmations/${oc.id}`} className="text-gray-500 hover:text-gray-900" title="View"><i className="bi bi-eye"></i></Link>
+                          <Link href={`/sales/order-confirmations/${oc.id}`} className="text-fg-subtle hover:text-fg" title="View"><i className="bi bi-eye"></i></Link>
                         )}
                         {can('order-confirmation.edit') && oc.status !== 'cancelled' && (
-                          <Link href={`/sales/order-confirmations/${oc.id}/edit`} className="text-blue-600 hover:text-blue-900" title="Edit"><i className="bi bi-pencil"></i></Link>
+                          <Link href={`/sales/order-confirmations/${oc.id}/edit`} className="text-link hover:text-blue-900" title="Edit"><i className="bi bi-pencil"></i></Link>
                         )}
                         {can('order-confirmation.delete') && (
-                          <button onClick={() => deleteOc(oc.id, oc.oc_num)} className="text-red-600 hover:text-red-900" title="Delete"><i className="bi bi-trash"></i></button>
+                          <button onClick={() => deleteOc(oc.id, oc.oc_num)} className="text-[var(--danger)] hover:text-red-900" title="Delete"><i className="bi bi-trash"></i></button>
                         )}
                       </div>
                     </td>

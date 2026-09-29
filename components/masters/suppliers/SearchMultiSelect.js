@@ -17,23 +17,23 @@ export default function SearchMultiSelect({ options = [], value = [], onChange, 
   const shown = options.filter((o) => o.name.toLowerCase().includes(query.trim().toLowerCase()));
 
   return (
-    <div className="border border-gray-300 rounded" id={id}>
+    <div className="border border-line-strong rounded" id={id}>
       {selected.size > 0 && (
-        <div className="flex flex-wrap gap-1 p-2 border-b border-gray-200">
+        <div className="flex flex-wrap gap-1 p-2 border-b border-line">
           {options.filter((o) => selected.has(String(o.id))).map((o) => (
-            <span key={o.id} className="inline-flex items-center gap-1 bg-gray-100 border border-gray-200 rounded px-2 py-0.5 text-xs">
+            <span key={o.id} className="inline-flex items-center gap-1 bg-surface-raised border border-line rounded px-2 py-0.5 text-xs">
               {o.name}
-              <button type="button" onClick={() => toggle(o.id)} className="text-gray-500 hover:text-red-600" aria-label={`Remove ${o.name}`}>×</button>
+              <button type="button" onClick={() => toggle(o.id)} className="text-fg-subtle hover:text-[var(--danger)]" aria-label={`Remove ${o.name}`}>×</button>
             </span>
           ))}
         </div>
       )}
       <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={placeholder}
-        className="w-full px-3 py-1.5 text-sm border-0 border-b border-gray-200 focus:outline-none" />
+        className="form-input border-0 border-b" />
       <div className="max-h-40 overflow-y-auto">
-        {shown.length === 0 ? <div className="px-3 py-2 text-xs text-gray-500">No matches.</div> : shown.map((o) => (
-          <label key={o.id} className="flex items-center gap-2 px-3 py-1 text-sm hover:bg-gray-50 cursor-pointer">
-            <input type="checkbox" checked={selected.has(String(o.id))} onChange={() => toggle(o.id)} className="rounded border-gray-300" />
+        {shown.length === 0 ? <div className="px-3 py-2 text-xs text-fg-subtle">No matches.</div> : shown.map((o) => (
+          <label key={o.id} className="flex items-center gap-2 px-3 py-1 text-sm hover:bg-surface-hover cursor-pointer">
+            <input type="checkbox" checked={selected.has(String(o.id))} onChange={() => toggle(o.id)} className="rounded border-line-strong" />
             {o.name}
           </label>
         ))}

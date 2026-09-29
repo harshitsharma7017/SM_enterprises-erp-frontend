@@ -50,38 +50,38 @@ export default function BuyerReceiptsPage() {
       <PageHeading title="Buyer Receipts" />
 
       <Card title="Buyer Receipts Tracker" variant="primary">
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-fg-subtle mb-4">
           Receivables view from Export Documents, with payment checklist progress.
         </p>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Export Doc</th>
-                <th className="px-4 py-2 font-medium">Buyer</th>
-                <th className="px-4 py-2 font-medium text-right">Invoice Value</th>
-                <th className="px-4 py-2 font-medium">Payment Proof</th>
-                <th className="px-4 py-2 font-medium">eBRC</th>
+                <th>Export Doc</th>
+                <th>Buyer</th>
+                <th className="text-right">Invoice Value</th>
+                <th>Payment Proof</th>
+                <th>eBRC</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="5" className="text-center py-8 text-gray-500">Loading Buyer Receipts...</td></tr>
+                <tr><td colSpan="5" className="text-center">Loading Buyer Receipts...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={5} icon="bi-currency-exchange" title="No export documents found" message="Raise an Export Document to see it here." />
               ) : (
                 rows.map((doc) => (
-                  <tr key={doc.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-mono font-semibold text-gray-900">{doc.doc_num}</td>
-                    <td className="px-4 py-2 text-gray-700">{doc.buyer_name || '—'}</td>
-                    <td className="px-4 py-2 text-right text-gray-900">{formatAmount(doc.total_amount)}</td>
-                    <td className="px-4 py-2">
+                  <tr key={doc.id}>
+                    <td className="font-mono cell-strong">{doc.doc_num}</td>
+                    <td className="text-fg-muted">{doc.buyer_name || '—'}</td>
+                    <td className="text-right cell-strong">{formatAmount(doc.total_amount)}</td>
+                    <td>
                       {doc.payment_status ? <WorkflowBadge status={doc.payment_status} config={CHECKLIST_STATUS_BADGES} /> : '—'}
                     </td>
-                    <td className="px-4 py-2">
+                    <td>
                       {doc.ebrc_status ? <WorkflowBadge status={doc.ebrc_status} config={CHECKLIST_STATUS_BADGES} /> : '—'}
                     </td>
                   </tr>

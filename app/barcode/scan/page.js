@@ -12,8 +12,7 @@ import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDateTime } from '@/components/sales/shared/format';
 
-const LABEL = 'block text-xs font-medium text-gray-700 mb-1';
-const SELECT = 'form-select w-full rounded border-gray-300 text-sm';
+const LABEL = 'block text-xs font-medium text-fg-muted mb-1';
 
 /**
  * Scan → identify. Works with a handheld (keyboard-wedge) scanner, typed
@@ -62,12 +61,12 @@ export default function BarcodeScanPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
             <label className={LABEL}>Company you are working in *</label>
-            <CompanySelect value={companyId} onChange={changeCompany} required className={SELECT} />
+            <CompanySelect value={companyId} onChange={changeCompany} required />
           </div>
           {locations.length > 0 && (
             <div>
               <label className={LABEL}>Scanning at (optional)</label>
-              <select value={locationId} onChange={(e) => setLocationId(e.target.value)} className={SELECT}>
+              <select value={locationId} onChange={(e) => setLocationId(e.target.value)} className="form-select">
                 <option value="">—</option>
                 {locations.map((l) => <option key={l.id} value={l.id}>{l.code} · {l.name}</option>)}
               </select>
@@ -75,8 +74,8 @@ export default function BarcodeScanPage() {
           )}
         </div>
         <BarcodeScanInput companyId={companyId} locationId={locationId} onResult={onResult} onError={onError} disabled={!companyId} autoFocus />
-        {!companyId && <p className="text-xs text-gray-500 mt-2 mb-0">Select the company first — a barcode only resolves in its own company.</p>}
-        <p className="text-xs text-gray-500 mt-2 mb-0">Scanning only identifies the lot and records the scan. Stock moves only through GRN / QC, material issue, production and dispatch.</p>
+        {!companyId && <p className="text-xs text-fg-subtle mt-2 mb-0">Select the company first — a barcode only resolves in its own company.</p>}
+        <p className="text-xs text-fg-subtle mt-2 mb-0">Scanning only identifies the lot and records the scan. Stock moves only through GRN / QC, material issue, production and dispatch.</p>
       </Card>
 
       {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4 text-sm"><i className="bi bi-exclamation-octagon me-1"></i> {error}</div>}
@@ -91,7 +90,7 @@ export default function BarcodeScanPage() {
           ) : (
             <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded mb-4 text-sm"><i className="bi bi-check-circle me-1"></i> <strong>First scan</strong> of this barcode.</div>
           )}
-          {can('barcode.view') && <p className="text-sm mb-2"><Link href={`/barcode/codes/${result.barcode.id}`} className="text-blue-600 hover:underline">Open barcode {result.barcode.barcode_value}</Link></p>}
+          {can('barcode.view') && <p className="text-sm mb-2"><Link href={`/barcode/codes/${result.barcode.id}`} className="text-link hover:underline">Open barcode {result.barcode.barcode_value}</Link></p>}
           <LotScanPanel data={result} barcode={result.barcode} />
         </>
       )}
@@ -102,8 +101,8 @@ export default function BarcodeScanPage() {
             {recent.map((r) => (
               <li key={r.key}>
                 <span className="font-mono">{r.value}</span>
-                {r.error ? <span className="text-red-600"> · not resolved</span> : <span className="text-gray-600"> · lot {r.lot}{r.duplicate ? ' · already scanned' : ' · first scan'}</span>}
-                <span className="text-gray-400"> · {formatDateTime(r.at)}</span>
+                {r.error ? <span className="text-[var(--danger)]"> · not resolved</span> : <span className="text-fg-muted"> · lot {r.lot}{r.duplicate ? ' · already scanned' : ' · first scan'}</span>}
+                <span className="text-fg-subtle"> · {formatDateTime(r.at)}</span>
               </li>
             ))}
           </ul>

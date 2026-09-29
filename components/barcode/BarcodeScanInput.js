@@ -3,8 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { apiClient } from '@/lib/api-client';
 
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm font-mono';
-
 /**
  * One scan field for every scanner, with no vendor SDK:
  * - handheld (keyboard-wedge) scanners type the value and press Enter into
@@ -105,21 +103,21 @@ export default function BarcodeScanInput({ companyId, context = 'lookup', locati
           spellCheck={false}
           maxLength={100}
           disabled={disabled || busy}
-          className={INPUT}
+          className="form-input"
           aria-label="Barcode"
         />
-        <button type="submit" disabled={disabled || busy || !value.trim()} className="px-3 py-1.5 rounded text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60 whitespace-nowrap">
+        <button type="submit" disabled={disabled || busy || !value.trim()} className="px-3 py-1.5 rounded text-sm font-medium bg-accent hover:bg-accent-hover text-white disabled:opacity-60 whitespace-nowrap">
           <i className="bi bi-upc-scan me-1"></i> {busy ? 'Checking…' : 'Scan'}
         </button>
-        <button type="button" onClick={camera ? stopCamera : startCamera} disabled={disabled} className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 whitespace-nowrap" title="Scan with the device camera">
+        <button type="button" onClick={camera ? stopCamera : startCamera} disabled={disabled} className="px-3 py-1.5 rounded text-sm font-medium border border-line-strong text-fg-muted hover:bg-surface-hover whitespace-nowrap" title="Scan with the device camera">
           <i className={`bi ${camera ? 'bi-camera-video-off' : 'bi-camera'} me-1`}></i> {camera ? 'Stop' : 'Camera'}
         </button>
       </form>
       {cameraError && <p className="text-xs text-amber-700 mt-1 mb-0">{cameraError}</p>}
       {camera && (
         <div className="mt-2">
-          <video ref={videoRef} muted playsInline className="w-full max-w-md rounded border border-gray-300 bg-black" />
-          <p className="text-xs text-gray-500 mt-1 mb-0">Point the camera at the barcode.</p>
+          <video ref={videoRef} muted playsInline className="w-full max-w-md rounded border border-line-strong bg-black" />
+          <p className="text-xs text-fg-subtle mt-1 mb-0">Point the camera at the barcode.</p>
         </div>
       )}
     </div>

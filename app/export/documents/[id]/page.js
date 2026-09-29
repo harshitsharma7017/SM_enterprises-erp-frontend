@@ -41,7 +41,7 @@ export default function ExportDocumentShowPage({ params }) {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="p-4 text-gray-500">Loading Export Document...</div>
+        <div className="p-4 text-fg-subtle">Loading Export Document...</div>
       </DashboardLayout>
     );
   }
@@ -49,7 +49,7 @@ export default function ExportDocumentShowPage({ params }) {
   if (error || !doc) {
     return (
       <DashboardLayout>
-        <div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Export Document not found'}</div>
+        <div className="alert alert-danger">{error || 'Export Document not found'}</div>
       </DashboardLayout>
     );
   }
@@ -67,25 +67,25 @@ export default function ExportDocumentShowPage({ params }) {
         actions={(
           <>
             {can('export-document.edit') && doc.status !== 'closed' && (
-              <Link href={`/export/documents/${id}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium">
+              <Link href={`/export/documents/${id}/edit`} className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded text-sm font-medium">
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
             )}
-            <Link href="/export/documents" className="border border-gray-300 px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
+            <Link href="/export/documents" className="border border-line-strong px-3 py-1.5 rounded text-sm text-fg-muted hover:bg-surface-hover">
               Back
             </Link>
           </>
         )}
       />
 
-      <div className="bg-white border rounded shadow-sm p-4 mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+      <div className="bg-surface border rounded shadow-sm p-4 mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
         <WorkflowBadge status={doc.status} config={EXPORT_DOC_STATUS_BADGES} />
-        <span className="text-gray-500">{checklists.length > 0 ? `${checklists.filter((c) => c.status === 'uploaded' || c.status === 'generated').length} / ${checklists.length}` : '0 / 0'} checklist items complete</span>
-        {doc.buyer_name && <span className="text-gray-500">· {doc.buyer_name}</span>}
-        {doc.shipment_date && <span className="text-gray-500">· {formatDate(doc.shipment_date)}</span>}
+        <span className="text-fg-subtle">{checklists.length > 0 ? `${checklists.filter((c) => c.status === 'uploaded' || c.status === 'generated').length} / ${checklists.length}` : '0 / 0'} checklist items complete</span>
+        {doc.buyer_name && <span className="text-fg-subtle">· {doc.buyer_name}</span>}
+        {doc.shipment_date && <span className="text-fg-subtle">· {formatDate(doc.shipment_date)}</span>}
       </div>
 
-      <div className="bg-white border rounded shadow-sm overflow-hidden">
+      <div className="bg-surface border rounded shadow-sm overflow-hidden">
         <div className="border-b flex flex-wrap">
           {TABS.map((tab) => {
             const badge = tab === 'Generate Documents' && generatedPendingCount > 0 ? generatedPendingCount
@@ -97,11 +97,11 @@ export default function ExportDocumentShowPage({ params }) {
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px ${activeTab === tab ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px ${activeTab === tab ? 'border-blue-600 text-link' : 'border-transparent text-fg-subtle hover:text-fg-muted'}`}
               >
                 {tab}
                 {badge != null && (
-                  <span className="ml-1.5 inline-flex items-center justify-center rounded-full bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5">{badge}</span>
+                  <span className="ml-1.5 inline-flex items-center justify-center rounded-full bg-surface-raised text-fg-muted text-xs px-1.5 py-0.5">{badge}</span>
                 )}
               </button>
             );
@@ -111,13 +111,13 @@ export default function ExportDocumentShowPage({ params }) {
         <div className="p-4">
           {activeTab === 'Overview' && (
             <dl className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
-              <div><dt className="text-gray-500">Order Confirmation</dt><dd className="mt-0.5 text-gray-900">{doc.order_confirmation_id ? <Link href={`/sales/order-confirmations/${doc.order_confirmation_id}`} className="text-blue-600 hover:underline">{doc.order_confirmation_num}</Link> : '—'}</dd></div>
-              <div><dt className="text-gray-500">Buyer</dt><dd className="mt-0.5 text-gray-900">{doc.buyer_name || '—'}</dd></div>
-              <div><dt className="text-gray-500">Currency / Incoterm</dt><dd className="mt-0.5 text-gray-900">{doc.currency_code || '—'} / {doc.incoterm_name || '—'}</dd></div>
-              <div><dt className="text-gray-500">Shipment</dt><dd className="mt-0.5 text-gray-900">{[doc.shipment_method_name, doc.shipment_date ? formatDate(doc.shipment_date) : null, doc.port_of_loading_name ? `POL: ${doc.port_of_loading_name}` : null, doc.port_of_discharge_name ? `POD: ${doc.port_of_discharge_name}` : null].filter(Boolean).join(' · ') || '—'}</dd></div>
-              <div className="md:col-span-2"><dt className="text-gray-500">Remarks</dt><dd className="mt-0.5 text-gray-900">{doc.remarks || '—'}</dd></div>
-              <div><dt className="text-gray-500">Created</dt><dd className="mt-0.5 text-gray-900">{formatDateTime(doc.created_at)}{doc.creator_name ? ` by ${doc.creator_name}` : ''}</dd></div>
-              <div><dt className="text-gray-500">Last updated</dt><dd className="mt-0.5 text-gray-900">{formatDateTime(doc.updated_at)}</dd></div>
+              <div><dt className="text-fg-subtle">Order Confirmation</dt><dd className="mt-0.5 text-fg">{doc.order_confirmation_id ? <Link href={`/sales/order-confirmations/${doc.order_confirmation_id}`} className="text-link hover:underline">{doc.order_confirmation_num}</Link> : '—'}</dd></div>
+              <div><dt className="text-fg-subtle">Buyer</dt><dd className="mt-0.5 text-fg">{doc.buyer_name || '—'}</dd></div>
+              <div><dt className="text-fg-subtle">Currency / Incoterm</dt><dd className="mt-0.5 text-fg">{doc.currency_code || '—'} / {doc.incoterm_name || '—'}</dd></div>
+              <div><dt className="text-fg-subtle">Shipment</dt><dd className="mt-0.5 text-fg">{[doc.shipment_method_name, doc.shipment_date ? formatDate(doc.shipment_date) : null, doc.port_of_loading_name ? `POL: ${doc.port_of_loading_name}` : null, doc.port_of_discharge_name ? `POD: ${doc.port_of_discharge_name}` : null].filter(Boolean).join(' · ') || '—'}</dd></div>
+              <div className="md:col-span-2"><dt className="text-fg-subtle">Remarks</dt><dd className="mt-0.5 text-fg">{doc.remarks || '—'}</dd></div>
+              <div><dt className="text-fg-subtle">Created</dt><dd className="mt-0.5 text-fg">{formatDateTime(doc.created_at)}{doc.creator_name ? ` by ${doc.creator_name}` : ''}</dd></div>
+              <div><dt className="text-fg-subtle">Last updated</dt><dd className="mt-0.5 text-fg">{formatDateTime(doc.updated_at)}</dd></div>
             </dl>
           )}
 
@@ -127,28 +127,28 @@ export default function ExportDocumentShowPage({ params }) {
 
           {activeTab === 'Items Shipped' && (
             (doc.items || []).length === 0 ? (
-              <p className="text-sm text-gray-500">No items on this Export Document yet.</p>
+              <p className="text-sm text-fg-subtle">No items on this Export Document yet.</p>
             ) : (
-              <div className="overflow-x-auto border border-gray-200 rounded-md">
-                <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-600">
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
                     <tr>
-                      <th className="px-3 py-2 font-medium">#</th>
-                      <th className="px-3 py-2 font-medium">Design No.</th>
-                      <th className="px-3 py-2 font-medium">Product</th>
-                      <th className="px-3 py-2 font-medium">Colour / Size</th>
-                      <th className="px-3 py-2 font-medium">Unit</th>
-                      <th className="px-3 py-2 font-medium text-right">Qty</th>
-                      <th className="px-3 py-2 font-medium text-right">Amount</th>
+                      <th>#</th>
+                      <th>Design No.</th>
+                      <th>Product</th>
+                      <th>Colour / Size</th>
+                      <th>Unit</th>
+                      <th className="text-right">Qty</th>
+                      <th className="text-right">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody>
                     {doc.items.map((item, i) => (
                       <tr key={item.id}>
-                        <td className="px-3 py-2 text-gray-500">{i + 1}</td>
-                        <td className="px-3 py-2 text-gray-900">{item.design_no || '—'}</td>
-                        <td className="px-3 py-2 text-gray-700">{item.product_name || (item.product_id ? `#${item.product_id}` : '—')}</td>
-                        <td className="px-3 py-2 text-gray-700">
+                        <td>{i + 1}</td>
+                        <td className="cell-strong">{item.design_no || '—'}</td>
+                        <td className="text-fg-muted">{item.product_name || (item.product_id ? `#${item.product_id}` : '—')}</td>
+                        <td className="text-fg-muted">
                           {(item.colours || []).map((c, ci) => (
                             <div key={ci} className="mb-0.5">
                               {c.colour && <span className="font-medium">{c.colour}: </span>}
@@ -156,16 +156,16 @@ export default function ExportDocumentShowPage({ params }) {
                             </div>
                           ))}
                         </td>
-                        <td className="px-3 py-2 text-gray-700">{item.unit || '—'}</td>
-                        <td className="px-3 py-2 text-right text-gray-900">{item.qty}</td>
-                        <td className="px-3 py-2 text-right text-gray-900 font-medium">{formatAmount(item.amount)}</td>
+                        <td className="text-fg-muted">{item.unit || '—'}</td>
+                        <td className="text-right cell-strong">{item.qty}</td>
+                        <td className="text-right cell-strong">{formatAmount(item.amount)}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="border-t bg-gray-50">
-                      <td colSpan="6" className="px-3 py-2 text-right font-semibold text-gray-700">Total</td>
-                      <td className="px-3 py-2 text-right font-semibold text-gray-900">{formatAmount(itemsTotal)}</td>
+                    <tr className="border-t">
+                      <td colSpan="6" className="text-right font-semibold text-fg-muted">Total</td>
+                      <td className="text-right cell-strong">{formatAmount(itemsTotal)}</td>
                     </tr>
                   </tfoot>
                 </table>

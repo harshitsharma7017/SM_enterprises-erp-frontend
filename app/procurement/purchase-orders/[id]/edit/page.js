@@ -31,8 +31,8 @@ export default function EditPurchaseOrderPage({ params }) {
           { label: 'Edit' },
         ]}
       />
-      {error && <div className="bg-red-50 text-red-600 p-3 rounded">{error}</div>}
-      {!error && !origin && <div className="p-4 text-gray-500">Loading Purchase Order...</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
+      {!error && !origin && <div className="p-4 text-fg-subtle">Loading Purchase Order...</div>}
       {origin === 'order_confirmation' && <PurchaseOrderForm poId={id} />}
       {origin && origin !== 'order_confirmation' && <PlanningPoForm poId={id} />}
     </DashboardLayout>

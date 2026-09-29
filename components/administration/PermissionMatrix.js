@@ -49,10 +49,10 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
       <div className="flex flex-wrap items-center gap-2 mb-3">
         {!readonly && (
           <>
-            <button type="button" onClick={() => setMany(allMatrixNames, true)} className="text-xs border border-blue-300 text-blue-600 hover:bg-blue-50 px-2 py-1 rounded">
+            <button type="button" onClick={() => setMany(allMatrixNames, true)} className="text-xs border border-line-strong text-link hover:bg-surface-hover px-2 py-1 rounded">
               <i className="bi bi-check-all mr-1"></i>Select all
             </button>
-            <button type="button" onClick={() => setMany(allMatrixNames, false)} className="text-xs border border-gray-300 text-gray-600 hover:bg-gray-50 px-2 py-1 rounded">
+            <button type="button" onClick={() => setMany(allMatrixNames, false)} className="text-xs border border-line-strong text-fg-muted hover:bg-surface-hover px-2 py-1 rounded">
               <i className="bi bi-x-lg mr-1"></i>Clear all
             </button>
             <span className="h-4 w-px bg-gray-300 mx-1" />
@@ -64,7 +64,7 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
                   key={action}
                   type="button"
                   onClick={() => setMany(columnNames, !columnNames.every((n) => selectedSet.has(n)))}
-                  className="text-xs border border-gray-300 text-gray-600 hover:bg-gray-50 px-2 py-1 rounded"
+                  className="text-xs border border-line-strong text-fg-muted hover:bg-surface-hover px-2 py-1 rounded"
                 >
                   All {actionLabel(action).toLowerCase()}
                 </button>
@@ -72,12 +72,12 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
             })}
           </>
         )}
-        <span className="ml-auto text-xs bg-gray-100 border border-gray-200 text-gray-600 px-2 py-1 rounded">
+        <span className="ml-auto text-xs bg-surface-raised border border-line text-fg-muted px-2 py-1 rounded">
           {selectedCount} selected
         </span>
       </div>
 
-      <div className="border border-gray-200 rounded-md divide-y divide-gray-200">
+      <div className="border border-line rounded-md divide-y divide-line">
         {Object.entries(GROUPS).map(([groupName, modules]) => {
           const groupNames = Object.entries(modules).flatMap(([moduleKey, meta]) =>
             (meta.actions || ['view', 'create', 'edit', 'delete'])
@@ -92,28 +92,28 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
               <button
                 type="button"
                 onClick={() => setOpenGroup(isOpen ? null : groupName)}
-                className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-left"
+                className="w-full flex items-center justify-between px-4 py-2.5 bg-surface-raised hover:bg-surface-hover text-left"
               >
-                <span className="font-semibold text-sm text-gray-800">{groupName}</span>
+                <span className="font-semibold text-sm text-fg">{groupName}</span>
                 <span className="flex items-center gap-2">
-                  <span className="text-xs bg-white border border-gray-200 text-gray-600 px-2 py-0.5 rounded">{grantedInGroup}/{groupNames.length}</span>
-                  <i className={`bi ${isOpen ? 'bi-chevron-up' : 'bi-chevron-down'} text-xs text-gray-400`}></i>
+                  <span className="text-xs bg-surface border border-line text-fg-muted px-2 py-0.5 rounded">{grantedInGroup}/{groupNames.length}</span>
+                  <i className={`bi ${isOpen ? 'bi-chevron-up' : 'bi-chevron-down'} text-xs text-fg-subtle`}></i>
                 </span>
               </button>
 
               {isOpen && (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm text-left">
-                    <thead className="bg-white text-gray-500 border-b border-gray-200">
+                <div className="table-wrap">
+                  <table className="data-table">
+                    <thead className="border-b border-line">
                       <tr>
-                        <th className="px-4 py-2 font-medium min-w-[200px]">Module</th>
+                        <th className="min-w-[200px]">Module</th>
                         {ALL_ACTIONS.map((action) => (
-                          <th key={action} className="px-2 py-2 font-medium text-center w-20">{actionLabel(action)}</th>
+                          <th key={action} className="text-center w-20">{actionLabel(action)}</th>
                         ))}
-                        {!readonly && <th className="px-2 py-2 font-medium text-center w-16">All</th>}
+                        {!readonly && <th className="text-center w-16">All</th>}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody>
                       {Object.entries(modules).map(([moduleKey, meta]) => {
                         const moduleActionsList = meta.actions || ['view', 'create', 'edit', 'delete'];
                         const moduleNames = moduleActionsList.map((a) => `${moduleKey}.${a}`).filter((n) => existingNames.has(n));
@@ -121,15 +121,15 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
 
                         return (
                           <tr key={moduleKey}>
-                            <td className="px-4 py-2">
-                              <div className="font-medium text-gray-800">{meta.label}</div>
-                              <div className="text-xs text-gray-400 font-mono">{moduleKey}.*</div>
+                            <td>
+                              <div className="font-medium text-fg">{meta.label}</div>
+                              <div className="text-xs text-fg-subtle font-mono">{moduleKey}.*</div>
                             </td>
                             {ALL_ACTIONS.map((action) => {
                               const name = `${moduleKey}.${action}`;
                               const applicable = moduleActionsList.includes(action) && existingNames.has(name);
                               return (
-                                <td key={action} className="px-2 py-2 text-center">
+                                <td key={action} className="text-center">
                                   {applicable ? (
                                     <input
                                       type="checkbox"
@@ -139,13 +139,13 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
                                       className="w-4 h-4"
                                     />
                                   ) : (
-                                    <span className="text-gray-300">—</span>
+                                    <span className="text-[var(--control-fg-disabled)]">—</span>
                                   )}
                                 </td>
                               );
                             })}
                             {!readonly && (
-                              <td className="px-2 py-2 text-center">
+                              <td className="text-center">
                                 <input
                                   type="checkbox"
                                   checked={allChecked}

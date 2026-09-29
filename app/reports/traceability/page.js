@@ -11,8 +11,6 @@ import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatQuantity } from '@/components/sales/shared/format';
 
-const INPUT = 'w-full px-3 py-1.5 border border-gray-300 rounded text-sm font-mono';
-
 /**
  * Lot traceability: find a lot by number or barcode in one company and show
  * the existing trace (purchase source → PO → GRN → lot → QC → material issue
@@ -50,22 +48,22 @@ export default function TraceabilityPage() {
     <DashboardLayout>
       <PageHeading title="Lot Traceability" breadcrumbs={[{ label: 'Reports', href: '/reports' }, { label: 'Lot Traceability' }]} />
       <Card title="Find a lot" variant="primary">
-        <form onSubmit={search} className="flex flex-wrap items-end gap-3">
+        <form onSubmit={search} className="filter-bar">
           <ReportCompanySelect value={company} onChange={(v) => { setCompany(v); setResult(null); }} allowAll={false} />
-          <div className="w-40">
-            <label className="block text-xs text-gray-500 mb-1">Search by</label>
-            <select value={by} onChange={(e) => setBy(e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Search by</label>
+            <select value={by} onChange={(e) => setBy(e.target.value)} className="form-select">
               <option value="lot">Lot number</option>
               {can('barcode.view') && <option value="barcode">Barcode</option>}
             </select>
           </div>
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-xs text-gray-500 mb-1">{by === 'lot' ? 'Lot number' : 'Barcode (scan or type)'}</label>
-            <input type="text" value={value} onChange={(e) => setValue(e.target.value)} className={INPUT} autoComplete="off" />
+          <div className="filter-bar-wide">
+            <label className="block text-xs text-fg-subtle mb-1">{by === 'lot' ? 'Lot number' : 'Barcode (scan or type)'}</label>
+            <input type="text" value={value} onChange={(e) => setValue(e.target.value)} className="form-input" autoComplete="off" />
           </div>
-          <button type="submit" disabled={!company || !value.trim() || busy} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm disabled:opacity-60"><i className="bi bi-diagram-3 me-1"></i> {busy ? 'Tracing…' : 'Trace'}</button>
+          <button type="submit" disabled={!company || !value.trim() || busy} className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded text-sm disabled:opacity-60"><i className="bi bi-diagram-3 me-1"></i> {busy ? 'Tracing…' : 'Trace'}</button>
         </form>
-        <p className="text-xs text-gray-500 mt-2 mb-0">A lot is found only in the selected company.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">A lot is found only in the selected company.</p>
       </Card>
 
       {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4 text-sm">{error}</div>}
@@ -78,9 +76,9 @@ export default function TraceabilityPage() {
               <ul className="list-none p-0 m-0 space-y-1 text-sm">
                 {result.finished_lots.map((l) => (
                   <li key={l.id}>
-                    <Link href={`/procurement/lots/${l.id}`} className="font-mono text-blue-600 hover:underline">{l.lot_no}</Link>
-                    <span className="text-gray-500"> · {formatQuantity(l.quantity, 3)} {l.unit} · by processing </span>
-                    {can('processing.view') ? <Link href={`/production/processing/${l.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{l.processing_no}</Link> : <span className="font-mono">{l.processing_no}</span>}
+                    <Link href={`/procurement/lots/${l.id}`} className="font-mono text-link hover:underline">{l.lot_no}</Link>
+                    <span className="text-fg-subtle"> · {formatQuantity(l.quantity, 3)} {l.unit} · by processing </span>
+                    {can('processing.view') ? <Link href={`/production/processing/${l.processing_record_id}`} className="font-mono text-link hover:underline">{l.processing_no}</Link> : <span className="font-mono">{l.processing_no}</span>}
                   </li>
                 ))}
               </ul>

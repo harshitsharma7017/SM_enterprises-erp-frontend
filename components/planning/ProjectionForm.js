@@ -7,8 +7,6 @@ import FormSection from '@/components/ui/FormSection';
 import CompanySelect from '@/components/company/CompanySelect';
 import { apiClient } from '@/lib/api-client';
 import { toDateInputValue } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
 const blankLine = () => ({ key: Math.random().toString(36).slice(2), product_id: '', quantity: '', remarks: '' });
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 
@@ -113,7 +111,7 @@ export default function ProjectionForm({ projectionId = null }) {
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading form data...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading form data...</div>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
@@ -126,78 +124,78 @@ export default function ProjectionForm({ projectionId = null }) {
       <FormSection title="Projection" icon="bi-graph-up-arrow" subtitle="A brand's expected material requirement for a planning period.">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Projection No.</label>
-            <input type="text" readOnly value={projectionId ? projectionNo : 'Auto-generated (BP/…)'} className={`${INPUT} bg-gray-50 border-dashed text-gray-500`} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Projection No.</label>
+            <input type="text" readOnly value={projectionId ? projectionNo : 'Auto-generated (BP/…)'} className={`form-input border-dashed`} />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Company <span className="text-red-500">*</span></label>
-            <CompanySelect value={form.company_id} onChange={handleCompanyChange} required className="form-select w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Company <span className="text-[var(--danger)]">*</span></label>
+            <CompanySelect value={form.company_id} onChange={handleCompanyChange} required />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Brand <span className="text-red-500">*</span></label>
-            <select name="brand_id" required value={form.brand_id} onChange={handleChange} disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Brand <span className="text-[var(--danger)]">*</span></label>
+            <select name="brand_id" required value={form.brand_id} onChange={handleChange} disabled={!companyId} className="form-select">
               <option value="">{companyId ? '— Select brand —' : 'Select a company first'}</option>
               {brandOptions.map((b) => <option key={b.id} value={b.id}>{b.name} ({b.code}){b.status === 'active' ? '' : ' — inactive'}</option>)}
             </select>
           </div>
           <div className="md:col-span-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>
-            <input type="text" name="title" required maxLength={200} value={form.title} onChange={handleChange} placeholder="e.g. Spring–Summer season projection" className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Title <span className="text-[var(--danger)]">*</span></label>
+            <input type="text" name="title" required maxLength={200} value={form.title} onChange={handleChange} placeholder="e.g. Spring–Summer season projection" className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Period Start <span className="text-red-500">*</span></label>
-            <input type="date" name="period_start" required value={form.period_start} onChange={handleChange} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Period Start <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" name="period_start" required value={form.period_start} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Period End <span className="text-red-500">*</span></label>
-            <input type="date" name="period_end" required min={form.period_start || undefined} value={form.period_end} onChange={handleChange} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Period End <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" name="period_end" required min={form.period_start || undefined} value={form.period_end} onChange={handleChange} className="form-input" />
           </div>
           <div className="md:col-span-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-            <textarea name="remarks" rows={2} maxLength={2000} value={form.remarks} onChange={handleChange} className={INPUT}></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+            <textarea name="remarks" rows={2} maxLength={2000} value={form.remarks} onChange={handleChange} className="form-textarea"></textarea>
           </div>
         </div>
       </FormSection>
 
       <FormSection title="Projected Materials" icon="bi-box-seam" subtitle="Only the selected company's active products with a UOM are listed. The UOM comes from the product.">
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-3 py-2 font-medium w-10">#</th>
-                <th className="px-3 py-2 font-medium">Product / Material</th>
-                <th className="px-3 py-2 font-medium w-40">Material Type</th>
-                <th className="px-3 py-2 font-medium w-40 text-right">Projected Qty</th>
-                <th className="px-3 py-2 font-medium w-20">UOM</th>
-                <th className="px-3 py-2 font-medium">Remarks</th>
-                <th className="px-3 py-2 w-10"></th>
+                <th className="w-10">#</th>
+                <th>Product / Material</th>
+                <th className="w-40">Material Type</th>
+                <th className="w-40 text-right">Projected Qty</th>
+                <th className="w-20">UOM</th>
+                <th>Remarks</th>
+                <th className="w-10"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {lines.map((line, index) => {
                 const product = productById[String(line.product_id)];
                 const taken = new Set(lines.filter((_, i) => i !== index).map((l) => String(l.product_id)));
                 return (
                   <tr key={line.key}>
-                    <td className="px-3 py-2 text-gray-500">{index + 1}</td>
-                    <td className="px-3 py-2">
-                      <select value={line.product_id} onChange={(e) => updateLine(index, { product_id: e.target.value })} disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+                    <td>{index + 1}</td>
+                    <td>
+                      <select value={line.product_id} onChange={(e) => updateLine(index, { product_id: e.target.value })} disabled={!companyId} className="form-select">
                         <option value="">{companyId ? '— Select product —' : 'Select a company first'}</option>
                         {productOptions.filter((p) => !taken.has(String(p.id))).map((p) => (
                           <option key={p.id} value={p.id}>{p.name} ({p.item_group_code})</option>
                         ))}
                       </select>
                     </td>
-                    <td className="px-3 py-2 text-gray-500">{product?.material_type_name || '—'}</td>
-                    <td className="px-3 py-2">
-                      <input type="number" min="0" step={stepFor(product?.uom_decimal_places)} value={line.quantity} onChange={(e) => updateLine(index, { quantity: e.target.value })} disabled={!product} className={`${INPUT} text-right`} />
+                    <td>{product?.material_type_name || '—'}</td>
+                    <td>
+                      <input type="number" min="0" step={stepFor(product?.uom_decimal_places)} value={line.quantity} onChange={(e) => updateLine(index, { quantity: e.target.value })} disabled={!product} className={`form-input text-right`} />
                     </td>
-                    <td className="px-3 py-2 font-mono text-gray-600">{product?.uom_code || '—'}</td>
-                    <td className="px-3 py-2">
-                      <input type="text" maxLength={500} value={line.remarks} onChange={(e) => updateLine(index, { remarks: e.target.value })} className={INPUT} />
+                    <td className="font-mono text-fg-muted">{product?.uom_code || '—'}</td>
+                    <td>
+                      <input type="text" maxLength={500} value={line.remarks} onChange={(e) => updateLine(index, { remarks: e.target.value })} className="form-input" />
                     </td>
-                    <td className="px-3 py-2 text-right">
-                      <button type="button" onClick={() => removeLine(index)} className="text-red-500 hover:text-red-700" title="Remove line"><i className="bi bi-x-lg"></i></button>
+                    <td className="text-right">
+                      <button type="button" onClick={() => removeLine(index)} className="text-[var(--danger)] hover:text-[var(--danger)]" title="Remove line"><i className="bi bi-x-lg"></i></button>
                     </td>
                   </tr>
                 );
@@ -205,16 +203,16 @@ export default function ProjectionForm({ projectionId = null }) {
             </tbody>
           </table>
         </div>
-        <button type="button" onClick={() => setLines((prev) => [...prev, blankLine()])} disabled={!companyId} className="mt-3 px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+        <button type="button" onClick={() => setLines((prev) => [...prev, blankLine()])} disabled={!companyId} className="mt-3 px-3 py-1.5 border border-line-strong rounded text-sm text-fg-muted hover:bg-surface-hover disabled:opacity-50">
           <i className="bi bi-plus-lg mr-1"></i> Add material
         </button>
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving} className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}>
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving} className={`bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}>
           <i className="bi bi-check-lg mr-1"></i> {projectionId ? 'Update' : 'Save'} Draft
         </button>
-        <Link href={projectionId ? `/planning/brand-projections/${projectionId}` : '/planning/brand-projections'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={projectionId ? `/planning/brand-projections/${projectionId}` : '/planning/brand-projections'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
       </div>

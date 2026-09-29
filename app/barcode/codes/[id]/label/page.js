@@ -50,9 +50,9 @@ export default function BarcodeLabelPage({ params }) {
     queueMicrotask(fetchBarcode);
   }, [fetchBarcode]);
 
-  if (error) return <div className="p-4 text-red-600">{error}</div>;
-  if (!barcode) return <div className="p-4 text-gray-500">Loading label...</div>;
-  if (barcode.status !== 'active') return <div className="p-4 text-red-600">Barcode {barcode.barcode_value} is retired; its label cannot be printed.</div>;
+  if (error) return <div className="p-4 text-[var(--danger)]">{error}</div>;
+  if (!barcode) return <div className="p-4 text-fg-subtle">Loading label...</div>;
+  if (barcode.status !== 'active') return <div className="p-4 text-[var(--danger)]">Barcode {barcode.barcode_value} is retired; its label cannot be printed.</div>;
 
   const s = SIZES[size];
   const dp = barcode.uom_decimal_places;
@@ -72,7 +72,7 @@ export default function BarcodeLabelPage({ params }) {
   ].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-gray-100 print:bg-white">
+    <div className="min-h-screen bg-surface-raised print:bg-surface">
       <style>{`
         @page { size: ${s.width}mm ${s.height}mm; margin: 0; }
         @media print {
@@ -81,38 +81,41 @@ export default function BarcodeLabelPage({ params }) {
         }
       `}</style>
 
-      <div className="print:hidden bg-white border-b p-4 flex flex-wrap items-end gap-4 text-sm">
+      <div className="print:hidden bg-surface border-b p-4 flex flex-wrap items-end gap-4 text-sm">
         <div>
           <div className="font-semibold">Label for {barcode.barcode_value}</div>
-          <Link href={`/barcode/codes/${id}`} className="text-blue-600 hover:underline text-xs">Back to barcode</Link>
+          <Link href={`/barcode/codes/${id}`} className="text-link hover:underline text-xs">Back to barcode</Link>
         </div>
-        <label className="flex flex-col text-xs text-gray-600">Size
-          <select value={size} onChange={(e) => setSize(e.target.value)} className="form-select rounded border-gray-300 text-sm mt-1">
+        <label className="flex flex-col text-xs text-fg-muted">Size
+          <select value={size} onChange={(e) => setSize(e.target.value)} className="form-select">
             {Object.entries(SIZES).map(([key, v]) => <option key={key} value={key}>{v.label}</option>)}
           </select>
         </label>
-        <label className="flex flex-col text-xs text-gray-600">Copies
-          <input type="number" min="1" max="50" value={copies} onChange={(e) => setCopies(e.target.value)} className="form-input rounded border-gray-300 text-sm mt-1 w-20" />
+        <label className="flex flex-col text-xs text-fg-muted">Copies
+          <input type="number" min="1" max="50" value={copies} onChange={(e) => setCopies(e.target.value)} className="form-input mt-1 w-20" />
         </label>
-        <fieldset className="flex flex-wrap gap-3 text-xs text-gray-700">
+        <fieldset className="flex flex-wrap gap-3 text-xs text-fg-muted">
           {FIELDS.map(([key, text]) => (
             <label key={key} className="inline-flex items-center gap-1">
               <input type="checkbox" checked={fields[key]} onChange={(e) => setFields({ ...fields, [key]: e.target.checked })} /> {text}
             </label>
           ))}
         </fieldset>
-        <button type="button" onClick={() => window.print()} className="px-3 py-1.5 rounded text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white"><i className="bi bi-printer me-1"></i> Print</button>
+        <button type="button" onClick={() => window.print()} className="px-3 py-1.5 rounded text-sm font-medium bg-accent hover:bg-accent-hover text-white"><i className="bi bi-printer me-1"></i> Print</button>
       </div>
 
-      <div className="label-sheet p-6 flex flex-wrap gap-4">
+      {/* `force-light` pins the stickers to the light palette. A label is printed
+          on white stock, so it must stay dark-on-white even while the app is in
+          dark mode. The options panel above is not printed and stays themed. */}
+      <div className="label-sheet force-light p-6 flex flex-wrap gap-4">
         {Array.from({ length: count }, (_, i) => (
-          <div key={i} className="label bg-white border border-gray-300 shadow-sm overflow-hidden flex flex-col" style={{ width: `${s.width}mm`, height: `${s.height}mm`, padding: '3mm' }}>
+          <div key={i} className="label bg-surface border border-line-strong shadow-sm overflow-hidden flex flex-col" style={{ width: `${s.width}mm`, height: `${s.height}mm`, padding: '3mm' }}>
             <Code128Svg value={barcode.barcode_value} height={40} className="w-full" style={{ height: `${s.height * 0.38}mm` }} />
             <div className="text-center font-mono font-bold tracking-widest" style={{ fontSize: '3.6mm' }}>{barcode.barcode_value}</div>
-            <table className="w-full mt-1" style={{ fontSize: '2.9mm', lineHeight: 1.25 }}>
+            <table className="data-table mt-1" style={{ fontSize: '2.9mm', lineHeight: 1.25 }}>
               <tbody>
                 {lines.map(([k, v]) => (
-                  <tr key={k}><td className="pr-2 text-gray-600 whitespace-nowrap align-top">{k}</td><td className="font-medium break-all">{v}</td></tr>
+                  <tr key={k}><td className="pr-2 text-fg-muted whitespace-nowrap align-top">{k}</td><td className="break-all">{v}</td></tr>
                 ))}
               </tbody>
             </table>

@@ -55,7 +55,7 @@ export default function MaterialPlansPage() {
   };
 
   const Actions = can('material-plan.create') ? (
-    <Link href="/planning/material-plans/create" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+    <Link href="/planning/material-plans/create" className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
       <i className="bi bi-plus-lg mr-1"></i> New Material Plan
     </Link>
   ) : null;
@@ -65,79 +65,79 @@ export default function MaterialPlansPage() {
       <PageHeading title="Material Plans" breadcrumbs={[{ label: 'Planning' }, { label: 'Material Plans' }]} />
 
       <Card title="What to prepare or purchase" variant="primary" actions={Actions}>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
+        <form className="filter-bar mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
           <div className="flex-1 min-w-[180px]">
-            <label className="block text-xs text-gray-500 mb-1">Search</label>
-            <input type="text" value={filters.search} onChange={(e) => setFilter('search', e.target.value)} placeholder="Number, title or material" className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+            <label className="block text-xs text-fg-subtle mb-1">Search</label>
+            <input type="text" value={filters.search} onChange={(e) => setFilter('search', e.target.value)} placeholder="Number, title or material" className="form-input" />
           </div>
-          <CompanyFilter value={filters.company_id} onChange={(e) => setFilter('company_id', e.target.value)} emptyOptionLabel={null} className="w-52" />
-          <div className="w-36">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
-            <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <CompanyFilter value={filters.company_id} onChange={(e) => setFilter('company_id', e.target.value)} emptyOptionLabel={null} />
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
+            <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className="form-select">
               <option value="">All</option>
               <option value="draft">Draft</option>
               <option value="planned">Planned</option>
               <option value="closed">Closed</option>
             </select>
           </div>
-          <div className="w-40">
-            <label className="block text-xs text-gray-500 mb-1">Period from</label>
-            <input type="date" value={filters.period_from} onChange={(e) => setFilter('period_from', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Period from</label>
+            <input type="date" value={filters.period_from} onChange={(e) => setFilter('period_from', e.target.value)} className="form-input" />
           </div>
-          <div className="w-40">
-            <label className="block text-xs text-gray-500 mb-1">Period to</label>
-            <input type="date" value={filters.period_to} onChange={(e) => setFilter('period_to', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Period to</label>
+            <input type="date" value={filters.period_to} onChange={(e) => setFilter('period_to', e.target.value)} className="form-input" />
           </div>
-          <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
+          <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">
             Reset
           </button>
         </form>
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Plan No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Title / Period</th>
-                <th className="px-4 py-2 font-medium">Material</th>
-                <th className="px-4 py-2 font-medium text-right">Required</th>
-                <th className="px-4 py-2 font-medium text-right">Planned (this plan)</th>
-                <th className="px-4 py-2 font-medium text-right">Pending (plan)</th>
-                <th className="px-4 py-2 font-medium text-right">Ordered</th>
-                <th className="px-4 py-2 font-medium">Status</th>
+                <th>Plan No.</th>
+                <th>Company</th>
+                <th>Title / Period</th>
+                <th>Material</th>
+                <th className="text-right">Required</th>
+                <th className="text-right">Planned (this plan)</th>
+                <th className="text-right">Pending (plan)</th>
+                <th className="text-right">Ordered</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading material plans...</td></tr>
+                <tr><td colSpan="9" className="text-center">Loading material plans...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={9} icon="bi-calendar2-week" title="No material plans" message="Create a plan from open material requirements." />
               ) : rows.map((p) => {
                 const lines = p.items.length ? p.items : [null];
                 return lines.map((line, i) => (
-                  <tr key={`${p.id}-${line ? line.id : 'none'}`} className="hover:bg-gray-50 align-top">
+                  <tr key={`${p.id}-${line ? line.id : 'none'}`} className="align-top">
                     {i === 0 && (
                       <>
-                        <td rowSpan={lines.length} className="px-4 py-2 font-mono font-semibold text-gray-900">
-                          <Link href={`/planning/material-plans/${p.id}`} className="hover:text-blue-600">{p.plan_no}</Link>
+                        <td rowSpan={lines.length} className="font-mono cell-strong">
+                          <Link href={`/planning/material-plans/${p.id}`} className="hover:text-link">{p.plan_no}</Link>
                         </td>
-                        <td rowSpan={lines.length} className="px-4 py-2"><CompanyBadge label={p.company_label} code={p.company_code} /></td>
-                        <td rowSpan={lines.length} className="px-4 py-2">
-                          <div className="text-gray-900">{p.title}</div>
-                          <div className="text-xs text-gray-500">{formatDate(p.period_start)} – {formatDate(p.period_end)}</div>
+                        <td rowSpan={lines.length}><CompanyBadge label={p.company_label} code={p.company_code} /></td>
+                        <td rowSpan={lines.length}>
+                          <div className="text-fg">{p.title}</div>
+                          <div className="text-xs text-fg-subtle">{formatDate(p.period_start)} – {formatDate(p.period_end)}</div>
                         </td>
                       </>
                     )}
-                    <td className="px-4 py-2 text-gray-900">{line ? line.product_name : '—'}</td>
-                    <td className="px-4 py-2 text-right">{line ? `${formatQuantity(line.required_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
-                    <td className="px-4 py-2 text-right font-medium">{line ? `${formatQuantity(line.planned_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
-                    <td className="px-4 py-2 text-right text-gray-700">{line ? `${formatQuantity(line.pending_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
-                    <td className="px-4 py-2 text-right text-gray-700">{line ? `${formatQuantity(line.ordered_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
+                    <td className="cell-strong">{line ? line.product_name : '—'}</td>
+                    <td className="text-right">{line ? `${formatQuantity(line.required_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
+                    <td className="text-right">{line ? `${formatQuantity(line.planned_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
+                    <td className="text-right text-fg-muted">{line ? `${formatQuantity(line.pending_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
+                    <td className="text-right text-fg-muted">{line ? `${formatQuantity(line.ordered_quantity, line.uom_decimal_places)} ${line.uom_code}` : '—'}</td>
                     {i === 0 && (
-                      <td rowSpan={lines.length} className="px-4 py-2"><WorkflowBadge status={p.status} config={PLAN_STATUS_BADGES} /></td>
+                      <td rowSpan={lines.length}><WorkflowBadge status={p.status} config={PLAN_STATUS_BADGES} /></td>
                     )}
                   </tr>
                 ));
@@ -145,7 +145,7 @@ export default function MaterialPlansPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Pending is per requirement: required minus the quantity on all planned or closed plans.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">Pending is per requirement: required minus the quantity on all planned or closed plans.</p>
 
         <Pagination pagination={toPaginationFromPageLimit(pageInfo)} onPageChange={setPage} />
       </Card>

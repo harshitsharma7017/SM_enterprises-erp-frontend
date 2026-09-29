@@ -7,8 +7,6 @@ import FormSection from '@/components/ui/FormSection';
 import CompanySelect from '@/components/company/CompanySelect';
 import { apiClient } from '@/lib/api-client';
 import { toDateInputValue, formatQuantity } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 
 /**
@@ -144,7 +142,7 @@ export default function PlanForm({ planId = null }) {
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading form data...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading form data...</div>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
@@ -157,28 +155,28 @@ export default function PlanForm({ planId = null }) {
       <FormSection title="Material Plan" icon="bi-calendar2-week" subtitle="Organises material requirements into what needs to be prepared or purchased. No purchase orders are created.">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Plan No.</label>
-            <input type="text" readOnly value={planId ? planNo : 'Auto-generated (MP/…)'} className={`${INPUT} bg-gray-50 border-dashed text-gray-500`} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Plan No.</label>
+            <input type="text" readOnly value={planId ? planNo : 'Auto-generated (MP/…)'} className={`form-input border-dashed`} />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Company <span className="text-red-500">*</span></label>
-            <CompanySelect value={form.company_id} onChange={handleCompanyChange} required className="form-select w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Company <span className="text-[var(--danger)]">*</span></label>
+            <CompanySelect value={form.company_id} onChange={handleCompanyChange} required />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>
-            <input type="text" name="title" required maxLength={200} value={form.title} onChange={handleChange} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Title <span className="text-[var(--danger)]">*</span></label>
+            <input type="text" name="title" required maxLength={200} value={form.title} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Planning Period Start <span className="text-red-500">*</span></label>
-            <input type="date" name="period_start" required value={form.period_start} onChange={handleChange} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Planning Period Start <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" name="period_start" required value={form.period_start} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Planning Period End <span className="text-red-500">*</span></label>
-            <input type="date" name="period_end" required min={form.period_start || undefined} value={form.period_end} onChange={handleChange} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Planning Period End <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" name="period_end" required min={form.period_start || undefined} value={form.period_end} onChange={handleChange} className="form-input" />
           </div>
           <div className="md:col-span-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-            <textarea name="remarks" rows={2} maxLength={2000} value={form.remarks} onChange={handleChange} className={INPUT}></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+            <textarea name="remarks" rows={2} maxLength={2000} value={form.remarks} onChange={handleChange} className="form-textarea"></textarea>
           </div>
         </div>
       </FormSection>
@@ -186,8 +184,8 @@ export default function PlanForm({ planId = null }) {
       <FormSection title="Planned Materials" icon="bi-list-check" subtitle="Pick the company's open requirements. Planned quantity cannot exceed what is still unplanned.">
         <div className="flex flex-wrap items-end gap-2 mb-3">
           <div className="flex-1 min-w-[260px]">
-            <label className="block text-xs text-gray-500 mb-1">Add requirement</label>
-            <select value={pick} onChange={(e) => setPick(e.target.value)} disabled={!form.company_id} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+            <label className="block text-xs text-fg-subtle mb-1">Add requirement</label>
+            <select value={pick} onChange={(e) => setPick(e.target.value)} disabled={!form.company_id} className="form-select">
               <option value="">{form.company_id ? (available.length ? '— Select requirement —' : 'No open requirements with unplanned quantity') : 'Select a company first'}</option>
               {available.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -196,46 +194,46 @@ export default function PlanForm({ planId = null }) {
               ))}
             </select>
           </div>
-          <button type="button" onClick={addLine} disabled={!pick} className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+          <button type="button" onClick={addLine} disabled={!pick} className="px-3 py-1.5 border border-line-strong rounded text-sm text-fg-muted hover:bg-surface-hover disabled:opacity-50">
             <i className="bi bi-plus-lg mr-1"></i> Add
           </button>
         </div>
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-3 py-2 font-medium">Requirement</th>
-                <th className="px-3 py-2 font-medium">Material</th>
-                <th className="px-3 py-2 font-medium text-right">Required</th>
-                <th className="px-3 py-2 font-medium text-right">Available</th>
-                <th className="px-3 py-2 font-medium w-40 text-right">Planned Qty</th>
-                <th className="px-3 py-2 font-medium">UOM</th>
-                <th className="px-3 py-2 font-medium">Remarks</th>
-                <th className="px-3 py-2 w-10"></th>
+                <th>Requirement</th>
+                <th>Material</th>
+                <th className="text-right">Required</th>
+                <th className="text-right">Available</th>
+                <th className="w-40 text-right">Planned Qty</th>
+                <th>UOM</th>
+                <th>Remarks</th>
+                <th className="w-10"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {lines.length === 0 ? (
-                <tr><td colSpan="8" className="px-3 py-6 text-center text-gray-500">No requirements added yet.</td></tr>
+                <tr><td colSpan="8" className="text-center">No requirements added yet.</td></tr>
               ) : lines.map((line, index) => (
                 <tr key={line.id}>
-                  <td className="px-3 py-2">
-                    <div className="font-mono text-gray-900">{line.requirement_no}</div>
-                    <div className="text-xs text-gray-500">{line.projection_no} · {line.brand_name}</div>
+                  <td>
+                    <div className="font-mono text-fg">{line.requirement_no}</div>
+                    <div className="text-xs text-fg-subtle">{line.projection_no} · {line.brand_name}</div>
                   </td>
-                  <td className="px-3 py-2 text-gray-900">{line.product_name}</td>
-                  <td className="px-3 py-2 text-right">{formatQuantity(line.required_quantity, line.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right text-gray-600">{formatQuantity(line.available, line.uom_decimal_places)}</td>
-                  <td className="px-3 py-2">
-                    <input type="number" min="0" max={line.available} step={stepFor(line.uom_decimal_places)} required value={line.planned_quantity} onChange={(e) => updateLine(index, { planned_quantity: e.target.value })} className={`${INPUT} text-right`} />
+                  <td className="cell-strong">{line.product_name}</td>
+                  <td className="text-right">{formatQuantity(line.required_quantity, line.uom_decimal_places)}</td>
+                  <td className="text-right text-fg-muted">{formatQuantity(line.available, line.uom_decimal_places)}</td>
+                  <td>
+                    <input type="number" min="0" max={line.available} step={stepFor(line.uom_decimal_places)} required value={line.planned_quantity} onChange={(e) => updateLine(index, { planned_quantity: e.target.value })} className={`form-input text-right`} />
                   </td>
-                  <td className="px-3 py-2 font-mono text-gray-600">{line.uom_code}</td>
-                  <td className="px-3 py-2">
-                    <input type="text" maxLength={500} value={line.remarks} onChange={(e) => updateLine(index, { remarks: e.target.value })} className={INPUT} />
+                  <td className="font-mono text-fg-muted">{line.uom_code}</td>
+                  <td>
+                    <input type="text" maxLength={500} value={line.remarks} onChange={(e) => updateLine(index, { remarks: e.target.value })} className="form-input" />
                   </td>
-                  <td className="px-3 py-2 text-right">
-                    <button type="button" onClick={() => removeLine(index)} className="text-red-500 hover:text-red-700" title="Remove line"><i className="bi bi-x-lg"></i></button>
+                  <td className="text-right">
+                    <button type="button" onClick={() => removeLine(index)} className="text-[var(--danger)] hover:text-[var(--danger)]" title="Remove line"><i className="bi bi-x-lg"></i></button>
                   </td>
                 </tr>
               ))}
@@ -244,11 +242,11 @@ export default function PlanForm({ planId = null }) {
         </div>
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving || lines.length === 0} className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm ${saving || lines.length === 0 ? 'opacity-70 cursor-not-allowed' : ''}`}>
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving || lines.length === 0} className={`bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm ${saving || lines.length === 0 ? 'opacity-70 cursor-not-allowed' : ''}`}>
           <i className="bi bi-check-lg mr-1"></i> {planId ? 'Update' : 'Save'} Draft
         </button>
-        <Link href={planId ? `/planning/material-plans/${planId}` : '/planning/material-plans'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={planId ? `/planning/material-plans/${planId}` : '/planning/material-plans'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
       </div>

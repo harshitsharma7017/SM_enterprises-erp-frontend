@@ -1,26 +1,414 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f5f7fa;
-  --foreground: #111827;
+/* ---------------------------------------------------------------------------
+ * Dark mode is class-driven, not media-driven.
+ *
+ * Tailwind v4 resolves `dark:` against prefers-color-scheme by default, which
+ * cannot be toggled. Overriding the variant lets a `dark` class on <html> drive
+ * it instead. See https://tailwindcss.com/docs/dark-mode
+ * ------------------------------------------------------------------------- */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+ * SEMANTIC TOKENS — light
+ *
+ * `.force-light` shares this block so a subtree can opt out of dark mode
+ * without duplicating any values. Printable documents (invoices, packing
+ * lists) use it: they must stay white-on-white regardless of theme.
+ *
+ * Specificity note: `:root`, `.dark` and `.force-light` all weigh the same, so
+ * source order decides. `.dark` comes after this block, which means it wins on
+ * the <html> element; a `.force-light` descendant then re-declares these values
+ * on itself and, because custom properties inherit, wins for its own subtree.
+ *
+ * Caveat: `.force-light` does not disable `dark:` utility variants, since those
+ * key off the ancestor `.dark` class. Do not use `dark:` inside a force-light
+ * region.
+ * ------------------------------------------------------------------------- */
+:root,
+.force-light {
+  /* Surfaces, from furthest back to closest */
+  --canvas: #f5f7fa;
+  --surface: #ffffff;
+  --surface-raised: #f8fafc;
+  --surface-hover: #f3f6fa;
+
+  /* Borders */
+  --border-subtle: #e9edf2;
+  --border-strong: #d4dae2;
+
+  /* Text, in descending emphasis */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+
+  /* Interactive accents */
+  --link: #1d4ed8;
+  --link-hover: #1e40af;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-fg: #ffffff;
+  --focus-ring: #2563eb;
+  --danger: #dc2626;
+
+  /* Neutral (secondary) button. A solid grey button cannot come from the
+   * inverted grey ramp: `bg-gray-600` would lighten in dark mode while its
+   * `text-white` stayed white, leaving white on light grey. */
+  --btn-neutral-bg: #4b5563;
+  --btn-neutral-bg-hover: #374151;
+  --btn-neutral-fg: #ffffff;
+
+  /* Form controls */
+  --control-bg-disabled: #f1f3f7;
+  --control-fg-disabled: #9aa4b2;
+  --control-bg-readonly: #f8fafc;
+  --control-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --control-placeholder: #9aa4b2;
+  /* A select with `appearance: none` cannot reliably carry a pseudo-element,
+   * so the dropdown arrow has to be a background image. That means one variant
+   * per theme, since the stroke colour is baked into the SVG. */
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 6 5 5 5-5'/%3E%3C/svg%3E");
+
+  /* Tint families — paired background / foreground / border.
+   * Badges and alerts use these instead of raw `bg-*-100 text-*-800` pairs,
+   * which have no sensible dark equivalent. */
+  --tint-gray-bg: #f3f4f6;
+  --tint-gray-fg: #1f2937;
+  --tint-gray-border: #e5e7eb;
+
+  --tint-blue-bg: #dbeafe;
+  --tint-blue-fg: #1e40af;
+  --tint-blue-border: #bfdbfe;
+
+  --tint-cyan-bg: #cffafe;
+  --tint-cyan-fg: #155e75;
+  --tint-cyan-border: #a5f3fc;
+
+  --tint-green-bg: #d1fae5;
+  --tint-green-fg: #065f46;
+  --tint-green-border: #a7f3d0;
+
+  --tint-red-bg: #fee2e2;
+  --tint-red-fg: #991b1b;
+  --tint-red-border: #fecaca;
+
+  --tint-amber-bg: #fef3c7;
+  --tint-amber-fg: #92400e;
+  --tint-amber-border: #fde68a;
+
+  --tint-indigo-bg: #e0e7ff;
+  --tint-indigo-fg: #3730a3;
+  --tint-indigo-border: #c7d2fe;
+
+  --tint-purple-bg: #f3e8ff;
+  --tint-purple-fg: #6b21a8;
+  --tint-purple-border: #e9d5ff;
+
+  --tint-yellow-bg: #fef9c3;
+  --tint-yellow-fg: #854d0e;
+  --tint-yellow-border: #fef08a;
+
+  /* App shell */
   --sidebar-bg: #ffffff;
   --sidebar-border: #e9edf2;
   --sidebar-header-color: #9aa4b2;
   --sidebar-link-color: #4b5563;
   --sidebar-link-hover-bg: #f3f6fa;
+  --sidebar-link-hover-color: #111827;
   --sidebar-link-active-bg: #eff4ff;
   --sidebar-link-active-color: #1d4ed8;
   --sidebar-icon-color: #8b95a5;
-  --primary: #2563eb;
+  --sidebar-brand-color: #111827;
+  --sidebar-brand-subtitle: #9aa4b2;
+  --sidebar-logo-from: #2563eb;
+  --sidebar-logo-to: #1d4ed8;
+  --sidebar-logo-shadow: 0 2px 6px rgb(37 99 235 / 0.28);
+  --scrollbar-thumb: #dfe4ea;
+  --scrollbar-thumb-hover: #c8cfd8;
+
+  /* Legacy aliases. Components still reference these directly (for example
+   * `border-[var(--card-border)]` and `style={{ background: 'var(--background)' }}`),
+   * so they are kept as pointers at the semantic tokens rather than as a second
+   * source of truth. */
+  --background: var(--canvas);
+  --foreground: var(--text-primary);
+  --card-border: var(--border-subtle);
+  --header-border: var(--border-subtle);
+  --primary: var(--accent);
   --primary-light: #eff4ff;
-  --header-border: #e9edf2;
-  --card-border: #e9edf2;
 }
 
+/* ---------------------------------------------------------------------------
+ * SEMANTIC TOKENS — dark
+ *
+ * Every token above has a counterpart here; a test asserts that, so the two
+ * blocks cannot drift apart.
+ * ------------------------------------------------------------------------- */
+.dark {
+  --canvas: #14171c;
+  --surface: #1b1f26;
+  --surface-raised: #21252d;
+  --surface-hover: #262b34;
+
+  --border-subtle: #2b313b;
+  --border-strong: #3a4150;
+
+  --text-primary: #f2f4f7;
+  --text-secondary: #9aa4b2;
+  --text-muted: #6b7480;
+
+  --link: #93c5fd;
+  --link-hover: #bfdbfe;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-fg: #ffffff;
+  --focus-ring: #60a5fa;
+  --danger: #f87171;
+
+  --btn-neutral-bg: #3a4150;
+  --btn-neutral-bg-hover: #4b5563;
+  --btn-neutral-fg: #f2f4f7;
+
+  --control-bg-disabled: #191d24;
+  --control-fg-disabled: #5c6472;
+  --control-bg-readonly: #191d24;
+  --control-shadow: none;
+  --control-placeholder: #6b7480;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%239aa4b2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 6 5 5 5-5'/%3E%3C/svg%3E");
+
+  --tint-gray-bg: #2b313b;
+  --tint-gray-fg: #cfd5dd;
+  --tint-gray-border: #3a4150;
+
+  --tint-blue-bg: #1e3a5f;
+  --tint-blue-fg: #93c5fd;
+  --tint-blue-border: #2a4d7a;
+
+  --tint-cyan-bg: #164e63;
+  --tint-cyan-fg: #67e8f9;
+  --tint-cyan-border: #1f6b85;
+
+  --tint-green-bg: #14432c;
+  --tint-green-fg: #6ee7b7;
+  --tint-green-border: #1c5c3c;
+
+  --tint-red-bg: #4c1d1d;
+  --tint-red-fg: #fca5a5;
+  --tint-red-border: #6b2626;
+
+  --tint-amber-bg: #4a3209;
+  --tint-amber-fg: #fcd34d;
+  --tint-amber-border: #63430c;
+
+  --tint-indigo-bg: #2a2a5e;
+  --tint-indigo-fg: #a5b4fc;
+  --tint-indigo-border: #38387d;
+
+  --tint-purple-bg: #3b1f5e;
+  --tint-purple-fg: #d8b4fe;
+  --tint-purple-border: #4f2a7d;
+
+  --tint-yellow-bg: #453c0a;
+  --tint-yellow-fg: #fde047;
+  --tint-yellow-border: #5c4f0e;
+
+  --sidebar-bg: #1b1f26;
+  --sidebar-border: #2b313b;
+  --sidebar-header-color: #6b7480;
+  --sidebar-link-color: #b6bec9;
+  --sidebar-link-hover-bg: #262b34;
+  --sidebar-link-hover-color: #f2f4f7;
+  --sidebar-link-active-bg: #1e2a44;
+  --sidebar-link-active-color: #93c5fd;
+  --sidebar-icon-color: #6b7480;
+  --sidebar-brand-color: #f2f4f7;
+  --sidebar-brand-subtitle: #6b7480;
+  --sidebar-logo-from: #3b82f6;
+  --sidebar-logo-to: #2563eb;
+  --sidebar-logo-shadow: 0 2px 6px rgb(0 0 0 / 0.45);
+  --scrollbar-thumb: #3a4150;
+  --scrollbar-thumb-hover: #4b5563;
+
+  --background: var(--canvas);
+  --foreground: var(--text-primary);
+  --card-border: var(--border-subtle);
+  --header-border: var(--border-subtle);
+  --primary: var(--accent);
+  --primary-light: #1e2a44;
+
+  /* -------------------------------------------------------------------------
+   * PALETTE REDEFINITION
+   *
+   * ~4,000 hardcoded light-mode colour utilities exist across 238 files.
+   * Redefining what those utilities resolve to is what makes dark mode
+   * affordable; hand-adding a `dark:` sibling to each is not viable.
+   *
+   * The gray ramp is inverted wholesale — it is used almost entirely for
+   * surfaces, borders and text, all of which should flip.
+   *
+   * `--color-white` is deliberately NOT redefined: `text-white` (129 uses)
+   * sits on saturated buttons and must stay white. `bg-white` is handled by
+   * the targeted bridge further down instead.
+   * ---------------------------------------------------------------------- */
+  --color-gray-50: #1a1d23;
+  --color-gray-100: #21252d;
+  --color-gray-200: #2b313b;
+  --color-gray-300: #3a4150;
+  --color-gray-400: #6b7480;
+  --color-gray-500: #9aa4b2;
+  --color-gray-600: #b6bec9;
+  --color-gray-700: #cfd5dd;
+  --color-gray-800: #e4e8ee;
+  --color-gray-900: #f2f4f7;
+  --color-gray-950: #fafbfc;
+
+  /* Accent families are remapped by role rather than inverted, based on how
+   * each step is actually used in this codebase:
+   *   50/100/200/300 are always tint backgrounds and borders -> darken
+   *   400/500/600/700 are saturated accents -> keep, except where measurably
+   *                   text-dominant (see red below)
+   *   800/900 are always foreground text -> lighten
+   */
+
+  /* blue: 98 `bg-blue-600` buttons vs 167 `text-blue-600` links means 600
+   * cannot serve both. Left saturated so buttons keep white-text contrast;
+   * links migrate to `text-link` during the sweep. blue-500 is left alone
+   * because 197 of its 200 uses are focus rings. */
+  --color-blue-50: #16243a;
+  --color-blue-100: #1e3a5f;
+  --color-blue-200: #2a4d7a;
+  --color-blue-300: #35608f;
+  --color-blue-800: #bfdbfe;
+  --color-blue-900: #dbeafe;
+
+  /* red: 166 of 171 `red-600` uses are text and 92 of 93 `red-700` are text,
+   * so these can be lightened for readability. The handful of solid red
+   * buttons keep enough contrast against white text at large-text AA. */
+  --color-red-50: #2e1414;
+  --color-red-100: #4c1d1d;
+  --color-red-200: #6b2626;
+  --color-red-300: #8a3232;
+  --color-red-500: #f87171;
+  --color-red-600: #f16a6a;
+  --color-red-700: #f89393;
+  --color-red-800: #fecaca;
+  --color-red-900: #fee2e2;
+
+  /* green: 600/700 left alone — 24 of 31 `green-600` and 22 of 63 `green-700`
+   * uses are solid button backgrounds that need white text on them. */
+  --color-green-50: #14261c;
+  --color-green-100: #14432c;
+  --color-green-200: #1c5c3c;
+  --color-green-300: #24754c;
+  --color-green-800: #a7f3d0;
+  --color-green-900: #d1fae5;
+
+  --color-amber-50: #2a1f07;
+  --color-amber-100: #4a3209;
+  --color-amber-200: #63430c;
+  --color-amber-300: #7c5410;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+  --color-amber-900: #fef3c7;
+
+  --color-cyan-50: #0c3a47;
+  --color-cyan-100: #164e63;
+  --color-cyan-200: #1f6b85;
+  --color-cyan-300: #2888a6;
+  --color-cyan-700: #a5f3fc;
+  --color-cyan-800: #cffafe;
+  --color-cyan-900: #ecfeff;
+
+  --color-indigo-50: #1c1c3d;
+  --color-indigo-100: #2a2a5e;
+  --color-indigo-200: #38387d;
+  --color-indigo-300: #46469c;
+  --color-indigo-700: #c7d2fe;
+  --color-indigo-800: #e0e7ff;
+  --color-indigo-900: #eef2ff;
+
+  --color-purple-50: #281444;
+  --color-purple-100: #3b1f5e;
+  --color-purple-200: #4f2a7d;
+  --color-purple-300: #63359c;
+  --color-purple-700: #e9d5ff;
+  --color-purple-800: #f3e8ff;
+  --color-purple-900: #faf5ff;
+
+  --color-yellow-50: #2e2806;
+  --color-yellow-100: #453c0a;
+  --color-yellow-200: #5c4f0e;
+  --color-yellow-300: #736312;
+  --color-yellow-700: #fde047;
+  --color-yellow-800: #fef08a;
+  --color-yellow-900: #fef9c3;
+}
+
+/* ---------------------------------------------------------------------------
+ * DENSITY
+ *
+ * Operators trading legibility against rows-per-screen. Driven by a
+ * `data-density` attribute on <html> so the pre-paint script can set it
+ * without a flash.
+ *
+ * The root font-size step is what makes existing rem-based spacing (`px-4`,
+ * `py-2`, and so on) scale for free, since Tailwind v4 spacing is rem-based.
+ * ------------------------------------------------------------------------- */
+:root,
+[data-density="comfortable"] {
+  --control-h: 2.375rem;
+  --control-pad-y: 0.5rem;
+  --control-pad-x: 0.75rem;
+  --control-fs: 0.9375rem;
+  --cell-pad-y: 0.625rem;
+  --cell-pad-x: 1rem;
+  --density-root-fs: 16px;
+}
+
+[data-density="compact"] {
+  --control-h: 2rem;
+  --control-pad-y: 0.3125rem;
+  --control-pad-x: 0.625rem;
+  --control-fs: 0.875rem;
+  --cell-pad-y: 0.375rem;
+  --cell-pad-x: 0.75rem;
+  --density-root-fs: 15px;
+}
+
+html {
+  font-size: var(--density-root-fs, 16px);
+}
+
+/* ---------------------------------------------------------------------------
+ * THEME MAPPING
+ *
+ * `inline` means utilities compile to the token's value (`var(--surface)`)
+ * rather than to `var(--color-surface)`, so the `.dark` and `.force-light`
+ * overrides above cascade correctly.
+ * ------------------------------------------------------------------------- */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-hover: var(--surface-hover);
+
+  --color-line: var(--border-subtle);
+  --color-line-strong: var(--border-strong);
+
+  --color-fg: var(--text-primary);
+  --color-fg-muted: var(--text-secondary);
+  --color-fg-subtle: var(--text-muted);
+
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+
+  /* Retained for existing consumers of the older names. */
+  --color-background: var(--canvas);
+  --color-foreground: var(--text-primary);
+  --color-primary: var(--accent);
   --color-primary-light: var(--primary-light);
   --color-sidebar-bg: var(--sidebar-bg);
   --color-sidebar-border: var(--sidebar-border);
@@ -29,13 +417,55 @@
   --color-sidebar-header: var(--sidebar-header-color);
   --color-header-border: var(--header-border);
   --color-card-border: var(--card-border);
-  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+
+  /* `--font-source-sans` is supplied by next/font on the <html> element. */
+  --font-sans: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+ * TYPE SCALE
+ *
+ * Redefining these two steps lifts 2,223 existing occurrences with no file
+ * edits: `text-xs` 12px -> 13px and `text-sm` 14px -> 15px. Labels and badges
+ * are the smallest text in the app, and both sit at `text-xs`.
+ * ------------------------------------------------------------------------- */
+@theme {
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  background: var(--canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+/* ---------------------------------------------------------------------------
+ * COMPATIBILITY BRIDGE — remove as the sweep lands
+ *
+ * `bg-white` appears 193 times and is the surface colour for cards, table
+ * bodies and button groups. Redefining `--color-white` would break the 129
+ * `text-white` uses on saturated buttons, so the background utility is
+ * rewritten on its own instead.
+ *
+ * Each of these is a stopgap for pages not yet converted to semantic tokens.
+ * They are scoped to `.dark`, so light mode is untouched. Delete each line
+ * once its underlying utility has been swept out of the codebase.
+ * ------------------------------------------------------------------------- */
+.dark .bg-white {
+  background-color: var(--surface);
+}
+
+.dark .divide-white > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--border-subtle);
+}
+
+.dark .border-white {
+  border-color: var(--border-subtle);
 }
 
 /* Sidebar section headers */
@@ -64,7 +494,7 @@ body {
 }
 .sidebar-link:hover {
   background: var(--sidebar-link-hover-bg);
-  color: #111827;
+  color: var(--sidebar-link-hover-color);
 }
 .sidebar-link:hover .sidebar-icon {
   color: var(--primary);
@@ -98,14 +528,14 @@ body {
 
 /* Sidebar scrollbar */
 .sidebar-scroll::-webkit-scrollbar { width: 6px; }
-.sidebar-scroll::-webkit-scrollbar-thumb { background: #dfe4ea; border-radius: 3px; }
-.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: #c8cfd8; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+.sidebar-scroll::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
 /* Card matching original */
 .card {
   border: 1px solid var(--card-border);
   border-radius: 0.5rem;
-  background: #ffffff;
+  background: var(--surface);
 }
 
 /* Small box (dashboard stat cards) */
@@ -134,7 +564,8 @@ body {
 }
 .small-box-footer:hover { color: #fff; text-decoration: underline; }
 
-/* Alert styles */
+/* Alert styles — colours come from the tint families so each has a dark
+ * counterpart. */
 .alert {
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
@@ -142,15 +573,420 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
+  border: 1px solid transparent;
 }
-.alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-.alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-.alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-.alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+.alert-success { background: var(--tint-green-bg); color: var(--tint-green-fg); border-color: var(--tint-green-border); }
+.alert-danger { background: var(--tint-red-bg); color: var(--tint-red-fg); border-color: var(--tint-red-border); }
+.alert-warning { background: var(--tint-amber-bg); color: var(--tint-amber-fg); border-color: var(--tint-amber-border); }
+.alert-info { background: var(--tint-blue-bg); color: var(--tint-blue-fg); border-color: var(--tint-blue-border); }
+
+/* -----------------------------------------------------------------------------
+ * FORM SECTIONS
+ *
+ * FormSection previously rendered only a bordered header, so the components that
+ * use it without wrapping them in a Card sat straight on the page background.
+ * It now carries its own surface.
+ *
+ * Inside a Card the surface and padding are already there, so the nested copy is
+ * removed rather than boxing the content twice. Keyed off the `card` and
+ * `form-section` class names both components already render, which keeps the
+ * component props untouched.
+ * -------------------------------------------------------------------------- */
+.form-section {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.card .form-section {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* -----------------------------------------------------------------------------
+ * DATA TABLES
+ *
+ * Replaces the hand-rolled `min-w-full divide-y divide-gray-200 text-sm` markup
+ * copied across 113 tables, none of which was theme- or density-aware.
+ *
+ * Cell padding comes from the density tokens, so the compact setting genuinely
+ * buys rows per screen rather than only shrinking text.
+ *
+ * Emphasis is inverted from the old default: body cells are secondary, and the
+ * identifying column opts *up* with `.cell-strong`. That is what makes a row
+ * scannable — previously every cell competed at the same weight.
+ *
+ * Same override caveat as the form controls: a per-cell `px-4 py-2` at a call
+ * site still outranks these rules, so the sweep has to strip it.
+ * -------------------------------------------------------------------------- */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+/* Opt-in vertical scroll, which is what makes a sticky header meaningful. */
+.table-wrap-scroll {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.data-table {
+  width: 100%;
+  /* `separate` rather than `collapse`: a collapsed border vanishes underneath a
+   * sticky header. */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-sm);
+  text-align: left;
+}
+
+.data-table thead th {
+  padding: var(--cell-pad-y) var(--cell-pad-x);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.data-table tbody td {
+  padding: var(--cell-pad-y) var(--cell-pad-x);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+/* Rules between rows only, so the header's own border is not doubled. */
+.data-table tbody tr + tr td {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.data-table tbody tr:hover td {
+  background: var(--surface-hover);
+}
+
+.data-table tfoot td {
+  padding: var(--cell-pad-y) var(--cell-pad-x);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font-weight: 600;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.data-table-sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Emphasis tier ------------------------------------------------------------ */
+
+/* The column that identifies the row. */
+.data-table .cell-strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Detail that should recede further than the default. */
+.data-table .cell-muted {
+  color: var(--text-muted);
+}
+
+/* Figures line up digit-for-digit, which matters for scanning quantities. */
+.data-table .cell-num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.data-table .cell-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* -----------------------------------------------------------------------------
+ * RESPONSIVE PATTERNS
+ *
+ * Layouts previously snapped from one column straight to four at a single `md:`
+ * breakpoint (286 `md:` uses against 91 `sm:` and 13 `lg:`), so 768-1100px was
+ * cramped and phones got a one-column stack. These ladders add the intermediate
+ * steps.
+ *
+ * Breakpoints deliberately mirror Tailwind's own (sm 40rem, lg 64rem, xl 80rem)
+ * so these classes and any remaining `sm:`/`lg:` utilities stay in step.
+ * -------------------------------------------------------------------------- */
+.form-grid,
+.form-grid-3,
+.form-grid-4 {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 40rem) {
+  .form-grid,
+  .form-grid-3,
+  .form-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .form-grid-3,
+  .form-grid-4 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 80rem) {
+  .form-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* For a field that needs more room than its neighbours. */
+.form-grid-span-2 {
+  grid-column: span 2;
+}
+
+.form-grid-full {
+  grid-column: 1 / -1;
+}
+
+/* A span must not exceed the single column available on a phone. */
+@media (max-width: 39.999rem) {
+  .form-grid-span-2 {
+    grid-column: auto;
+  }
+}
+
+/* Filter bars were `flex flex-wrap` with fixed `w-48` cells, which wrapped
+ * ragged. A grid keeps the columns aligned. */
+.filter-bar {
+  display: grid;
+  gap: 0.75rem;
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 40rem) {
+  .filter-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .filter-bar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* The search field usually deserves more width than a dropdown. */
+@media (min-width: 40rem) {
+  .filter-bar-wide {
+    grid-column: span 2;
+  }
+}
+
+.filter-bar-actions {
+  display: flex;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+/* -----------------------------------------------------------------------------
+ * STACKED TABLE FALLBACK
+ *
+ * Opt-in via `.data-table-stack`. Below the `sm` breakpoint each row becomes a
+ * card and each cell shows its column name, so a wide table stops depending
+ * solely on horizontal scrolling.
+ *
+ * Requires every `<td>` to carry `data-label="Column name"`; cells without one
+ * simply render with no label rather than breaking.
+ *
+ * Caveat, and the reason this is opt-in rather than default: setting `display:
+ * block` on table elements drops the implicit table semantics, and `::before`
+ * content is not dependably exposed to assistive tech. Prefer it for short
+ * read-mostly lists. For dense operational tables, horizontal scroll with a
+ * sticky header keeps the semantics intact and is the better trade.
+ * -------------------------------------------------------------------------- */
+@media (max-width: 39.999rem) {
+  .data-table-stack thead {
+    display: none;
+  }
+
+  .data-table-stack,
+  .data-table-stack tbody,
+  .data-table-stack tbody tr,
+  .data-table-stack tbody td {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table-stack tbody tr {
+    border: 1px solid var(--border-subtle);
+    border-radius: 0.5rem;
+    background: var(--surface);
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+  }
+
+  .data-table-stack tbody tr + tr td {
+    border-top: 0;
+  }
+
+  .data-table-stack tbody td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .data-table-stack tbody td + td {
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .data-table-stack tbody td[data-label]::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  /* Numbers read better left-aligned once the column context is gone. */
+  .data-table-stack tbody td.cell-num,
+  .data-table-stack tbody td.cell-actions {
+    text-align: left;
+  }
+}
 
 @layer components {
+  /* Solid neutral button, for secondary actions such as a filter submit. */
+  .btn-neutral {
+    background-color: var(--btn-neutral-bg);
+    color: var(--btn-neutral-fg);
+  }
+  .btn-neutral:hover:not(:disabled) {
+    background-color: var(--btn-neutral-bg-hover);
+  }
+
+  /* Tint pairs, for badges, alerts and any other status chip. Centralising the
+   * eight families here is what lets them have a dark counterpart at all. */
+  .tint-gray { background-color: var(--tint-gray-bg); color: var(--tint-gray-fg); border-color: var(--tint-gray-border); }
+  .tint-blue { background-color: var(--tint-blue-bg); color: var(--tint-blue-fg); border-color: var(--tint-blue-border); }
+  .tint-cyan { background-color: var(--tint-cyan-bg); color: var(--tint-cyan-fg); border-color: var(--tint-cyan-border); }
+  .tint-green { background-color: var(--tint-green-bg); color: var(--tint-green-fg); border-color: var(--tint-green-border); }
+  .tint-red { background-color: var(--tint-red-bg); color: var(--tint-red-fg); border-color: var(--tint-red-border); }
+  .tint-amber { background-color: var(--tint-amber-bg); color: var(--tint-amber-fg); border-color: var(--tint-amber-border); }
+  .tint-indigo { background-color: var(--tint-indigo-bg); color: var(--tint-indigo-fg); border-color: var(--tint-indigo-border); }
+  .tint-purple { background-color: var(--tint-purple-bg); color: var(--tint-purple-fg); border-color: var(--tint-purple-border); }
+  .tint-yellow { background-color: var(--tint-yellow-bg); color: var(--tint-yellow-fg); border-color: var(--tint-yellow-border); }
+
+  /* -------------------------------------------------------------------------
+   * FORM CONTROLS
+   *
+   * Written as plain CSS rather than `@apply` so every declaration that governs
+   * size lives in one place and is driven by the density tokens.
+   *
+   * The height mismatch this fixes was not a padding problem. A `<select>` keeps
+   * its own native chrome unless `appearance` is cleared, and computes its
+   * height from that chrome rather than from the padding it was given — which is
+   * why byte-identical Tailwind classes still produced different heights.
+   * `appearance: none` plus a shared `min-height` is the actual fix.
+   *
+   * Caveat that the sweep has to handle: utilities live in a later layer than
+   * components, so an inline `py-1` or `text-xs` at a call site still wins over
+   * these rules. Redundant inline sizing must be stripped for this to take
+   * effect everywhere.
+   * ---------------------------------------------------------------------- */
   .form-input, .form-select, .form-textarea {
-    @apply w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm;
+    display: block;
+    width: 100%;
+    min-height: var(--control-h);
+    padding: var(--control-pad-y) var(--control-pad-x);
+    font: inherit;
+    font-size: var(--control-fs);
+    line-height: 1.25rem;
+    color: var(--text-primary);
+    background-color: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.375rem;
+    box-shadow: var(--control-shadow);
+    transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .form-input::placeholder,
+  .form-textarea::placeholder {
+    color: var(--control-placeholder);
+    opacity: 1;
+  }
+
+  .form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: var(--select-chevron);
+    background-repeat: no-repeat;
+    background-position: right var(--control-pad-x) center;
+    background-size: 0.8rem;
+    /* Room for the arrow, so long option text cannot run underneath it. */
+    padding-inline-end: calc(var(--control-pad-x) * 2 + 0.8rem);
+  }
+
+  .form-textarea {
+    min-height: calc(var(--control-h) * 2.5);
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  .form-input:hover:not(:disabled):not([readonly]),
+  .form-select:hover:not(:disabled),
+  .form-textarea:hover:not(:disabled):not([readonly]) {
+    border-color: var(--text-muted);
+  }
+
+  /* Mouse and keyboard focus both move the border; the ring is reserved for
+   * focus-visible so it does not fire on every click. */
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--focus-ring);
+  }
+
+  .form-input:focus-visible, .form-select:focus-visible, .form-textarea:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: -1px;
+    border-color: var(--focus-ring);
+  }
+
+  .form-input:disabled, .form-select:disabled, .form-textarea:disabled {
+    background-color: var(--control-bg-disabled);
+    color: var(--control-fg-disabled);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* `[readonly]` rather than `:read-only`, which also matches ordinary
+   * non-editable elements. */
+  .form-input[readonly], .form-textarea[readonly] {
+    background-color: var(--control-bg-readonly);
+    color: var(--text-secondary);
+    cursor: default;
+  }
+
+  .form-input[aria-invalid="true"],
+  .form-select[aria-invalid="true"],
+  .form-textarea[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  .form-input[aria-invalid="true"]:focus-visible,
+  .form-select[aria-invalid="true"]:focus-visible,
+  .form-textarea[aria-invalid="true"]:focus-visible {
+    outline-color: var(--danger);
+    border-color: var(--danger);
   }
 }

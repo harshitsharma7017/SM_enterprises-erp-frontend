@@ -54,41 +54,41 @@ export default function PackingDeskPage() {
       <PageHeading title="Packing" />
 
       <Card title="Packing Desk" variant="primary">
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-fg-subtle mb-4">
           Carton-wise packing for each shipment. Record cartons on the Export Document edit screen, then
           generate Packing List formats from here.
         </p>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Export Doc</th>
-                <th className="px-4 py-2 font-medium">Buyer</th>
-                <th className="px-4 py-2 font-medium text-right">Cartons</th>
-                <th className="px-4 py-2 font-medium text-right">Net (kg)</th>
-                <th className="px-4 py-2 font-medium text-right">Gross (kg)</th>
-                <th className="px-4 py-2 font-medium text-right w-24">Actions</th>
+                <th>Export Doc</th>
+                <th>Buyer</th>
+                <th className="text-right">Cartons</th>
+                <th className="text-right">Net (kg)</th>
+                <th className="text-right">Gross (kg)</th>
+                <th className="text-right w-24">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="6" className="text-center py-8 text-gray-500">Loading Packing Desk...</td></tr>
+                <tr><td colSpan="6" className="text-center">Loading Packing Desk...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={6} icon="bi-boxes" title="No shipments to pack yet" message="Raise an Export Document from a confirmed Order Confirmation first." />
               ) : (
                 rows.map((doc) => (
-                  <tr key={doc.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-mono font-semibold text-gray-900">{doc.doc_num}</td>
-                    <td className="px-4 py-2 text-gray-700">{doc.buyer_name || '—'}</td>
-                    <td className="px-4 py-2 text-right text-gray-900">{doc.total_cartons ?? '—'}</td>
-                    <td className="px-4 py-2 text-right text-gray-700">{doc.net_weight != null ? formatAmount(doc.net_weight) : '—'}</td>
-                    <td className="px-4 py-2 text-right text-gray-700">{doc.gross_weight != null ? formatAmount(doc.gross_weight) : '—'}</td>
-                    <td className="px-4 py-2 text-right">
+                  <tr key={doc.id}>
+                    <td className="font-mono cell-strong">{doc.doc_num}</td>
+                    <td className="text-fg-muted">{doc.buyer_name || '—'}</td>
+                    <td className="text-right cell-strong">{doc.total_cartons ?? '—'}</td>
+                    <td className="text-right text-fg-muted">{doc.net_weight != null ? formatAmount(doc.net_weight) : '—'}</td>
+                    <td className="text-right text-fg-muted">{doc.gross_weight != null ? formatAmount(doc.gross_weight) : '—'}</td>
+                    <td className="text-right">
                       {can('packing.view') && (
-                        <Link href={`/export/packing/${doc.id}`} className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-2 py-1 rounded">
+                        <Link href={`/export/packing/${doc.id}`} className="text-xs bg-surface-raised hover:bg-gray-200 text-fg-muted border border-line-strong px-2 py-1 rounded">
                           <i className="bi bi-boxes me-1"></i>Pack
                         </Link>
                       )}

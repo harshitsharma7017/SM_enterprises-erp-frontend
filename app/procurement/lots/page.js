@@ -58,87 +58,87 @@ export default function LotsPage() {
       <PageHeading title="Lots" breadcrumbs={[{ label: 'Procurement' }, { label: 'Lots' }]} />
 
       <Card title="Lots (received on a goods receipt, or finished material posted from production)" variant="primary">
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-xs text-gray-500 mb-1">Search</label>
-            <input type="text" value={filters.search} onChange={(e) => setFilter('search', e.target.value)} placeholder="Lot, mill lot, material, PO or GRN" className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+        <form className="filter-bar mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
+          <div className="filter-bar-wide">
+            <label className="block text-xs text-fg-subtle mb-1">Search</label>
+            <input type="text" value={filters.search} onChange={(e) => setFilter('search', e.target.value)} placeholder="Lot, mill lot, material, PO or GRN" className="form-input" />
           </div>
-          <CompanyFilter value={filters.company_id} onChange={(e) => setFilter('company_id', e.target.value)} emptyOptionLabel={null} className="w-52" />
-          <div className="w-36">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
-            <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <CompanyFilter value={filters.company_id} onChange={(e) => setFilter('company_id', e.target.value)} emptyOptionLabel={null} />
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
+            <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className="form-select">
               <option value="">All</option>
               <option value="received">Received</option>
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
-          <div className="w-40">
-            <label className="block text-xs text-gray-500 mb-1">Source</label>
-            <select value={filters.source_type} onChange={(e) => setFilter('source_type', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Source</label>
+            <select value={filters.source_type} onChange={(e) => setFilter('source_type', e.target.value)} className="form-select">
               <option value="">All</option>
               {Object.entries(LOT_SOURCE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
           </div>
-          <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
+          <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">
             Reset
           </button>
         </form>
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Lot No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Material</th>
-                <th className="px-4 py-2 font-medium text-right">Quantity</th>
-                <th className="px-4 py-2 font-medium text-right">Width (inch)</th>
-                <th className="px-4 py-2 font-medium">Mill Lot</th>
-                <th className="px-4 py-2 font-medium">Source (GRN / PO or production)</th>
-                <th className="px-4 py-2 font-medium">Supplier</th>
-                <th className="px-4 py-2 font-medium">Received</th>
-                <th className="px-4 py-2 font-medium">QC</th>
-                <th className="px-4 py-2 font-medium text-right">Usable Stock</th>
-                <th className="px-4 py-2 font-medium">Status</th>
+                <th>Lot No.</th>
+                <th>Company</th>
+                <th>Material</th>
+                <th className="text-right">Quantity</th>
+                <th className="text-right">Width (inch)</th>
+                <th>Mill Lot</th>
+                <th>Source (GRN / PO or production)</th>
+                <th>Supplier</th>
+                <th>Received</th>
+                <th>QC</th>
+                <th className="text-right">Usable Stock</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="12" className="text-center py-8 text-gray-500">Loading lots...</td></tr>
+                <tr><td colSpan="12" className="text-center">Loading lots...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={12} icon="bi-stack" title="No lots yet" message="Lots are created when a goods receipt is posted." />
               ) : rows.map((l) => (
-                <tr key={l.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2"><Link href={`/procurement/lots/${l.id}`} className="font-mono font-semibold text-gray-900 hover:text-blue-600">{l.lot_no}</Link></td>
-                  <td className="px-4 py-2"><CompanyBadge label={l.company_label} code={l.company_code} /></td>
-                  <td className="px-4 py-2 text-gray-900">{l.product_name}</td>
-                  <td className="px-4 py-2 text-right font-medium whitespace-nowrap">{formatQuantity(l.quantity, l.uom_decimal_places)} {l.unit}</td>
-                  <td className="px-4 py-2 text-right">{l.width_inch === null ? '—' : formatQuantity(l.width_inch, 3)}</td>
-                  <td className="px-4 py-2 text-gray-600">{l.supplier_lot_no || '—'}</td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-700">
+                <tr key={l.id}>
+                  <td><Link href={`/procurement/lots/${l.id}`} className="font-mono font-semibold text-fg hover:text-link">{l.lot_no}</Link></td>
+                  <td><CompanyBadge label={l.company_label} code={l.company_code} /></td>
+                  <td className="cell-strong">{l.product_name}</td>
+                  <td className="text-right whitespace-nowrap">{formatQuantity(l.quantity, l.uom_decimal_places)} {l.unit}</td>
+                  <td className="text-right">{l.width_inch === null ? '—' : formatQuantity(l.width_inch, 3)}</td>
+                  <td className="text-fg-muted">{l.supplier_lot_no || '—'}</td>
+                  <td className="font-mono text-fg-muted">
                     {l.source_type === 'opening' ? (
                       <span className="font-sans">Opening stock</span>
                     ) : l.source_type === 'production' ? (
                       <span className="font-sans">Produced · <span className="font-mono">{l.processing_no}</span></span>
                     ) : (
                       <>
-                        <Link href={`/procurement/grn/${l.inward_entry_id}`} className="hover:text-blue-600">{l.inward_no}</Link>
+                        <Link href={`/procurement/grn/${l.inward_entry_id}`} className="hover:text-link">{l.inward_no}</Link>
                         <div>{l.po_num}</div>
                       </>
                     )}
                   </td>
-                  <td className="px-4 py-2 text-gray-700">{l.supplier_name || '—'}</td>
-                  <td className="px-4 py-2 text-gray-500">{formatDate(l.received_date)}</td>
-                  <td className="px-4 py-2 text-xs whitespace-nowrap">
-                    <div className="text-gray-700">{QC_STATE_LABELS[l.qc_state]}</div>
+                  <td className="text-fg-muted">{l.supplier_name || '—'}</td>
+                  <td>{formatDate(l.received_date)}</td>
+                  <td className="whitespace-nowrap">
+                    <div className="text-fg-muted">{QC_STATE_LABELS[l.qc_state]}</div>
                     {Number(l.qc_inspected_quantity) > 0 && (
-                      <div className="text-gray-500"><span className="text-green-700">{formatQuantity(l.qc_accepted_quantity, l.uom_decimal_places)}</span> / <span className="text-red-700">{formatQuantity(l.qc_rejected_quantity, l.uom_decimal_places)}</span></div>
+                      <div className="text-fg-subtle"><span className="text-green-700">{formatQuantity(l.qc_accepted_quantity, l.uom_decimal_places)}</span> / <span className="text-red-700">{formatQuantity(l.qc_rejected_quantity, l.uom_decimal_places)}</span></div>
                     )}
                   </td>
-                  <td className="px-4 py-2 text-right whitespace-nowrap">{formatQuantity(l.stock_quantity, l.uom_decimal_places)}</td>
-                  <td className="px-4 py-2"><WorkflowBadge status={l.status} config={LOT_STATUS_BADGES} /></td>
+                  <td className="text-right whitespace-nowrap">{formatQuantity(l.stock_quantity, l.uom_decimal_places)}</td>
+                  <td><WorkflowBadge status={l.status} config={LOT_STATUS_BADGES} /></td>
                 </tr>
               ))}
             </tbody>

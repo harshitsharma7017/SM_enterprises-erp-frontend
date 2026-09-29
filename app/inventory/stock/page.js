@@ -78,13 +78,13 @@ export default function StockPage() {
 
       {pending.length > 0 && (
         <Card title={`Awaiting stock posting (${pending.length})`} variant="info">
-          <p className="text-xs text-gray-500 mt-0 mb-2">Completed inspections whose accepted quantity is not in stock yet. Open the inspection and use Post to Stock.</p>
+          <p className="text-xs text-fg-subtle mt-0 mb-2">Completed inspections whose accepted quantity is not in stock yet. Open the inspection and use Post to Stock.</p>
           <ul className="list-none p-0 m-0 space-y-1 text-sm">
             {pending.slice(0, 10).map((q) => (
               <li key={q.id} className="flex flex-wrap items-center gap-2">
                 <CompanyBadge label={q.company_label} code={q.company_code} />
-                <Link href={`/quality-control/${q.id}`} className="font-mono text-blue-600 hover:underline">{q.qc_no}</Link>
-                <span className="text-gray-600">{q.lot_no} · {q.product_name} · accepted {formatQuantity(q.accepted_quantity, q.uom_decimal_places)} {q.unit}</span>
+                <Link href={`/quality-control/${q.id}`} className="font-mono text-link hover:underline">{q.qc_no}</Link>
+                <span className="text-fg-muted">{q.lot_no} · {q.product_name} · accepted {formatQuantity(q.accepted_quantity, q.uom_decimal_places)} {q.unit}</span>
               </li>
             ))}
           </ul>
@@ -93,11 +93,11 @@ export default function StockPage() {
 
       <Card title="Usable stock (QC-accepted material and posted production output)" variant="primary" actions={(
         <div className="flex gap-1">
-          <button type="button" onClick={() => switchView('lot')} className={`${TAB} ${view === 'lot' ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700'}`}>By lot</button>
-          <button type="button" onClick={() => switchView('product')} className={`${TAB} ${view === 'product' ? 'bg-blue-600 text-white' : 'border border-gray-300 text-gray-700'}`}>By product</button>
+          <button type="button" onClick={() => switchView('lot')} className={`${TAB} ${view === 'lot' ? 'bg-accent text-white' : 'border border-line-strong text-fg-muted'}`}>By lot</button>
+          <button type="button" onClick={() => switchView('product')} className={`${TAB} ${view === 'product' ? 'bg-accent text-white' : 'border border-line-strong text-fg-muted'}`}>By product</button>
         </div>
       )}>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <InventoryFilters
           filters={filters}
@@ -107,78 +107,78 @@ export default function StockPage() {
           searchPlaceholder={view === 'product' ? 'Product name or code' : 'Lot, mill lot, material, supplier, GRN, PO or location'}
         />
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
+        <div className="table-wrap">
           {view === 'lot' ? (
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-50 text-gray-700">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="px-4 py-2 font-medium">Lot</th>
-                  <th className="px-4 py-2 font-medium">Company</th>
-                  <th className="px-4 py-2 font-medium">Material</th>
-                  <th className="px-4 py-2 font-medium text-right">Width</th>
-                  <th className="px-4 py-2 font-medium">Location</th>
-                  <th className="px-4 py-2 font-medium">Supplier</th>
-                  <th className="px-4 py-2 font-medium">Source (GRN / PO or production)</th>
-                  <th className="px-4 py-2 font-medium">Received</th>
-                  <th className="px-4 py-2 font-medium text-right">Available</th>
-                  <th className="px-4 py-2 font-medium">Status</th>
+                  <th>Lot</th>
+                  <th>Company</th>
+                  <th>Material</th>
+                  <th className="text-right">Width</th>
+                  <th>Location</th>
+                  <th>Supplier</th>
+                  <th>Source (GRN / PO or production)</th>
+                  <th>Received</th>
+                  <th className="text-right">Available</th>
+                  <th>Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody>
                 {loading ? (
-                  <tr><td colSpan="10" className="text-center py-8 text-gray-500">Loading stock...</td></tr>
+                  <tr><td colSpan="10" className="text-center">Loading stock...</td></tr>
                 ) : rows.length === 0 ? (
                   <EmptyState colspan={10} icon="bi-boxes" title="No stock" message="Stock is created when a completed inspection's accepted quantity is posted." />
                 ) : rows.map((b) => (
-                  <tr key={`${b.lot_id}-${b.location_id}`} className="hover:bg-gray-50">
-                    <td className="px-4 py-2"><Link href={`/inventory/stock/${b.lot_id}`} className="font-mono font-semibold text-gray-900 hover:text-blue-600">{b.lot_no}</Link></td>
-                    <td className="px-4 py-2"><CompanyBadge label={b.company_label} code={b.company_code} /></td>
-                    <td className="px-4 py-2">
-                      <div className="text-gray-900">{b.product_name}</div>
-                      <div className="text-xs text-gray-500">{b.material_type_name || '—'}</div>
+                  <tr key={`${b.lot_id}-${b.location_id}`}>
+                    <td><Link href={`/inventory/stock/${b.lot_id}`} className="font-mono font-semibold text-fg hover:text-link">{b.lot_no}</Link></td>
+                    <td><CompanyBadge label={b.company_label} code={b.company_code} /></td>
+                    <td>
+                      <div className="text-fg">{b.product_name}</div>
+                      <div className="text-xs text-fg-subtle">{b.material_type_name || '—'}</div>
                     </td>
-                    <td className="px-4 py-2 text-right">{b.width_inch === null ? '—' : `${formatQuantity(b.width_inch, 3)}"`}</td>
-                    <td className="px-4 py-2 text-gray-700"><span className="font-mono">{b.location_code}</span> <span className="text-xs text-gray-500">{b.location_name}</span></td>
-                    <td className="px-4 py-2 text-gray-700">{b.supplier_name || '—'}</td>
-                    <td className="px-4 py-2 font-mono text-xs text-gray-700">
+                    <td className="text-right">{b.width_inch === null ? '—' : `${formatQuantity(b.width_inch, 3)}"`}</td>
+                    <td className="text-fg-muted"><span className="font-mono">{b.location_code}</span> <span className="text-xs text-fg-subtle">{b.location_name}</span></td>
+                    <td className="text-fg-muted">{b.supplier_name || '—'}</td>
+                    <td className="font-mono text-fg-muted">
                       {b.lot_source_type === 'opening' ? <span className="font-sans">Opening stock</span> : b.lot_source_type === 'production' ? <span className="font-sans">Produced · <span className="font-mono">{b.lot_processing_no}</span></span> : <>{b.inward_no}<div>{b.po_num}</div></>}
                     </td>
-                    <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{formatDate(b.received_date)}</td>
-                    <td className="px-4 py-2 text-right font-semibold whitespace-nowrap">{formatQuantity(b.quantity, b.uom_decimal_places)} <span className="text-xs font-normal text-gray-500">{b.unit}</span></td>
-                    <td className="px-4 py-2"><WorkflowBadge status={b.stock_status} config={STOCK_STATUS_BADGES} /></td>
+                    <td className="whitespace-nowrap">{formatDate(b.received_date)}</td>
+                    <td className="text-right font-semibold whitespace-nowrap">{formatQuantity(b.quantity, b.uom_decimal_places)} <span className="text-xs font-normal text-fg-subtle">{b.unit}</span></td>
+                    <td><WorkflowBadge status={b.stock_status} config={STOCK_STATUS_BADGES} /></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-50 text-gray-700">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="px-4 py-2 font-medium">Product</th>
-                  <th className="px-4 py-2 font-medium">Company</th>
-                  <th className="px-4 py-2 font-medium">Material Type</th>
-                  <th className="px-4 py-2 font-medium text-center">Lots</th>
-                  <th className="px-4 py-2 font-medium text-center">Locations</th>
-                  <th className="px-4 py-2 font-medium text-right">Available</th>
+                  <th>Product</th>
+                  <th>Company</th>
+                  <th>Material Type</th>
+                  <th className="text-center">Lots</th>
+                  <th className="text-center">Locations</th>
+                  <th className="text-right">Available</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody>
                 {loading ? (
-                  <tr><td colSpan="6" className="text-center py-8 text-gray-500">Loading stock...</td></tr>
+                  <tr><td colSpan="6" className="text-center">Loading stock...</td></tr>
                 ) : rows.length === 0 ? (
                   <EmptyState colspan={6} icon="bi-boxes" title="No stock" message="No product has usable stock for these filters." />
                 ) : rows.map((p) => (
-                  <tr key={`${p.company_id}-${p.product_id}-${p.uom_id}-${p.unit}`} className="hover:bg-gray-50">
-                    <td className="px-4 py-2">
-                      <button type="button" onClick={() => { setFilters({ ...EMPTY_FILTERS, company_id: String(p.company_id), product_id: String(p.product_id) }); switchView('lot'); }} className="text-left text-gray-900 hover:text-blue-600">
-                        {p.product_name} <span className="text-xs text-gray-500">({p.item_group_code})</span>
+                  <tr key={`${p.company_id}-${p.product_id}-${p.uom_id}-${p.unit}`}>
+                    <td>
+                      <button type="button" onClick={() => { setFilters({ ...EMPTY_FILTERS, company_id: String(p.company_id), product_id: String(p.product_id) }); switchView('lot'); }} className="text-left text-fg hover:text-link">
+                        {p.product_name} <span className="text-xs text-fg-subtle">({p.item_group_code})</span>
                       </button>
                     </td>
-                    <td className="px-4 py-2"><CompanyBadge label={p.company_label} code={p.company_code} /></td>
-                    <td className="px-4 py-2 text-gray-700">{p.material_type_name || '—'}</td>
-                    <td className="px-4 py-2 text-center">{p.lots_count}</td>
-                    <td className="px-4 py-2 text-center">{p.locations_count}</td>
-                    <td className="px-4 py-2 text-right font-semibold whitespace-nowrap">{formatQuantity(p.quantity, p.uom_decimal_places)} <span className="text-xs font-normal text-gray-500">{p.unit}</span></td>
+                    <td><CompanyBadge label={p.company_label} code={p.company_code} /></td>
+                    <td className="text-fg-muted">{p.material_type_name || '—'}</td>
+                    <td className="text-center">{p.lots_count}</td>
+                    <td className="text-center">{p.locations_count}</td>
+                    <td className="text-right font-semibold whitespace-nowrap">{formatQuantity(p.quantity, p.uom_decimal_places)} <span className="text-xs font-normal text-fg-subtle">{p.unit}</span></td>
                   </tr>
                 ))}
               </tbody>

@@ -2,7 +2,7 @@
 import { useCompanies } from '../../hooks/useCompanies';
 
 /**
- * Company <select> for create/edit forms of company-owned records.
+ * Company <select className="form-select"> for create/edit forms of company-owned records.
  * Inactive companies are listed only when already selected (an existing
  * record keeps its owner even after the company is deactivated).
  *
@@ -21,7 +21,7 @@ export default function CompanySelect({ value, onChange, name = 'company_id', re
       onChange={onChange}
       required={required}
       disabled={disabled}
-      className={className || 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500'}
+      className={`form-select ${className}`.trim()}
     >
       <option value="">{emptyLabel || 'Select company'}</option>
       {companies

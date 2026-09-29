@@ -81,97 +81,97 @@ export default function UserForm({ mode, user }) {
   };
 
   if (loading) {
-    return <div className="p-4 text-gray-500">Loading form...</div>;
+    return <div className="p-4 text-fg-subtle">Loading form...</div>;
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-fg-muted mb-1">Full Name <span className="text-[var(--danger)]">*</span></label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} required
-            className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.name ? 'border-red-400' : 'border-gray-300'}`} />
-          {fieldErrors.name && <p className="text-xs text-red-600 mt-1">{fieldErrors.name}</p>}
+            className={`form-input ${fieldErrors.name ? 'border-red-400' : 'border-line-strong'}`} />
+          {fieldErrors.name && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.name}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email Address <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-fg-muted mb-1">Email Address <span className="text-[var(--danger)]">*</span></label>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-            className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.email ? 'border-red-400' : 'border-gray-300'}`} />
-          {fieldErrors.email && <p className="text-xs text-red-600 mt-1">{fieldErrors.email}</p>}
+            className={`form-input ${fieldErrors.email ? 'border-red-400' : 'border-line-strong'}`} />
+          {fieldErrors.email && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.email}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <label className="block text-sm font-medium text-fg-muted mb-1">Phone</label>
           <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210"
-            className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.phone ? 'border-red-400' : 'border-gray-300'}`} />
-          {fieldErrors.phone && <p className="text-xs text-red-600 mt-1">{fieldErrors.phone}</p>}
+            className={`form-input ${fieldErrors.phone ? 'border-red-400' : 'border-line-strong'}`} />
+          {fieldErrors.phone && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.phone}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <label className="block text-sm font-medium text-fg-muted mb-1">Status</label>
           <label className="flex items-center gap-2 mt-2">
             <input type="checkbox" checked={isActive} disabled={isProtected || isSelf}
               onChange={(e) => setIsActive(e.target.checked)} className="w-4 h-4" />
-            <span className="text-sm text-gray-700">Active — the user can sign in</span>
+            <span className="text-sm text-fg-muted">Active — the user can sign in</span>
           </label>
-          {fieldErrors.is_active && <p className="text-xs text-red-600 mt-1">{fieldErrors.is_active}</p>}
-          {isProtected && <p className="text-xs text-gray-400 mt-1"><i className="bi bi-shield-lock mr-1"></i>Protected system account.</p>}
-          {isSelf && !isProtected && <p className="text-xs text-gray-400 mt-1">You cannot deactivate your own account.</p>}
+          {fieldErrors.is_active && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.is_active}</p>}
+          {isProtected && <p className="text-xs text-fg-subtle mt-1"><i className="bi bi-shield-lock mr-1"></i>Protected system account.</p>}
+          {isSelf && !isProtected && <p className="text-xs text-fg-subtle mt-1">You cannot deactivate your own account.</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Password {!isEdit && <span className="text-red-500">*</span>}
+          <label className="block text-sm font-medium text-fg-muted mb-1">
+            Password {!isEdit && <span className="text-[var(--danger)]">*</span>}
           </label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required={!isEdit}
             autoComplete="new-password"
-            className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.password ? 'border-red-400' : 'border-gray-300'}`} />
-          <p className="text-xs text-gray-400 mt-1">{isEdit ? 'Leave blank to keep the current password.' : 'Minimum 8 characters, with letters and numbers.'}</p>
-          {fieldErrors.password && <p className="text-xs text-red-600 mt-1">{fieldErrors.password}</p>}
+            className={`form-input ${fieldErrors.password ? 'border-red-400' : 'border-line-strong'}`} />
+          <p className="text-xs text-fg-subtle mt-1">{isEdit ? 'Leave blank to keep the current password.' : 'Minimum 8 characters, with letters and numbers.'}</p>
+          {fieldErrors.password && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.password}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Confirm Password {!isEdit && <span className="text-red-500">*</span>}
+          <label className="block text-sm font-medium text-fg-muted mb-1">
+            Confirm Password {!isEdit && <span className="text-[var(--danger)]">*</span>}
           </label>
           <input type="password" value={passwordConfirmation} onChange={(e) => setPasswordConfirmation(e.target.value)} required={!isEdit}
             autoComplete="new-password"
-            className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.password_confirmation ? 'border-red-400' : 'border-gray-300'}`} />
-          {fieldErrors.password_confirmation && <p className="text-xs text-red-600 mt-1">{fieldErrors.password_confirmation}</p>}
+            className={`form-input ${fieldErrors.password_confirmation ? 'border-red-400' : 'border-line-strong'}`} />
+          {fieldErrors.password_confirmation && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.password_confirmation}</p>}
         </div>
       </div>
 
-      <hr className="my-4 border-gray-200" />
+      <hr className="my-4 border-line" />
 
       <div className="mb-2 flex items-center justify-between">
-        <label className="text-sm font-semibold text-gray-700">
-          Roles <span className="text-red-500">*</span>
+        <label className="text-sm font-semibold text-fg-muted">
+          Roles <span className="text-[var(--danger)]">*</span>
         </label>
-        <span className="text-xs text-gray-400">A user&apos;s permissions are the sum of all their roles.</span>
+        <span className="text-xs text-fg-subtle">A user&apos;s permissions are the sum of all their roles.</span>
       </div>
-      {fieldErrors.role_ids && <p className="text-xs text-red-600 mb-2">{fieldErrors.role_ids}</p>}
+      {fieldErrors.role_ids && <p className="text-xs text-[var(--danger)] mb-2">{fieldErrors.role_ids}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
         {roles.map((role) => {
           const disabled = isProtected && role.name === 'Super Admin';
           return (
-            <label key={role.id} className={`border rounded p-2 flex items-start gap-2 ${disabled ? 'bg-gray-50' : ''}`}>
+            <label key={role.id} className={`border rounded p-2 flex items-start gap-2 ${disabled ? 'bg-surface-raised' : ''}`}>
               <input type="checkbox" checked={roleIds.includes(role.id)} disabled={disabled}
                 onChange={(e) => toggleRole(role.id, e.target.checked)} className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span className="text-sm text-gray-700">{role.name}</span>
+              <span className="text-sm text-fg-muted">{role.name}</span>
             </label>
           );
         })}
       </div>
 
-      <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
-        <button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium disabled:opacity-50">
+      <div className="flex gap-2 mt-4 pt-3 border-t border-line">
+        <button type="submit" disabled={saving} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded text-sm font-medium disabled:opacity-50">
           {saving ? 'Saving...' : isEdit ? 'Update User' : 'Create User'}
         </button>
-        <button type="button" onClick={() => router.push('/user-management/users')} className="border border-gray-300 px-4 py-2 rounded text-sm text-gray-700 hover:bg-gray-50">
+        <button type="button" onClick={() => router.push('/user-management/users')} className="border border-line-strong px-4 py-2 rounded text-sm text-fg-muted hover:bg-surface-hover">
           Cancel
         </button>
       </div>

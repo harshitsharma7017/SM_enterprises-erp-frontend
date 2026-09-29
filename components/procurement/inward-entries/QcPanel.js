@@ -81,9 +81,9 @@ export default function QcPanel({ entry, can, onQcDone }) {
   };
 
   return (
-    <div className="bg-white border-2 border-amber-300 rounded shadow-sm mb-4 overflow-hidden">
+    <div className="bg-surface border-2 border-amber-300 rounded shadow-sm mb-4 overflow-hidden">
       <div className="bg-amber-50 px-4 py-2.5 border-b border-amber-200 flex items-center justify-between flex-wrap gap-2">
-        <span className="font-semibold text-sm text-gray-800">Quality Control (QC) Inspection Pass</span>
+        <span className="font-semibold text-sm text-fg">Quality Control (QC) Inspection Pass</span>
         <span className={`badge border rounded-md px-2 py-1 text-xs font-medium ${statusMeta.className}`}>
           <i className={`bi ${statusMeta.icon} me-1`}></i>{statusMeta.label}
         </span>
@@ -91,49 +91,49 @@ export default function QcPanel({ entry, can, onQcDone }) {
 
       <div className="p-4">
         {entry.qc_inspected_at && (
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-fg-subtle mb-3">
             Inspected Date: {formatDateTime(entry.qc_inspected_at)}
             {entry.qc_inspector_name ? ` · Inspected By: ${entry.qc_inspector_name}` : ''}
           </p>
         )}
 
         {entry.status !== 'pending' ? (
-          <p className="text-sm text-gray-500">This receipt has already been QC-inspected.</p>
+          <p className="text-sm text-fg-subtle">This receipt has already been QC-inspected.</p>
         ) : !can('inward-entry.approve') ? (
-          <p className="text-sm text-gray-400">QC inspection requires the <code>inward-entry.approve</code> permission.</p>
+          <p className="text-sm text-fg-subtle">QC inspection requires the <code>inward-entry.approve</code> permission.</p>
         ) : (
           <>
             {error && <div className="bg-red-50 border border-red-200 text-red-700 rounded p-3 text-sm mb-3">{error}</div>}
 
-            <div className="overflow-x-auto border border-gray-200 rounded-md mb-4">
-              <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-                <thead className="bg-gray-50 text-gray-600">
+            <div className="table-wrap mb-4">
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <th className="px-3 py-2 font-medium">Product / Description</th>
-                    <th className="px-3 py-2 font-medium text-right">Received</th>
-                    <th className="px-3 py-2 font-medium text-right w-28">Passed Qty</th>
-                    <th className="px-3 py-2 font-medium text-right w-28">Rejected Qty</th>
-                    <th className="px-3 py-2 font-medium">QC Remarks</th>
+                    <th>Product / Description</th>
+                    <th className="text-right">Received</th>
+                    <th className="text-right w-28">Passed Qty</th>
+                    <th className="text-right w-28">Rejected Qty</th>
+                    <th>QC Remarks</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody>
                   {rows.map((row, index) => (
                     <tr key={row.id}>
-                      <td className="px-3 py-2 text-gray-900">{row.product_name || '—'}</td>
-                      <td className="px-3 py-2 text-right text-gray-700">{row.received_qty}</td>
-                      <td className="px-3 py-2 text-right text-green-700 font-medium">{row.passed_qty}</td>
-                      <td className="px-3 py-2 text-right">
+                      <td className="cell-strong">{row.product_name || '—'}</td>
+                      <td className="text-right text-fg-muted">{row.received_qty}</td>
+                      <td className="text-right text-green-700">{row.passed_qty}</td>
+                      <td className="text-right">
                         <input
                           type="number"
                           min="0"
                           max={row.received_qty}
                           value={row.rejected_qty}
                           onChange={(e) => handleRejectedChange(index, e.target.value)}
-                          className="form-input w-20 rounded border-gray-300 text-sm text-right text-red-700"
+                          className="form-input w-20 text-right text-red-700"
                         />
                       </td>
-                      <td className="px-3 py-2">
-                        <input type="text" value={row.qc_remarks} onChange={(e) => updateRow(index, { qc_remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                      <td>
+                        <input type="text" value={row.qc_remarks} onChange={(e) => updateRow(index, { qc_remarks: e.target.value })} className="form-input" />
                       </td>
                     </tr>
                   ))}
@@ -142,8 +142,8 @@ export default function QcPanel({ entry, can, onQcDone }) {
             </div>
 
             <div className="mb-4 max-w-sm">
-              <label className="block text-xs font-medium text-gray-700 mb-1">QC Decision</label>
-              <select value={decision} onChange={(e) => setDecision(e.target.value)} className="form-select w-full rounded border-gray-300 text-sm">
+              <label className="block text-xs font-medium text-fg-muted mb-1">QC Decision</label>
+              <select value={decision} onChange={(e) => setDecision(e.target.value)} className="form-select">
                 <option value="approved">Approve (QC Pass)</option>
                 <option value="rejected">Reject Shipment</option>
               </select>

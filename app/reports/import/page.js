@@ -85,8 +85,8 @@ export default function ImportPage() {
     }
   };
 
-  if (loadError) return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{loadError}</div></DashboardLayout>;
-  if (!imports) return <DashboardLayout><div className="p-4 text-gray-500">Loading...</div></DashboardLayout>;
+  if (loadError) return <DashboardLayout><div className="alert alert-danger">{loadError}</div></DashboardLayout>;
+  if (!imports) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading...</div></DashboardLayout>;
   if (imports.length === 0) return <DashboardLayout><div className="bg-amber-50 text-amber-800 p-3 rounded">You cannot import any record type (each import also needs that record&apos;s create permission).</div></DashboardLayout>;
 
   const unchanged = previewedFor && previewedFor.entity === entity && previewedFor.company === company && previewedFor.file === file;
@@ -100,24 +100,24 @@ export default function ImportPage() {
       <Card title="1. What to import" variant="primary">
         <div className="flex flex-wrap items-end gap-3 mb-3">
           <div className="w-56">
-            <label className="block text-xs text-gray-500 mb-1">Record type</label>
-            <select value={entity} onChange={(e) => { setEntity(e.target.value); reset(); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+            <label className="block text-xs text-fg-subtle mb-1">Record type</label>
+            <select value={entity} onChange={(e) => { setEntity(e.target.value); reset(); }} className="form-select">
               {imports.map((i) => <option key={i.key} value={i.key}>{i.title}</option>)}
             </select>
           </div>
-          <button type="button" onClick={() => apiClient.download(`/imports/${entity}/template`, `${entity}-import-template.xlsx`).catch((err) => setError(err.message))} className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}><i className="bi bi-download me-1"></i> Download template</button>
+          <button type="button" onClick={() => apiClient.download(`/imports/${entity}/template`, `${entity}-import-template.xlsx`).catch((err) => setError(err.message))} className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}><i className="bi bi-download me-1"></i> Download template</button>
         </div>
         {def && (
           <>
-            <table className="min-w-full text-sm">
-              <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1 font-medium">Column</th><th className="py-1 font-medium">Required</th><th className="py-1 font-medium">Notes</th><th className="py-1 font-medium">Example</th></tr></thead>
-              <tbody className="divide-y divide-gray-100">
+            <table className="data-table">
+              <thead><tr><th>Column</th><th>Required</th><th>Notes</th><th>Example</th></tr></thead>
+              <tbody>
                 {def.columns.map((c, i) => (
-                  <tr key={c.header}><td className="py-1 font-medium">{c.header}</td><td className="py-1">{c.required ? 'Yes' : '—'}</td><td className="py-1 text-gray-600">{c.note || ''}</td><td className="py-1 font-mono text-xs">{def.example[i] ?? ''}</td></tr>
+                  <tr key={c.header}><td>{c.header}</td><td>{c.required ? 'Yes' : '—'}</td><td className="text-fg-muted">{c.note || ''}</td><td className="font-mono">{def.example[i] ?? ''}</td></tr>
                 ))}
               </tbody>
             </table>
-            <p className="text-xs text-gray-500 mt-2 mb-0">
+            <p className="text-xs text-fg-subtle mt-2 mb-0">
               First sheet only; one header row, then one row per {def.grouped ? 'projection line (rows with the same Projection Ref form one draft projection)' : 'record'}; up to {def.max_rows} rows.
               Imports only create new records — an existing code / name is reported as an error, never updated.{def.grouped ? ' Imported projections are always drafts.' : ''}
             </p>
@@ -129,12 +129,12 @@ export default function ImportPage() {
         <div className="flex flex-wrap items-end gap-3">
           <ReportCompanySelect value={company} onChange={(v) => { setCompany(v); reset(); }} allowAll={false} />
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Excel file (.xlsx)</label>
+            <label className="block text-xs text-fg-subtle mb-1">Excel file (.xlsx)</label>
             <input key={fileKey} type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(e) => { setFile(e.target.files?.[0] || null); reset(); }} className="text-sm" />
           </div>
-          <button type="button" onClick={runPreview} disabled={!file || !company || busy} className={`${BTN} bg-blue-600 hover:bg-blue-700 text-white`}><i className="bi bi-search me-1"></i> {busy && !preview ? 'Checking…' : 'Preview'}</button>
+          <button type="button" onClick={runPreview} disabled={!file || !company || busy} className={`${BTN} bg-accent hover:bg-accent-hover text-white`}><i className="bi bi-search me-1"></i> {busy && !preview ? 'Checking…' : 'Preview'}</button>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Preview only checks the file — nothing is saved.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">Preview only checks the file — nothing is saved.</p>
       </Card>
 
       {error && <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4 text-sm">{error}</div>}
@@ -142,23 +142,23 @@ export default function ImportPage() {
 
       {preview && (
         <Card title={`3. Preview — ${preview.summary.valid} valid, ${preview.summary.invalid} with errors (${preview.summary.rows} rows)`} variant={preview.can_import ? 'success' : 'danger'}>
-          <div className="overflow-x-auto border border-gray-200 rounded-md mb-3">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-50 text-gray-700">
+          <div className="table-wrap mb-3">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">Row</th>
-                  <th className="px-3 py-2 font-medium">Status</th>
-                  {shownColumns.map((h) => <th key={h} className="px-3 py-2 font-medium">{h}</th>)}
-                  <th className="px-3 py-2 font-medium">Problems (field — reason)</th>
+                  <th>Row</th>
+                  <th>Status</th>
+                  {shownColumns.map((h) => <th key={h}>{h}</th>)}
+                  <th>Problems (field — reason)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody>
                 {preview.rows.map((r) => (
                   <tr key={r.row_number} className={r.valid ? '' : 'bg-red-50'}>
-                    <td className="px-3 py-1.5 font-mono">{r.row_number}</td>
-                    <td className="px-3 py-1.5">{r.valid ? <span className="text-green-700">Valid</span> : <span className="text-red-700">Invalid</span>}</td>
-                    {shownColumns.map((h) => <td key={h} className="px-3 py-1.5">{r.values?.[h] === null || r.values?.[h] === undefined ? '' : String(r.values[h])}</td>)}
-                    <td className="px-3 py-1.5">
+                    <td className="font-mono">{r.row_number}</td>
+                    <td>{r.valid ? <span className="text-green-700">Valid</span> : <span className="text-red-700">Invalid</span>}</td>
+                    {shownColumns.map((h) => <td key={h}>{r.values?.[h] === null || r.values?.[h] === undefined ? '' : String(r.values[h])}</td>)}
+                    <td>
                       {r.errors.length === 0 ? '—' : (
                         <ul className="list-none p-0 m-0 space-y-0.5 text-red-700">
                           {r.errors.map((e, i) => <li key={i}><strong>{e.field || 'Row'}</strong> — {e.message}</li>)}
@@ -174,7 +174,7 @@ export default function ImportPage() {
             <div className="flex items-center gap-3">
               <button type="button" onClick={runImport} disabled={!canConfirm} className={`${BTN} bg-green-600 hover:bg-green-700 text-white`}><i className="bi bi-check2-circle me-1"></i> {busy ? 'Importing…' : `Import ${preview.summary.records} record(s)`}</button>
               {!unchanged && <span className="text-xs text-amber-700">The file, company or record type changed — preview again first.</span>}
-              <span className="text-xs text-gray-500">All rows are created, or none.</span>
+              <span className="text-xs text-fg-subtle">All rows are created, or none.</span>
             </div>
           ) : (
             <p className="text-sm text-red-700 m-0">Fix the rows marked above in the spreadsheet and preview again. Nothing has been imported.</p>

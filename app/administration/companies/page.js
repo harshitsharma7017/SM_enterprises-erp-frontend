@@ -90,7 +90,7 @@ export default function CompanyIndex() {
 
   const Actions = (
     can('company.create') ? (
-      <Link href="/administration/companies/create" className="btn btn-sm btn-primary bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+      <Link href="/administration/companies/create" className="btn btn-sm btn-primary bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
         <i className="bi bi-plus-lg mr-1"></i> Add Company
       </Link>
     ) : null
@@ -99,91 +99,90 @@ export default function CompanyIndex() {
   return (
     <DashboardLayout>
       <div className="mb-4">
-        <h2 className="text-2xl font-semibold text-gray-900 m-0">Companies</h2>
+        <h2 className="text-2xl font-semibold text-fg m-0">Companies</h2>
       </div>
 
       <Card title="Company Master" variant="primary" actions={Actions}>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={(e) => e.preventDefault()}>
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-xs text-gray-500 mb-1">Search</label>
+        <form className="filter-bar mb-4" onSubmit={(e) => e.preventDefault()}>
+          <div className="filter-bar-wide">
+            <label className="block text-xs text-fg-subtle mb-1">Search</label>
             <input
               type="text"
               name="search"
               value={filters.search}
               onChange={handleFilterChange}
-              className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
               placeholder="Code, name or GSTIN"
             />
           </div>
-          <div className="w-48">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
             <select
               name="status"
               value={filters.status}
               onChange={handleFilterChange}
-              className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            >
+            className="form-select">
               <option value="">All</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
-          <div className="flex gap-2">
-            <button type="button" onClick={resetFilters} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
+          <div className="filter-bar-actions">
+            <button type="button" onClick={resetFilters} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">
               Reset
             </button>
           </div>
         </form>
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium w-12">#</th>
-                <th className="px-4 py-2 font-medium w-24">Code</th>
-                <th className="px-4 py-2 font-medium">Company Name</th>
-                <th className="px-4 py-2 font-medium">Short Name</th>
-                <th className="px-4 py-2 font-medium">GSTIN</th>
-                <th className="px-4 py-2 font-medium">Contact</th>
-                <th className="px-4 py-2 font-medium w-28">Status</th>
-                <th className="px-4 py-2 font-medium text-right w-32">Actions</th>
+                <th className="w-12">#</th>
+                <th className="w-24">Code</th>
+                <th>Company Name</th>
+                <th>Short Name</th>
+                <th>GSTIN</th>
+                <th>Contact</th>
+                <th className="w-28">Status</th>
+                <th className="text-right w-32">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="8" className="text-center py-8 text-gray-500">Loading companies...</td></tr>
+                <tr><td colSpan="8" className="text-center">Loading companies...</td></tr>
               ) : companies.length === 0 ? (
                 <EmptyState colspan={8} icon="bi-buildings" title="No companies found" message="Adjust the filters or add a company." />
               ) : (
                 companies.map((company, index) => (
-                  <tr key={company.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 text-gray-500">{index + 1 + (filters.page - 1) * LIMIT}</td>
-                    <td className="px-4 py-2">
-                      <StandardBadge className="font-mono text-gray-700 bg-white">{company.code}</StandardBadge>
+                  <tr key={company.id}>
+                    <td>{index + 1 + (filters.page - 1) * LIMIT}</td>
+                    <td>
+                      <StandardBadge className="font-mono text-fg-muted bg-surface">{company.code}</StandardBadge>
                     </td>
-                    <td className="px-4 py-2 font-semibold text-gray-800">{company.name}</td>
-                    <td className="px-4 py-2 text-gray-600">{company.short_name || '—'}</td>
-                    <td className="px-4 py-2 font-mono text-gray-600">{company.gstin || '—'}</td>
-                    <td className="px-4 py-2 text-gray-600">
+                    <td className="cell-strong">{company.name}</td>
+                    <td className="text-fg-muted">{company.short_name || '—'}</td>
+                    <td className="font-mono text-fg-muted">{company.gstin || '—'}</td>
+                    <td className="text-fg-muted">
                       {company.phone || company.email ? (
                         <div className="flex flex-col">
                           {company.phone && <span>{company.phone}</span>}
-                          {company.email && <span className="text-xs text-gray-500">{company.email}</span>}
+                          {company.email && <span className="text-xs text-fg-subtle">{company.email}</span>}
                         </div>
                       ) : '—'}
                     </td>
-                    <td className="px-4 py-2">
+                    <td>
                       <StatusBadge
                         status={company.is_active ? 'active' : 'inactive'}
                         onClick={can('company.edit') ? () => toggleStatus(company) : undefined}
                       />
                     </td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="text-right">
                       <div className="inline-flex rounded-md shadow-sm" role="group">
                         {can('company.edit') && (
-                          <Link href={`/administration/companies/${company.id}`} className="px-2 py-1 text-sm bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 rounded-l-md border-r-0" title="Edit">
+                          <Link href={`/administration/companies/${company.id}`} className="px-2 py-1 text-sm bg-surface border border-line-strong text-link hover:bg-surface-hover rounded-l-md border-r-0" title="Edit">
                             <i className="bi bi-pencil"></i>
                           </Link>
                         )}
@@ -191,7 +190,7 @@ export default function CompanyIndex() {
                           <button
                             type="button"
                             onClick={() => deleteCompany(company)}
-                            className={`px-2 py-1 text-sm bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-r-md ${can('company.edit') ? '' : 'rounded-l-md'}`}
+                            className={`px-2 py-1 text-sm bg-surface border border-line-strong text-[var(--danger)] hover:bg-red-50 rounded-r-md ${can('company.edit') ? '' : 'rounded-l-md'}`}
                             title="Delete (only possible while no record uses this company)"
                           >
                             <i className="bi bi-trash"></i>

@@ -11,8 +11,7 @@ import { LOT_SOURCE_LABELS } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
 import { formatDate, formatQuantity } from '@/components/sales/shared/format';
 
-const SELECT = 'form-select w-full rounded border-gray-300 text-sm';
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
+const SELECT = 'form-select w-full rounded border-line-strong text-sm';
 
 /** Pick a received lot (of one company) that has no active barcode, and generate one. */
 export default function GenerateBarcodePage() {
@@ -54,35 +53,35 @@ export default function GenerateBarcodePage() {
       <Card title="Received lots without a barcode" variant="primary">
         <form className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4" onSubmit={(e) => { e.preventDefault(); load(companyId, search); }}>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Company *</label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Company *</label>
             <CompanySelect value={companyId} onChange={(e) => { setCompanyId(e.target.value); setLots([]); setLoaded(false); load(e.target.value, search); }} required className={SELECT} />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Lot, material, GRN or processing</label>
-            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Lot, material, GRN or processing</label>
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} className="form-input" />
           </div>
-          <div className="flex items-end"><button type="submit" disabled={!companyId} className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-60">Search</button></div>
+          <div className="flex items-end"><button type="submit" disabled={!companyId} className="px-3 py-1.5 border border-line-strong rounded text-sm text-fg-muted hover:bg-surface-hover disabled:opacity-60">Search</button></div>
         </form>
-        {!companyId ? <p className="text-sm text-gray-500 m-0">Select a company.</p> : !loaded ? null : lots.length === 0 ? <p className="text-sm text-gray-500 m-0">Every received lot here already has a barcode.</p> : (
-          <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Lot</th><th className="py-1.5 font-medium">Source</th><th className="py-1.5 font-medium">Material</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium text-right">In stock</th><th className="py-1.5 font-medium">Date</th><th></th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
+        {!companyId ? <p className="text-sm text-fg-subtle m-0">Select a company.</p> : !loaded ? null : lots.length === 0 ? <p className="text-sm text-fg-subtle m-0">Every received lot here already has a barcode.</p> : (
+          <table className="data-table">
+            <thead><tr><th>Lot</th><th>Source</th><th>Material</th><th className="text-right">Quantity</th><th className="text-right">In stock</th><th>Date</th><th></th></tr></thead>
+            <tbody>
               {lots.map((l) => (
                 <tr key={l.id}>
-                  <td className="py-1.5 font-mono">{l.lot_no}</td>
-                  <td className="py-1.5 text-xs">{LOT_SOURCE_LABELS[l.source_type]} <span className="font-mono text-gray-500">{l.inward_no || l.processing_no}</span></td>
-                  <td className="py-1.5">{l.product_name}</td>
-                  <td className="py-1.5 text-right">{formatQuantity(l.quantity, l.uom_decimal_places)} {l.unit}</td>
-                  <td className="py-1.5 text-right">{formatQuantity(l.stock_quantity, l.uom_decimal_places)}</td>
-                  <td className="py-1.5">{formatDate(l.received_date)}</td>
-                  <td className="py-1.5 text-right"><button type="button" disabled={busyLot !== null} onClick={() => generate(l)} className="px-2.5 py-1 rounded text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-60"><i className="bi bi-upc me-1"></i> Generate</button></td>
+                  <td className="font-mono">{l.lot_no}</td>
+                  <td>{LOT_SOURCE_LABELS[l.source_type]} <span className="font-mono text-fg-subtle">{l.inward_no || l.processing_no}</span></td>
+                  <td>{l.product_name}</td>
+                  <td className="text-right">{formatQuantity(l.quantity, l.uom_decimal_places)} {l.unit}</td>
+                  <td className="text-right">{formatQuantity(l.stock_quantity, l.uom_decimal_places)}</td>
+                  <td>{formatDate(l.received_date)}</td>
+                  <td className="text-right"><button type="button" disabled={busyLot !== null} onClick={() => generate(l)} className="px-2.5 py-1 rounded text-xs font-medium bg-accent hover:bg-accent-hover text-white disabled:opacity-60"><i className="bi bi-upc me-1"></i> Generate</button></td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </Card>
-      <Link href="/barcode/codes" className="text-sm text-blue-600 hover:underline">Back to barcodes</Link>
+      <Link href="/barcode/codes" className="text-sm text-link hover:underline">Back to barcodes</Link>
     </DashboardLayout>
   );
 }

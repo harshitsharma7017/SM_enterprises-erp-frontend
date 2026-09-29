@@ -70,19 +70,19 @@ export default function PermissionsIndexPage() {
     <DashboardLayout>
       <PageHeading title="Permissions" />
 
-      <div className="bg-gray-50 border border-gray-200 rounded p-3 mb-4 text-sm text-gray-600">
+      <div className="bg-surface-raised border border-line rounded p-3 mb-4 text-sm text-fg-muted">
         <i className="bi bi-info-circle mr-1"></i>
         Permissions are read-only here — they&apos;re seeded directly into the database rather than declared in a
         separate config file, so there&apos;s no config/database diff or &quot;Sync from Config&quot; action to show.
       </div>
 
-      {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
-      <Card title="Registered Permissions" variant="primary" actions={<span className="text-xs bg-gray-100 border border-gray-200 text-gray-600 px-2 py-1 rounded">{permissions.length} total</span>}>
+      <Card title="Registered Permissions" variant="primary" actions={<span className="text-xs bg-surface-raised border border-line text-fg-muted px-2 py-1 rounded">{permissions.length} total</span>}>
         {loading ? (
-          <div className="p-4 text-gray-500">Loading permissions...</div>
+          <div className="p-4 text-fg-subtle">Loading permissions...</div>
         ) : (
-          <div className="border border-gray-200 rounded-md divide-y divide-gray-200">
+          <div className="border border-line rounded-md divide-y divide-line">
             {orderedGroups.filter((g) => byGroup.has(g)).map((group) => {
               const rows = byGroup.get(group) || [];
               const isOpen = openGroup === group;
@@ -91,35 +91,35 @@ export default function PermissionsIndexPage() {
                   <button
                     type="button"
                     onClick={() => setOpenGroup(isOpen ? null : group)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-left"
+                    className="w-full flex items-center justify-between px-4 py-2.5 bg-surface-raised hover:bg-surface-hover text-left"
                   >
-                    <span className="font-semibold text-sm text-gray-800">{group}</span>
+                    <span className="font-semibold text-sm text-fg">{group}</span>
                     <span className="flex items-center gap-2">
-                      <span className="text-xs bg-white border border-gray-200 text-gray-600 px-2 py-0.5 rounded">{rows.length}</span>
-                      <i className={`bi ${isOpen ? 'bi-chevron-up' : 'bi-chevron-down'} text-xs text-gray-400`}></i>
+                      <span className="text-xs bg-surface border border-line text-fg-muted px-2 py-0.5 rounded">{rows.length}</span>
+                      <i className={`bi ${isOpen ? 'bi-chevron-up' : 'bi-chevron-down'} text-xs text-fg-subtle`}></i>
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full text-sm text-left">
-                        <thead className="bg-white text-gray-500 border-b border-gray-200">
+                    <div className="table-wrap">
+                      <table className="data-table">
+                        <thead className="border-b border-line">
                           <tr>
-                            <th className="px-4 py-2 font-medium">Permission</th>
-                            <th className="px-4 py-2 font-medium w-40">Module</th>
-                            <th className="px-4 py-2 font-medium w-32">Action</th>
-                            <th className="px-4 py-2 font-medium text-center w-32">Used by roles</th>
+                            <th>Permission</th>
+                            <th className="w-40">Module</th>
+                            <th className="w-32">Action</th>
+                            <th className="text-center w-32">Used by roles</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody>
                           {rows.map((p) => {
                             const [moduleName, action] = p.name.split(/\.(.+)/);
                             return (
                               <tr key={p.id}>
-                                <td className="px-4 py-2 font-mono text-xs text-gray-800">{p.name}</td>
-                                <td className="px-4 py-2 text-gray-500">{moduleName}</td>
-                                <td className="px-4 py-2 text-gray-500">{actionLabel(action)}</td>
-                                <td className="px-4 py-2 text-center">
-                                  <span className={`text-xs border px-2 py-0.5 rounded ${usageByName.get(p.name) > 0 ? 'bg-gray-100 border-gray-200 text-gray-700' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                                <td className="font-mono cell-strong">{p.name}</td>
+                                <td>{moduleName}</td>
+                                <td>{actionLabel(action)}</td>
+                                <td className="text-center">
+                                  <span className={`text-xs border px-2 py-0.5 rounded ${usageByName.get(p.name) > 0 ? 'bg-surface-raised border-line text-fg-muted' : 'bg-surface-raised border-line text-fg-subtle'}`}>
                                     {usageByName.get(p.name) || 0}
                                   </span>
                                 </td>

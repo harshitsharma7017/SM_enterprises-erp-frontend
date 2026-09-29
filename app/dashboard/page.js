@@ -52,7 +52,7 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900" style={{ fontWeight: 600 }}>Dashboard</h2>
+        <h2 className="text-2xl font-semibold text-fg" style={{ fontWeight: 600 }}>Dashboard</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
@@ -60,7 +60,7 @@ export default function DashboardPage() {
           title="Total Inquiries"
           value={stats?.inquiryCount}
           icon="bi-inbox-fill"
-          color="bg-blue-600"
+          color="bg-accent"
           linkHref="/sales/inquiries"
           linkLabel="View Inquiries"
           permission="inquiry.view"
@@ -127,10 +127,10 @@ export default function DashboardPage() {
       {/* Charts placeholder — will be connected when dashboard stats API is ready */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="card p-6">
-          <h3 className="text-base font-semibold text-gray-900 mb-4">
+          <h3 className="text-base font-semibold text-fg mb-4">
             <i className="bi bi-graph-up-arrow mr-1"></i>Pipeline Trend (6 Months)
           </h3>
-          <div className="flex items-center justify-center text-gray-400 text-sm" style={{ minHeight: 310 }}>
+          <div className="flex items-center justify-center text-fg-subtle text-sm" style={{ minHeight: 310 }}>
             <div className="text-center">
               <i className="bi bi-bar-chart text-4xl mb-2 block opacity-30"></i>
               <p>Charts will render once the dashboard stats API is connected.</p>
@@ -138,10 +138,10 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="card p-6">
-          <h3 className="text-base font-semibold text-gray-900 mb-4">
+          <h3 className="text-base font-semibold text-fg mb-4">
             <i className="bi bi-pie-chart-fill mr-1"></i>Inquiry Status Distribution
           </h3>
-          <div className="flex items-center justify-center text-gray-400 text-sm" style={{ minHeight: 310 }}>
+          <div className="flex items-center justify-center text-fg-subtle text-sm" style={{ minHeight: 310 }}>
             <div className="text-center">
               <i className="bi bi-pie-chart text-4xl mb-2 block opacity-30"></i>
               <p>Charts will render once the dashboard stats API is connected.</p>

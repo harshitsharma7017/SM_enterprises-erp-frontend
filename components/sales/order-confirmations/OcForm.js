@@ -228,7 +228,7 @@ export default function OcForm({ ocId = null }) {
     setErrors([]);
 
     const payload = { ...formData, status };
-    // Joi's numeric fields accept null but not '' — a blank <select> must become
+    // Joi's numeric fields accept null but not '' — a blank <select className="form-select"> must become
     // null, not an empty string, or validation rejects e.g. an unset Agent.
     for (const key of ['agent_id', 'agent_commission_value', 'agent_commission_type', 'brand_id']) {
       if (payload[key] === '') payload[key] = null;
@@ -259,7 +259,7 @@ export default function OcForm({ ocId = null }) {
   };
 
   if (loading) {
-    return <div className="p-4 text-gray-500">Loading form data...</div>;
+    return <div className="p-4 text-fg-subtle">Loading form data...</div>;
   }
 
   return (
@@ -296,8 +296,8 @@ export default function OcForm({ ocId = null }) {
       <FormSection title="Contract Identity" icon="bi-check2-square">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Company {!ocId && <span className="text-red-500">*</span>}
+            <label className="block text-xs font-medium text-fg-muted mb-1">
+              Company {!ocId && <span className="text-[var(--danger)]">*</span>}
             </label>
             {lockedCompany ? (
               <div className="py-1.5"><CompanyBadge label={lockedCompany.label} code={lockedCompany.code} /></div>
@@ -307,93 +307,92 @@ export default function OcForm({ ocId = null }) {
                   value={formData.company_id}
                   onChange={handleCompanyChange}
                   required={!ocId}
-                  className="form-select w-full rounded border-gray-300 text-sm"
                 />
-                {ocId && <p className="text-[11px] text-gray-500 mt-1">Created before multi-company support — assigning a company also assigns it to this OC&apos;s unassigned POs, inward entries and export documents.</p>}
+                {ocId && <p className="text-[11px] text-fg-subtle mt-1">Created before multi-company support — assigning a company also assigns it to this OC&apos;s unassigned POs, inward entries and export documents.</p>}
               </>
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Contract No.</label>
-            <input type="text" readOnly value={ocId ? ocNum : 'GT/[buyer code]/[seq]/[FY]'} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
-            <p className="text-[11px] text-gray-500 mt-1">Global running sequence</p>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Contract No.</label>
+            <input type="text" readOnly value={ocId ? ocNum : 'GT/[buyer code]/[seq]/[FY]'} className="form-input border-dashed" />
+            <p className="text-[11px] text-fg-subtle mt-1">Global running sequence</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Type</label>
-            <select name="mode" value={formData.mode} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Type</label>
+            <select name="mode" value={formData.mode} onChange={handleChange} className="form-select">
               <option value="oc">Order Confirmation</option>
               <option value="direct">Direct Buyer Contract</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">OC Date <span className="text-red-500">*</span></label>
-            <input type="date" name="oc_date" required value={formData.oc_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Oc Date"/>
+            <label className="block text-xs font-medium text-fg-muted mb-1">OC Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" name="oc_date" required value={formData.oc_date} onChange={handleChange} className="form-input"  placeholder="Enter Oc Date"/>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Buyer&apos;s Ref</label>
-            <input type="text" name="buyer_ref" placeholder="Buyer's own PO/ref no." value={formData.buyer_ref} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Buyer&apos;s Ref</label>
+            <input type="text" name="buyer_ref" placeholder="Buyer's own PO/ref no." value={formData.buyer_ref} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Buyer <span className="text-red-500">*</span></label>
-            <select name="buyer_id" required value={formData.buyer_id} onChange={handleBuyerChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Buyer <span className="text-[var(--danger)]">*</span></label>
+            <select name="buyer_id" required value={formData.buyer_id} onChange={handleBuyerChange} className="form-select">
               <option value="">— Select —</option>
               {buyers.filter((b) => buyerFitsCompany(b, formData.company_id) || String(b.id) === String(formData.buyer_id)).map((b) => <option key={b.id} value={b.id}>{b.company_name}{b.display_code ? ` (${b.display_code})` : ''}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Brand</label>
-            <select name="brand_id" value={formData.brand_id} onChange={handleChange} disabled={!formData.company_id} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Brand</label>
+            <select name="brand_id" value={formData.brand_id} onChange={handleChange} disabled={!formData.company_id} className="form-select">
               <option value="">{formData.company_id ? '— None —' : 'Select a company first'}</option>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.name} ({b.code})</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Category <span className="text-red-500">*</span></label>
-            <select name="category_id" required value={formData.category_id} onChange={handleCategoryChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Category <span className="text-[var(--danger)]">*</span></label>
+            <select name="category_id" required value={formData.category_id} onChange={handleCategoryChange} className="form-select">
               <option value="">— Select —</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Order Format <span className="text-red-500">*</span></label>
-            <select name="document_format_id" required value={formData.document_format_id} onChange={handleFormatChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Order Format <span className="text-[var(--danger)]">*</span></label>
+            <select name="document_format_id" required value={formData.document_format_id} onChange={handleFormatChange} className="form-select">
               <option value="">— Select —</option>
               {formats.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Format Type</label>
-            <input type="text" readOnly value={selectedFormat?.module || ''} placeholder="— From Format —" className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Format Type</label>
+            <input type="text" readOnly value={selectedFormat?.module || ''} placeholder="— From Format —" className="form-input border-dashed" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Agent</label>
-            <select name="agent_id" value={formData.agent_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Agent</label>
+            <select name="agent_id" value={formData.agent_id} onChange={handleChange} className="form-select">
               <option value="">— Select —</option>
               {agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Commission Type</label>
-            <select name="agent_commission_type" value={formData.agent_commission_type} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Commission Type</label>
+            <select name="agent_commission_type" value={formData.agent_commission_type} onChange={handleChange} className="form-select">
               <option value="">— Select —</option>
               <option value="percent">Percent</option>
               <option value="flat">Flat</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Commission</label>
-            <input type="number" step="0.01" min="0" name="agent_commission_value" value={formData.agent_commission_value} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Agent Commission Value"/>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Commission</label>
+            <input type="number" step="0.01" min="0" name="agent_commission_value" value={formData.agent_commission_value} onChange={handleChange} className="form-input"  placeholder="Enter Agent Commission Value"/>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Currency <span className="text-red-500">*</span></label>
-            <select name="currency_id" required value={formData.currency_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Currency <span className="text-[var(--danger)]">*</span></label>
+            <select name="currency_id" required value={formData.currency_id} onChange={handleChange} className="form-select">
               <option value="">— Select —</option>
               {currencies.map((c) => <option key={c.id} value={c.id}>{c.iso_code} — {c.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Incoterm</label>
-            <select name="incoterm" value={formData.incoterm} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Incoterm</label>
+            <select name="incoterm" value={formData.incoterm} onChange={handleChange} className="form-select">
               {['FOB', 'CIF', 'CFR', 'EXW', 'DDP'].map((v) => <option key={v} value={v}>{v}</option>)}
             </select>
           </div>
@@ -403,37 +402,37 @@ export default function OcForm({ ocId = null }) {
       <FormSection title="Shipment Details" icon="bi-truck" subtitle="→ Export Docs module">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Ship Method</label>
-            <select name="ship_method" value={formData.ship_method} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Ship Method</label>
+            <select name="ship_method" value={formData.ship_method} onChange={handleChange} className="form-select">
               {['Sea', 'Air', 'Land', 'Courier'].map((v) => <option key={v} value={v}>{v}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Shipment Month/Date</label>
-            <input type="text" name="shipment_date" maxLength={60} placeholder="e.g. March 2026" value={formData.shipment_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Shipment Month/Date</label>
+            <input type="text" name="shipment_date" maxLength={60} placeholder="e.g. March 2026" value={formData.shipment_date} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">POL</label>
-            <input type="text" name="pol" placeholder="e.g. Nhava Sheva, Mumbai" value={formData.pol} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">POL</label>
+            <input type="text" name="pol" placeholder="e.g. Nhava Sheva, Mumbai" value={formData.pol} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">POD</label>
-            <input type="text" name="pod" placeholder="e.g. Jebel Ali, Dubai" value={formData.pod} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">POD</label>
+            <input type="text" name="pod" placeholder="e.g. Jebel Ali, Dubai" value={formData.pod} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Payment Terms</label>
-            <input type="text" name="payment_terms" placeholder="e.g. 30 days AOV" value={formData.payment_terms} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Payment Terms</label>
+            <input type="text" name="payment_terms" placeholder="e.g. 30 days AOV" value={formData.payment_terms} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-            <input type="text" name="remarks" value={formData.remarks} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Remarks"/>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+            <input type="text" name="remarks" value={formData.remarks} onChange={handleChange} className="form-input"  placeholder="Enter Remarks"/>
           </div>
         </div>
       </FormSection>
 
       {isDirect ? (
         <FormSection title="Items" icon="bi-table">
-          <div className="bg-gray-50 border border-gray-200 rounded p-3 text-sm text-gray-600">
+          <div className="bg-surface-raised border border-line rounded p-3 text-sm text-fg-muted">
             Direct buyer contract — items are entered at PO stage. POs are raised against this contract number.
           </div>
         </FormSection>
@@ -454,12 +453,12 @@ export default function OcForm({ ocId = null }) {
       <FormSection title="Delivery & Packing Details" icon="bi-box-seam">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Details</label>
-            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Delivery Details"></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Delivery Details</label>
+            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea" placeholder="Enter Delivery Details"></textarea>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Packing Details</label>
-            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Packing Details"></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Packing Details</label>
+            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea" placeholder="Enter Packing Details"></textarea>
           </div>
         </div>
       </FormSection>
@@ -467,21 +466,21 @@ export default function OcForm({ ocId = null }) {
       <FormSection title="Module Connections" icon="bi-diagram-3">
         <div className="flex flex-wrap gap-2">
           {['Buyer Master', 'Agent Master', 'Order Format', 'Purchase Orders (on Raise PO)'].map((m) => (
-            <span key={m} className="px-2 py-1 rounded-md border border-gray-200 bg-gray-50 text-gray-700 text-sm">{m}</span>
+            <span key={m} className="px-2 py-1 rounded-md border border-line bg-surface-raised text-fg-muted text-sm">{m}</span>
           ))}
         </div>
       </FormSection>
 
-      <div className="bg-white border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">
-        <span className="text-sm text-gray-600">Status: <span className="font-semibold text-gray-900">{formData.status}</span></span>
+      <div className="bg-surface border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">
+        <span className="text-sm text-fg-muted">Status: <span className="font-semibold text-fg">{formData.status}</span></span>
         <div className="flex-1" />
-        <Link href={ocId ? `/sales/order-confirmations/${ocId}` : '/sales/order-confirmations'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={ocId ? `/sales/order-confirmations/${ocId}` : '/sales/order-confirmations'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
-        <button type="button" disabled={saving} onClick={() => submit('draft')} className="px-4 py-2 border border-gray-400 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm disabled:opacity-50">
+        <button type="button" disabled={saving} onClick={() => submit('draft')} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm disabled:opacity-50">
           Save Draft
         </button>
-        <button type="button" disabled={saving} onClick={() => submit('sent')} className="px-4 py-2 border border-blue-400 text-blue-600 rounded hover:bg-blue-50 font-medium text-sm disabled:opacity-50">
+        <button type="button" disabled={saving} onClick={() => submit('sent')} className="px-4 py-2 border border-blue-400 text-link rounded hover:bg-surface-hover font-medium text-sm disabled:opacity-50">
           <i className="bi bi-send me-1"></i> Mark OC Sent
         </button>
         <button type="button" disabled={saving} onClick={() => submit('confirmed')} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-50">

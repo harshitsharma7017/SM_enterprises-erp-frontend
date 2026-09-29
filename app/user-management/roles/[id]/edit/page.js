@@ -36,9 +36,9 @@ export default function RoleEditPage({ params }) {
       <PageHeading title="Edit Role" breadcrumbs={[{ label: 'Roles', href: '/user-management/roles' }, { label: role?.name || '...' }]} />
       <Card title={role ? `Edit — ${role.name}` : 'Edit Role'} variant="primary">
         {loading ? (
-          <div className="p-4 text-gray-500">Loading role...</div>
+          <div className="p-4 text-fg-subtle">Loading role...</div>
         ) : error || !role ? (
-          <div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Role not found'}</div>
+          <div className="alert alert-danger">{error || 'Role not found'}</div>
         ) : (
           <RoleForm mode="edit" role={role} />
         )}

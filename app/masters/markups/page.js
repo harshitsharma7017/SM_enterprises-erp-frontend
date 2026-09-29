@@ -64,7 +64,7 @@ export default function MarkupIndex() {
   };
 
   const Actions = can('markup.create') ? (
-    <Link href="/masters/markups/create" className="btn btn-sm btn-primary bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+    <Link href="/masters/markups/create" className="btn btn-sm btn-primary bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
       <i className="bi bi-plus-lg mr-1"></i> Add Markup Rule
     </Link>
   ) : null;
@@ -72,73 +72,73 @@ export default function MarkupIndex() {
   return (
     <DashboardLayout>
       <div className="mb-4">
-        <h2 className="text-2xl font-semibold text-gray-900 m-0">Markups</h2>
+        <h2 className="text-2xl font-semibold text-fg m-0">Markups</h2>
       </div>
       <Card title="Markup Master" variant="primary" actions={Actions}>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={e => e.preventDefault()}>
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-xs text-gray-500 mb-1">Search</label>
-            <input type="text" name="search" value={filters.search} onChange={handleFilterChange} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Supplier or Buyer Name" />
+        <form className="filter-bar mb-4" onSubmit={e => e.preventDefault()}>
+          <div className="filter-bar-wide">
+            <label className="block text-xs text-fg-subtle mb-1">Search</label>
+            <input type="text" name="search" value={filters.search} onChange={handleFilterChange} className="form-input focus:ring-[var(--focus-ring)]" placeholder="Supplier or Buyer Name" />
           </div>
-          <div className="w-40">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
-            <select name="status" value={filters.status} onChange={handleFilterChange} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
+            <select name="status" value={filters.status} onChange={handleFilterChange} className="form-select">
               <option value="">All</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
-          <div className="flex gap-2">
-            <button type="submit" onClick={fetchItems} className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm flex items-center">
+          <div className="filter-bar-actions">
+            <button type="submit" onClick={fetchItems} className="px-3 py-1.5 btn-neutral rounded text-sm flex items-center">
               <i className="bi bi-funnel mr-1"></i>Filter
             </button>
-            <button type="button" onClick={resetFilters} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">Reset</button>
+            <button type="button" onClick={resetFilters} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">Reset</button>
           </div>
         </form>
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Supplier</th>
-                <th className="px-4 py-2 font-medium">Buyer</th>
-                <th className="px-4 py-2 font-medium text-right">Markup %</th>
-                <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium w-28">Status</th>
-                <th className="px-4 py-2 font-medium text-right w-36">Actions</th>
+                <th>Supplier</th>
+                <th>Buyer</th>
+                <th className="text-right">Markup %</th>
+                <th>Date</th>
+                <th className="w-28">Status</th>
+                <th className="text-right w-36">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="6" className="text-center py-8 text-gray-500">Loading Markups…</td></tr>
+                <tr><td colSpan="6" className="text-center">Loading Markups…</td></tr>
               ) : items.length === 0 ? (
                 <EmptyState colspan={6} icon="bi-diagram-2" title="No Markup Rules" message="No markups found matching criteria." />
               ) : (
                 items.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2">
-                      <div className="font-semibold text-gray-800">{item.supplier_name}</div>
-                      <div className="text-xs text-gray-500 font-mono">{item.supplier_display_code}</div>
+                  <tr key={item.id}>
+                    <td>
+                      <div className="font-semibold text-fg">{item.supplier_name}</div>
+                      <div className="text-xs text-fg-subtle font-mono">{item.supplier_display_code}</div>
                     </td>
-                    <td className="px-4 py-2">
-                      <div className="font-semibold text-gray-800">{item.buyer_name}</div>
-                      <div className="text-xs text-gray-500 font-mono">{item.buyer_display_code}</div>
+                    <td>
+                      <div className="font-semibold text-fg">{item.buyer_name}</div>
+                      <div className="text-xs text-fg-subtle font-mono">{item.buyer_display_code}</div>
                     </td>
-                    <td className="px-4 py-2 text-right font-semibold text-blue-700">{item.markup_percent}%</td>
-                    <td className="px-4 py-2 text-gray-500">{new Date(item.record_date).toLocaleDateString()}</td>
-                    <td className="px-4 py-2"><StatusBadge status={item.status} onClick={can('markup.edit') ? () => toggleStatus(item) : undefined} /></td>
-                    <td className="px-4 py-2 text-right">
+                    <td className="text-right font-semibold text-link">{item.markup_percent}%</td>
+                    <td>{new Date(item.record_date).toLocaleDateString()}</td>
+                    <td><StatusBadge status={item.status} onClick={can('markup.edit') ? () => toggleStatus(item) : undefined} /></td>
+                    <td className="text-right">
                       <div className="inline-flex rounded-md shadow-sm">
                         {can('markup.view') && (
-                          <Link href={`/masters/markups/${item.id}`} className="px-2 py-1 text-sm bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-l-md border-r-0"><i className="bi bi-eye"></i></Link>
+                          <Link href={`/masters/markups/${item.id}`} className="px-2 py-1 text-sm bg-surface border border-line-strong text-fg-muted hover:bg-surface-hover rounded-l-md border-r-0"><i className="bi bi-eye"></i></Link>
                         )}
                         {can('markup.edit') && (
-                          <Link href={`/masters/markups/${item.id}`} className="px-2 py-1 text-sm bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 border-r-0"><i className="bi bi-pencil"></i></Link>
+                          <Link href={`/masters/markups/${item.id}`} className="px-2 py-1 text-sm bg-surface border border-line-strong text-link hover:bg-surface-hover border-r-0"><i className="bi bi-pencil"></i></Link>
                         )}
                         {can('markup.delete') && (
-                          <button type="button" onClick={() => deleteItem(item)} className="px-2 py-1 text-sm bg-white border border-red-300 text-red-600 hover:bg-red-50 rounded-r-md"><i className="bi bi-trash"></i></button>
+                          <button type="button" onClick={() => deleteItem(item)} className="px-2 py-1 text-sm bg-surface border border-line-strong text-[var(--danger)] hover:bg-red-50 rounded-r-md"><i className="bi bi-trash"></i></button>
                         )}
                       </div>
                     </td>

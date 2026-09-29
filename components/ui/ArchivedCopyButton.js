@@ -31,7 +31,7 @@ export default function ArchivedCopyButton({ entityType, entityId, onError }) {
     .catch((err) => onError?.(err.message || 'Failed to download the archived copy'));
   return (
     <button type="button" onClick={download} title={`Archived ${new Date(latest.created_at).toLocaleString()} (${latest.event})${count > 1 ? ` — ${count} copies in the Document Archive` : ''}`}
-      className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">
+      className="px-3 py-1.5 rounded text-sm font-medium border border-line-strong bg-surface text-fg-muted hover:bg-surface-hover hover:text-fg">
       <i className="bi bi-archive me-1"></i> Issued copy
     </button>
   );

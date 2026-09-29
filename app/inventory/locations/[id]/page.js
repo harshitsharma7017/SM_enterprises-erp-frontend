@@ -26,8 +26,8 @@ export default function StockLocationPage({ params }) {
     return () => { mounted = false; };
   }, [id]);
 
-  if (error) return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{error}</div></DashboardLayout>;
-  if (!location) return <DashboardLayout><div className="p-4 text-gray-500">Loading location...</div></DashboardLayout>;
+  if (error) return <DashboardLayout><div className="alert alert-danger">{error}</div></DashboardLayout>;
+  if (!location) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading location...</div></DashboardLayout>;
 
   return (
     <DashboardLayout>
@@ -36,7 +36,7 @@ export default function StockLocationPage({ params }) {
         breadcrumbs={[{ label: 'Stock Locations', href: '/inventory/locations' }, { label: location.code }]}
         actions={(
           <>
-            <Link href="/inventory/locations" className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">Back</Link>
+            <Link href="/inventory/locations" className="px-3 py-1.5 rounded text-sm font-medium border border-line-strong text-fg-muted hover:bg-surface-hover">Back</Link>
           </>
         )}
       />
@@ -44,11 +44,11 @@ export default function StockLocationPage({ params }) {
 
       <Card title="Location" variant="primary">
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={location.company_label} code={location.company_code} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={location.status} config={LOCATION_STATUS_BADGES} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Lots in stock</dt><dd className="mt-1 text-gray-900">{location.lots_in_stock}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Movements</dt><dd className="mt-1 text-gray-900">{location.movements_count}</dd></div>
-          {location.remarks && <div className="md:col-span-4"><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{location.remarks}</dd></div>}
+          <div><dt className="text-fg-subtle text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={location.company_label} code={location.company_code} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={location.status} config={LOCATION_STATUS_BADGES} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Lots in stock</dt><dd className="mt-1 text-fg">{location.lots_in_stock}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Movements</dt><dd className="mt-1 text-fg">{location.movements_count}</dd></div>
+          {location.remarks && <div className="md:col-span-4"><dt className="text-fg-subtle text-xs">Remarks</dt><dd className="mt-1 text-fg whitespace-pre-line">{location.remarks}</dd></div>}
         </dl>
         {location.status === 'inactive' && <p className="text-xs text-amber-700 mt-3 mb-0">Inactive: no new stock can be posted here; existing stock stays visible.</p>}
       </Card>

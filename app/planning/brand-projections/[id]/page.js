@@ -66,9 +66,9 @@ export default function BrandProjectionShowPage({ params }) {
     }
   };
 
-  if (loading) return <DashboardLayout><div className="p-4 text-gray-500">Loading brand projection...</div></DashboardLayout>;
+  if (loading) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading brand projection...</div></DashboardLayout>;
   if (!projection) {
-    return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Brand projection not found'}</div></DashboardLayout>;
+    return <DashboardLayout><div className="alert alert-danger">{error || 'Brand projection not found'}</div></DashboardLayout>;
   }
 
   const isDraft = projection.status === 'draft';
@@ -83,7 +83,7 @@ export default function BrandProjectionShowPage({ params }) {
         actions={(
           <>
             {isDraft && can('brand-projection.edit') && (
-              <Link href={`/planning/brand-projections/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}>
+              <Link href={`/planning/brand-projections/${id}/edit`} className={`${BTN} border border-line-strong text-link hover:bg-surface-hover`}>
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
             )}
@@ -93,21 +93,21 @@ export default function BrandProjectionShowPage({ params }) {
               </button>
             )}
             {!isDraft && ungenerated > 0 && can('material-requirement.create') && (
-              <button type="button" disabled={busy} onClick={() => run(() => apiClient.post('/planning/material-requirements/generate', { brand_projection_id: Number(id) }))} className={`${BTN} bg-blue-600 hover:bg-blue-700 text-white`}>
+              <button type="button" disabled={busy} onClick={() => run(() => apiClient.post('/planning/material-requirements/generate', { brand_projection_id: Number(id) }))} className={`${BTN} bg-accent hover:bg-accent-hover text-white`}>
                 <i className="bi bi-list-check me-1"></i> Generate Requirements ({ungenerated})
               </button>
             )}
             {!isDraft && !hasRequirements && can('brand-projection.edit') && (
-              <button type="button" disabled={busy} onClick={() => run(() => apiClient.post(`/planning/brand-projections/${id}/reopen`), 'Reopen this projection as a draft?')} className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>
+              <button type="button" disabled={busy} onClick={() => run(() => apiClient.post(`/planning/brand-projections/${id}/reopen`), 'Reopen this projection as a draft?')} className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>
                 <i className="bi bi-arrow-counterclockwise me-1"></i> Reopen
               </button>
             )}
             {isDraft && can('brand-projection.delete') && (
-              <button type="button" onClick={remove} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}>
+              <button type="button" onClick={remove} className={`${BTN} border border-line-strong text-[var(--danger)] hover:bg-red-50`}>
                 <i className="bi bi-trash me-1"></i> Delete
               </button>
             )}
-            <Link href="/planning/brand-projections" className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>Back</Link>
+            <Link href="/planning/brand-projections" className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>Back</Link>
           </>
         )}
       />
@@ -117,47 +117,47 @@ export default function BrandProjectionShowPage({ params }) {
 
       <Card title="Projection Details" variant="primary">
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={projection.company_label} code={projection.company_code} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Brand</dt><dd className="mt-1 font-medium text-gray-900">{projection.brand_name} <span className="text-gray-500 font-mono text-xs">({projection.brand_code})</span></dd></div>
-          <div><dt className="text-gray-500 text-xs">Period</dt><dd className="mt-1 text-gray-900">{formatDate(projection.period_start)} – {formatDate(projection.period_end)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={projection.status} config={PROJECTION_STATUS_BADGES} /></dd></div>
-          <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Title</dt><dd className="mt-1 text-gray-900">{projection.title}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Financial Year</dt><dd className="mt-1 text-gray-900">{projection.financial_year}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Finalized</dt><dd className="mt-1 text-gray-900">{projection.finalized_at ? `${formatDateTime(projection.finalized_at)} · ${projection.finalizer_name || '—'}` : '—'}</dd></div>
-          {projection.remarks && <div className="md:col-span-4"><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{projection.remarks}</dd></div>}
+          <div><dt className="text-fg-subtle text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={projection.company_label} code={projection.company_code} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Brand</dt><dd className="mt-1 font-medium text-fg">{projection.brand_name} <span className="text-fg-subtle font-mono text-xs">({projection.brand_code})</span></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Period</dt><dd className="mt-1 text-fg">{formatDate(projection.period_start)} – {formatDate(projection.period_end)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={projection.status} config={PROJECTION_STATUS_BADGES} /></dd></div>
+          <div className="md:col-span-2"><dt className="text-fg-subtle text-xs">Title</dt><dd className="mt-1 text-fg">{projection.title}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Financial Year</dt><dd className="mt-1 text-fg">{projection.financial_year}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Finalized</dt><dd className="mt-1 text-fg">{projection.finalized_at ? `${formatDateTime(projection.finalized_at)} · ${projection.finalizer_name || '—'}` : '—'}</dd></div>
+          {projection.remarks && <div className="md:col-span-4"><dt className="text-fg-subtle text-xs">Remarks</dt><dd className="mt-1 text-fg whitespace-pre-line">{projection.remarks}</dd></div>}
         </dl>
       </Card>
 
       <Card title="Projected Materials" variant="info">
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-3 py-2 font-medium w-10">#</th>
-                <th className="px-3 py-2 font-medium">Product / Material</th>
-                <th className="px-3 py-2 font-medium">Material Type</th>
-                <th className="px-3 py-2 font-medium text-right">Projected Qty</th>
-                <th className="px-3 py-2 font-medium">UOM</th>
-                <th className="px-3 py-2 font-medium">Remarks</th>
-                <th className="px-3 py-2 font-medium">Requirement</th>
+                <th className="w-10">#</th>
+                <th>Product / Material</th>
+                <th>Material Type</th>
+                <th className="text-right">Projected Qty</th>
+                <th>UOM</th>
+                <th>Remarks</th>
+                <th>Requirement</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {projection.items.map((item, index) => (
                 <tr key={item.id}>
-                  <td className="px-3 py-2 text-gray-500">{index + 1}</td>
-                  <td className="px-3 py-2 text-gray-900">{item.product_name} <span className="text-xs text-gray-500">({item.item_group_code})</span><BrandSpecNote spec={item.brand_spec} /></td>
-                  <td className="px-3 py-2 text-gray-500">{item.material_type_name || '—'}</td>
-                  <td className="px-3 py-2 text-right font-medium">{formatQuantity(item.quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 font-mono text-gray-600">{item.uom_code}</td>
-                  <td className="px-3 py-2 text-gray-500">{item.remarks || '—'}</td>
-                  <td className="px-3 py-2">
+                  <td>{index + 1}</td>
+                  <td className="cell-strong">{item.product_name} <span className="text-xs text-fg-subtle">({item.item_group_code})</span><BrandSpecNote spec={item.brand_spec} /></td>
+                  <td>{item.material_type_name || '—'}</td>
+                  <td className="text-right">{formatQuantity(item.quantity, item.uom_decimal_places)}</td>
+                  <td className="font-mono text-fg-muted">{item.uom_code}</td>
+                  <td>{item.remarks || '—'}</td>
+                  <td>
                     {item.requirement_id ? (
                       <span className="inline-flex items-center gap-2">
-                        <Link href={`/planning/material-requirements/${item.requirement_id}`} className="font-mono text-blue-600 hover:underline">{item.requirement_no}</Link>
+                        <Link href={`/planning/material-requirements/${item.requirement_id}`} className="font-mono text-link hover:underline">{item.requirement_no}</Link>
                         <WorkflowBadge status={item.requirement_status} config={REQUIREMENT_STATUS_BADGES} />
                       </span>
-                    ) : <span className="text-gray-400">Not generated</span>}
+                    ) : <span className="text-fg-subtle">Not generated</span>}
                   </td>
                 </tr>
               ))}

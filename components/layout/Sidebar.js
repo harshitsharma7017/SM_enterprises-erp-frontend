@@ -37,9 +37,14 @@ function NavItem({ href, icon, label, permission, treeview, can, collapsed, isAc
       <Link
         href={href}
         className={`sidebar-link ${active ? 'active' : ''} ${treeview ? 'treeview-child' : ''}`}
+        // Collapsed, the link is an icon on its own, so it needs an explicit
+        // name for assistive tech and a tooltip for everyone else.
+        aria-label={collapsed ? label : undefined}
+        title={collapsed ? label : undefined}
+        aria-current={active ? 'page' : undefined}
       >
         <span className="sidebar-icon">
-          <i className={`bi ${icon}`}></i>
+          <i className={`bi ${icon}`} aria-hidden="true" />
         </span>
         {!collapsed && <span>{label}</span>}
       </Link>
@@ -68,19 +73,19 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
             className="flex-shrink-0 grid place-items-center rounded-[10px]"
             style={{
               width: 38, height: 38,
-              background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-              boxShadow: '0 2px 6px rgba(37, 99, 235, 0.28)',
-              color: '#fff', fontWeight: 700, fontSize: '0.85rem',
+              background: 'linear-gradient(135deg, var(--sidebar-logo-from), var(--sidebar-logo-to))',
+              boxShadow: 'var(--sidebar-logo-shadow)',
+              color: 'var(--accent-fg)', fontWeight: 700, fontSize: '0.85rem',
             }}
           >
             GT
           </span>
           {!collapsed && (
             <span className="flex flex-col leading-tight">
-              <span style={{ fontWeight: 600, fontSize: '0.98rem', color: '#111827' }}>
+              <span style={{ fontWeight: 600, fontSize: '0.98rem', color: 'var(--sidebar-brand-color)' }}>
                 Guru Traders
               </span>
-              <small style={{ fontSize: '0.68rem', fontWeight: 500, color: '#9aa4b2', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <small style={{ fontSize: '0.68rem', fontWeight: 500, color: 'var(--sidebar-brand-subtitle)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Export ERP
               </small>
             </span>
@@ -89,7 +94,7 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="flex-shrink-0 grid place-items-center border-0 rounded-[7px] bg-transparent text-[#9aa4b2] hover:bg-[#f3f6fa] hover:text-[#2563eb] cursor-pointer transition-colors"
+          className="flex-shrink-0 grid place-items-center border-0 rounded-[7px] bg-transparent text-[var(--sidebar-icon-color)] hover:bg-[var(--sidebar-link-hover-bg)] hover:text-[var(--primary)] cursor-pointer transition-colors"
           style={{ width: 28, height: 28, fontSize: '0.8rem' }}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
@@ -106,8 +111,11 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
             <Link
               href="/dashboard"
               className={`sidebar-link ${pathname === '/dashboard' ? 'active' : ''}`}
+              aria-label={collapsed ? 'Dashboard' : undefined}
+              title={collapsed ? 'Dashboard' : undefined}
+              aria-current={pathname === '/dashboard' ? 'page' : undefined}
             >
-              <span className="sidebar-icon"><i className="bi bi-grid-1x2"></i></span>
+              <span className="sidebar-icon"><i className="bi bi-grid-1x2" aria-hidden="true" /></span>
               {!collapsed && <span>Dashboard</span>}
             </Link>
           </li>
@@ -254,14 +262,16 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
                   <button
                     type="button"
                     onClick={() => setUserMgmtOpen(!userMgmtOpen)}
-                    className={`sidebar-link w-full text-left ${isActive('/user-management') ? 'active' : ''}`}
-                    style={{ border: 'none', background: 'none', cursor: 'pointer' }}
+                    className={`sidebar-link w-full text-left border-0 bg-transparent cursor-pointer ${isActive('/user-management') ? 'active' : ''}`}
+                    aria-expanded={userMgmtOpen}
+                    aria-label={collapsed ? 'User Management' : undefined}
+                    title={collapsed ? 'User Management' : undefined}
                   >
-                    <span className="sidebar-icon"><i className="bi bi-people"></i></span>
+                    <span className="sidebar-icon"><i className="bi bi-people" aria-hidden="true" /></span>
                     {!collapsed && (
                       <>
                         <span className="flex-1">User Management</span>
-                        <i className={`bi ${userMgmtOpen ? 'bi-chevron-down' : 'bi-chevron-right'} text-xs opacity-50`}></i>
+                        <i className={`bi ${userMgmtOpen ? 'bi-chevron-down' : 'bi-chevron-right'} text-xs opacity-50`} aria-hidden="true" />
                       </>
                     )}
                   </button>

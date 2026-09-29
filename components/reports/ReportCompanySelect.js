@@ -11,8 +11,8 @@ export default function ReportCompanySelect({ value, onChange, allowAll = true, 
   const companies = useCompanies();
   return (
     <div className={className}>
-      <label className="block text-xs text-gray-500 mb-1">Company *</label>
-      <select value={value} onChange={(e) => onChange(e.target.value)} required className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+      <label className="block text-xs text-fg-subtle mb-1">Company *</label>
+      <select value={value} onChange={(e) => onChange(e.target.value)} required className="form-select">
         <option value="">— Select company —</option>
         {allowAll && <option value="all">All companies</option>}
         {companies.map((c) => <option key={c.id} value={c.id}>{c.short_name || c.name}</option>)}

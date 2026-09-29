@@ -7,8 +7,8 @@ import { apiClient } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate, formatAmount } from '@/components/sales/shared/format';
 
-const LINK = 'font-mono text-blue-600 hover:underline';
-const BTN = 'px-2.5 py-1 rounded text-xs font-medium border border-blue-300 text-blue-700 hover:bg-blue-50';
+const LINK = 'font-mono text-link hover:underline';
+const BTN = 'px-2.5 py-1 rounded text-xs font-medium border border-line-strong text-link hover:bg-surface-hover';
 
 /**
  * An order's proforma invoice and invoice history. Each list is only
@@ -35,8 +35,8 @@ export default function OrderCommercialDocuments({ ocId, orderStatus }) {
   const confirmed = orderStatus === 'confirmed';
 
   return (
-    <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
-      <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700 flex items-center justify-between">
+    <div className="bg-surface border rounded shadow-sm mb-4 overflow-hidden">
+      <div className="bg-surface-raised px-4 py-2.5 border-b font-semibold text-sm text-fg-muted flex items-center justify-between">
         <span>Proforma Invoices &amp; Invoices</span>
         <span className="flex gap-2">
           {confirmed && can('proforma-invoice.create') && <Link href={`/finance/proforma-invoices/create?order_confirmation_id=${ocId}`} className={BTN}><i className="bi bi-file-earmark-text me-1"></i> New PI</Link>}
@@ -44,21 +44,21 @@ export default function OrderCommercialDocuments({ ocId, orderStatus }) {
         </span>
       </div>
       <div className="p-4 space-y-4 text-sm">
-        {error && <div className="bg-red-50 text-red-600 p-2 rounded">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
         {canPi && (
           <div>
-            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-1">Proforma invoices</h4>
-            {proformas.length === 0 ? <p className="text-gray-500 m-0">None.</p> : (
-              <table className="min-w-full">
-                <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1 font-medium">PI</th><th className="py-1 font-medium">Date</th><th className="py-1 font-medium text-right">Amount</th><th className="py-1 font-medium">Payment ref.</th><th className="py-1 font-medium">Status</th></tr></thead>
-                <tbody className="divide-y divide-gray-100">
+            <h4 className="text-xs font-semibold text-fg-subtle uppercase mb-1">Proforma invoices</h4>
+            {proformas.length === 0 ? <p className="text-fg-subtle m-0">None.</p> : (
+              <table className="data-table">
+                <thead><tr><th>PI</th><th>Date</th><th className="text-right">Amount</th><th>Payment ref.</th><th>Status</th></tr></thead>
+                <tbody>
                   {proformas.map((p) => (
                     <tr key={p.id}>
-                      <td className="py-1"><Link href={`/finance/proforma-invoices/${p.id}`} className={LINK}>{p.pi_no}</Link></td>
-                      <td className="py-1">{formatDate(p.pi_date)}</td>
-                      <td className="py-1 text-right">{p.total_amount === null ? '—' : `${formatAmount(p.total_amount)} ${p.currency_code || ''}`}</td>
-                      <td className="py-1">{p.payment_reference || '—'}</td>
-                      <td className="py-1"><WorkflowBadge status={p.status} config={COMMERCIAL_STATUS_BADGES} /></td>
+                      <td><Link href={`/finance/proforma-invoices/${p.id}`} className={LINK}>{p.pi_no}</Link></td>
+                      <td>{formatDate(p.pi_date)}</td>
+                      <td className="text-right">{p.total_amount === null ? '—' : `${formatAmount(p.total_amount)} ${p.currency_code || ''}`}</td>
+                      <td>{p.payment_reference || '—'}</td>
+                      <td><WorkflowBadge status={p.status} config={COMMERCIAL_STATUS_BADGES} /></td>
                     </tr>
                   ))}
                 </tbody>
@@ -68,19 +68,19 @@ export default function OrderCommercialDocuments({ ocId, orderStatus }) {
         )}
         {canInvoice && (
           <div>
-            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-1">Invoices</h4>
-            {invoices.length === 0 ? <p className="text-gray-500 m-0">None.</p> : (
-              <table className="min-w-full">
-                <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1 font-medium">Invoice</th><th className="py-1 font-medium">Date</th><th className="py-1 font-medium">PI</th><th className="py-1 font-medium">Dispatch</th><th className="py-1 font-medium text-right">Amount</th><th className="py-1 font-medium">Status</th></tr></thead>
-                <tbody className="divide-y divide-gray-100">
+            <h4 className="text-xs font-semibold text-fg-subtle uppercase mb-1">Invoices</h4>
+            {invoices.length === 0 ? <p className="text-fg-subtle m-0">None.</p> : (
+              <table className="data-table">
+                <thead><tr><th>Invoice</th><th>Date</th><th>PI</th><th>Dispatch</th><th className="text-right">Amount</th><th>Status</th></tr></thead>
+                <tbody>
                   {invoices.map((i) => (
                     <tr key={i.id}>
-                      <td className="py-1"><Link href={`/finance/invoices/${i.id}`} className={LINK}>{i.invoice_no || `Draft #${i.id}`}</Link></td>
-                      <td className="py-1">{formatDate(i.invoice_date)}</td>
-                      <td className="py-1 font-mono text-xs">{i.pi_no || '—'}</td>
-                      <td className="py-1 font-mono text-xs">{i.dispatch_nos}</td>
-                      <td className="py-1 text-right">{i.total_amount === null ? '—' : `${formatAmount(i.total_amount)} ${i.currency_code || ''}`}</td>
-                      <td className="py-1"><WorkflowBadge status={i.status} config={COMMERCIAL_STATUS_BADGES} /></td>
+                      <td><Link href={`/finance/invoices/${i.id}`} className={LINK}>{i.invoice_no || `Draft #${i.id}`}</Link></td>
+                      <td>{formatDate(i.invoice_date)}</td>
+                      <td className="font-mono">{i.pi_no || '—'}</td>
+                      <td className="font-mono">{i.dispatch_nos}</td>
+                      <td className="text-right">{i.total_amount === null ? '—' : `${formatAmount(i.total_amount)} ${i.currency_code || ''}`}</td>
+                      <td><WorkflowBadge status={i.status} config={COMMERCIAL_STATUS_BADGES} /></td>
                     </tr>
                   ))}
                 </tbody>

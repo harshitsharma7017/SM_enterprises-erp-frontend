@@ -28,10 +28,10 @@ export default function DashboardLayout({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+      <div className="min-h-screen flex items-center justify-center bg-canvas" role="status" aria-live="polite">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-500 font-medium text-sm">Loading session...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[var(--accent)] mb-4" />
+          <p className="text-fg-subtle font-medium text-sm">Loading session...</p>
         </div>
       </div>
     );
@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }) {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--background)' }}>
+    <div className="flex h-screen overflow-hidden bg-canvas">
       <Sidebar
         can={can}
         canAny={canAny}
@@ -53,7 +53,7 @@ export default function DashboardLayout({ children }) {
           onLogout={logout}
           onToggleSidebar={toggleSidebar}
         />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto p-6" style={{ background: 'var(--background)' }}>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-6 bg-canvas">
           {children}
         </main>
       </div>

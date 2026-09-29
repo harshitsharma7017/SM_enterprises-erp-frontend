@@ -69,80 +69,80 @@ export default function MaterialRequirementsPage() {
       <PageHeading title="Material Requirements" breadcrumbs={[{ label: 'Planning' }, { label: 'Material Requirements' }]} />
 
       <Card title="Requirements generated from finalized brand projections" variant="primary">
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
+        <form className="filter-bar mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
           <div className="flex-1 min-w-[180px]">
-            <label className="block text-xs text-gray-500 mb-1">Search</label>
-            <input type="text" value={filters.search} onChange={(e) => setFilter('search', e.target.value)} placeholder="Requirement, projection or material" className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+            <label className="block text-xs text-fg-subtle mb-1">Search</label>
+            <input type="text" value={filters.search} onChange={(e) => setFilter('search', e.target.value)} placeholder="Requirement, projection or material" className="form-input" />
           </div>
-          <CompanyFilter value={filters.company_id} onChange={(e) => setFilter('company_id', e.target.value)} emptyOptionLabel={null} className="w-52" />
+          <CompanyFilter value={filters.company_id} onChange={(e) => setFilter('company_id', e.target.value)} emptyOptionLabel={null} />
           {can('brand.view') && (
-            <div className="w-48">
-              <label className="block text-xs text-gray-500 mb-1">Brand</label>
-              <select value={filters.brand_id} onChange={(e) => setFilter('brand_id', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+            <div>
+              <label className="block text-xs text-fg-subtle mb-1">Brand</label>
+              <select value={filters.brand_id} onChange={(e) => setFilter('brand_id', e.target.value)} className="form-select">
                 <option value="">All Brands</option>
                 {brandOptions.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
             </div>
           )}
-          <div className="w-36">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
-            <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
+            <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className="form-select">
               <option value="">All</option>
               <option value="open">Open</option>
               <option value="planned">Planned</option>
               <option value="closed">Closed</option>
             </select>
           </div>
-          <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
+          <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">
             Reset
           </button>
         </form>
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Requirement No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Projection</th>
-                <th className="px-4 py-2 font-medium">Brand</th>
-                <th className="px-4 py-2 font-medium">Material</th>
-                <th className="px-4 py-2 font-medium text-right">Required</th>
-                <th className="px-4 py-2 font-medium text-right">Planned</th>
-                <th className="px-4 py-2 font-medium text-right">Pending (plan)</th>
-                <th className="px-4 py-2 font-medium text-right">Ordered</th>
-                <th className="px-4 py-2 font-medium text-right">Pending (order)</th>
-                <th className="px-4 py-2 font-medium">UOM</th>
-                <th className="px-4 py-2 font-medium">Status</th>
+                <th>Requirement No.</th>
+                <th>Company</th>
+                <th>Projection</th>
+                <th>Brand</th>
+                <th>Material</th>
+                <th className="text-right">Required</th>
+                <th className="text-right">Planned</th>
+                <th className="text-right">Pending (plan)</th>
+                <th className="text-right">Ordered</th>
+                <th className="text-right">Pending (order)</th>
+                <th>UOM</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="12" className="text-center py-8 text-gray-500">Loading material requirements...</td></tr>
+                <tr><td colSpan="12" className="text-center">Loading material requirements...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={12} icon="bi-list-check" title="No material requirements" message="Finalize a brand projection, then generate its requirements." />
               ) : rows.map((r) => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 font-mono font-semibold text-gray-900">
-                    <Link href={`/planning/material-requirements/${r.id}`} className="hover:text-blue-600">{r.requirement_no}</Link>
+                <tr key={r.id}>
+                  <td className="font-mono cell-strong">
+                    <Link href={`/planning/material-requirements/${r.id}`} className="hover:text-link">{r.requirement_no}</Link>
                   </td>
-                  <td className="px-4 py-2"><CompanyBadge label={r.company_label} code={r.company_code} /></td>
-                  <td className="px-4 py-2 font-mono text-gray-600">
+                  <td><CompanyBadge label={r.company_label} code={r.company_code} /></td>
+                  <td className="font-mono text-fg-muted">
                     {can('brand-projection.view')
-                      ? <Link href={`/planning/brand-projections/${r.brand_projection_id}`} className="hover:text-blue-600">{r.projection_no}</Link>
+                      ? <Link href={`/planning/brand-projections/${r.brand_projection_id}`} className="hover:text-link">{r.projection_no}</Link>
                       : r.projection_no}
                   </td>
-                  <td className="px-4 py-2 text-gray-700">{r.brand_name}</td>
-                  <td className="px-4 py-2 text-gray-900">{r.product_name}</td>
-                  <td className="px-4 py-2 text-right font-medium">{formatQuantity(r.required_quantity, r.uom_decimal_places)}</td>
-                  <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(r.planned_quantity, r.uom_decimal_places)}</td>
-                  <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(r.pending_quantity, r.uom_decimal_places)}</td>
-                  <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(r.ordered_quantity, r.uom_decimal_places)}</td>
-                  <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(r.order_pending_quantity, r.uom_decimal_places)}</td>
-                  <td className="px-4 py-2 font-mono text-gray-600">{r.uom_code}</td>
-                  <td className="px-4 py-2"><WorkflowBadge status={r.status} config={REQUIREMENT_STATUS_BADGES} /></td>
+                  <td className="text-fg-muted">{r.brand_name}</td>
+                  <td className="cell-strong">{r.product_name}</td>
+                  <td className="text-right">{formatQuantity(r.required_quantity, r.uom_decimal_places)}</td>
+                  <td className="text-right text-fg-muted">{formatQuantity(r.planned_quantity, r.uom_decimal_places)}</td>
+                  <td className="text-right text-fg-muted">{formatQuantity(r.pending_quantity, r.uom_decimal_places)}</td>
+                  <td className="text-right text-fg-muted">{formatQuantity(r.ordered_quantity, r.uom_decimal_places)}</td>
+                  <td className="text-right text-fg-muted">{formatQuantity(r.order_pending_quantity, r.uom_decimal_places)}</td>
+                  <td className="font-mono text-fg-muted">{r.uom_code}</td>
+                  <td><WorkflowBadge status={r.status} config={REQUIREMENT_STATUS_BADGES} /></td>
                 </tr>
               ))}
             </tbody>

@@ -72,32 +72,32 @@ export default function RoleForm({ mode, role }) {
   };
 
   if (loading) {
-    return <div className="p-4 text-gray-500">Loading permissions...</div>;
+    return <div className="p-4 text-fg-subtle">Loading permissions...</div>;
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="mb-4 max-w-md">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Role Name <span className="text-red-500">*</span></label>
+        <label className="block text-sm font-medium text-fg-muted mb-1">Role Name <span className="text-[var(--danger)]">*</span></label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           disabled={isSystem}
-          className={`w-full px-3 py-2 border rounded text-sm ${fieldErrors.name ? 'border-red-400' : 'border-gray-300'} ${isSystem ? 'bg-gray-50 text-gray-500' : ''}`}
+          className={`form-input ${fieldErrors.name ? 'border-red-400' : 'border-line-strong'} ${isSystem ? 'bg-surface-raised text-fg-subtle' : ''}`}
         />
-        {fieldErrors.name && <p className="text-xs text-red-600 mt-1">{fieldErrors.name}</p>}
-        {isSystem && <p className="text-xs text-gray-400 mt-1"><i className="bi bi-shield-lock mr-1"></i>System role — name is fixed.</p>}
+        {fieldErrors.name && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.name}</p>}
+        {isSystem && <p className="text-xs text-fg-subtle mt-1"><i className="bi bi-shield-lock mr-1"></i>System role — name is fixed.</p>}
       </div>
 
       <div className="mb-2 flex items-center justify-between">
-        <label className="text-sm font-semibold text-gray-700">Permissions</label>
-        {isSuperAdmin && <span className="text-xs text-gray-500">Super Admin always has every permission — this matrix is fixed.</span>}
+        <label className="text-sm font-semibold text-fg-muted">Permissions</label>
+        {isSuperAdmin && <span className="text-xs text-fg-subtle">Super Admin always has every permission — this matrix is fixed.</span>}
       </div>
-      {fieldErrors.permissions && <p className="text-xs text-red-600 mb-2">{fieldErrors.permissions}</p>}
+      {fieldErrors.permissions && <p className="text-xs text-[var(--danger)] mb-2">{fieldErrors.permissions}</p>}
 
       <PermissionMatrix
         permissions={permissions}
@@ -106,11 +106,11 @@ export default function RoleForm({ mode, role }) {
         readonly={isSuperAdmin}
       />
 
-      <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
-        <button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium disabled:opacity-50">
+      <div className="flex gap-2 mt-4 pt-3 border-t border-line">
+        <button type="submit" disabled={saving} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded text-sm font-medium disabled:opacity-50">
           {saving ? 'Saving...' : mode === 'create' ? 'Create Role' : 'Update Role'}
         </button>
-        <button type="button" onClick={() => router.push('/user-management/roles')} className="border border-gray-300 px-4 py-2 rounded text-sm text-gray-700 hover:bg-gray-50">
+        <button type="button" onClick={() => router.push('/user-management/roles')} className="border border-line-strong px-4 py-2 rounded text-sm text-fg-muted hover:bg-surface-hover">
           Cancel
         </button>
       </div>

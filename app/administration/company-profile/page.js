@@ -97,14 +97,14 @@ export default function CompanyProfilePage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="p-4 text-gray-500">Loading company profile...</div>
+        <div className="p-4 text-fg-subtle">Loading company profile...</div>
       </DashboardLayout>
     );
   }
 
   const field = (name, label, opts = {}) => (
     <div className={opts.col || 'md:col-span-1'}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}{opts.required && <span className="text-red-500"> *</span>}</label>
+      <label className="block text-sm font-medium text-fg-muted mb-1">{label}{opts.required && <span className="text-[var(--danger)]"> *</span>}</label>
       <input
         type={opts.type || 'text'}
         name={name}
@@ -113,9 +113,9 @@ export default function CompanyProfilePage() {
         placeholder={opts.placeholder}
         required={opts.required}
         disabled={!can('company-profile.edit')}
-        className={`w-full px-3 py-2 border rounded text-sm disabled:bg-gray-50 disabled:text-gray-500 ${fieldErrors[name] ? 'border-red-400' : 'border-gray-300'}`}
+        className={`form-input disabled:bg-surface-raised disabled:text-fg-subtle ${fieldErrors[name] ? 'border-red-400' : 'border-line-strong'}`}
       />
-      {fieldErrors[name] && <p className="text-xs text-red-600 mt-1">{fieldErrors[name]}</p>}
+      {fieldErrors[name] && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors[name]}</p>}
     </div>
   );
 
@@ -124,13 +124,13 @@ export default function CompanyProfilePage() {
       <PageHeading title="Company Profile" />
 
       <Card title="Company Profile" variant="primary">
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-fg-subtle mb-4">
           Our own company&apos;s details — this is what prints on export invoices, bank documents and every
           other export paperwork.
         </p>
 
-        {success && <div className="bg-green-50 text-green-700 p-3 rounded mb-4">{success}</div>}
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {success && <div className="alert alert-success">{success}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -138,7 +138,7 @@ export default function CompanyProfilePage() {
               {field('company_name', 'Company Name', { required: true })}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+              <label className="block text-sm font-medium text-fg-muted mb-1">Logo</label>
               <div className="flex items-center gap-2">
                 {(logoPreview || logoPath) && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -153,33 +153,33 @@ export default function CompanyProfilePage() {
                   className={`text-xs w-full ${fieldErrors.logo ? 'border border-red-400 rounded p-1' : ''}`}
                 />
               </div>
-              {fieldErrors.logo && <p className="text-xs text-red-600 mt-1">{fieldErrors.logo}</p>}
+              {fieldErrors.logo && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.logo}</p>}
             </div>
 
             <div className="md:col-span-4">{field('tagline', 'Tagline', { placeholder: 'e.g. An Indian Govt. Recognised Export House' })}</div>
 
             <div className="md:col-span-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-fg-muted mb-1">Address</label>
               <textarea
                 name="address" value={form.address} onChange={handleChange} rows={3}
                 disabled={!can('company-profile.edit')}
-                className={`w-full px-3 py-2 border rounded text-sm disabled:bg-gray-50 disabled:text-gray-500 ${fieldErrors.address ? 'border-red-400' : 'border-gray-300'}`}
+                className={`form-textarea disabled:bg-surface-raised disabled:text-fg-subtle ${fieldErrors.address ? 'border-red-400' : 'border-line-strong'}`}
               />
-              {fieldErrors.address && <p className="text-xs text-red-600 mt-1">{fieldErrors.address}</p>}
+              {fieldErrors.address && <p className="text-xs text-[var(--danger)] mt-1">{fieldErrors.address}</p>}
             </div>
 
             <div className="md:col-span-2">{field('phone', 'Phone')}</div>
             <div className="md:col-span-2">{field('email', 'Email', { type: 'email' })}</div>
           </div>
 
-          <h3 className="text-sm font-semibold text-gray-700 mt-6 mb-2">Statutory Details</h3>
+          <h3 className="text-sm font-semibold text-fg-muted mt-6 mb-2">Statutory Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {field('gstin', 'GSTIN', { placeholder: 'Required before generating an Export Invoice' })}
             {field('iec_code', 'IEC Code', { placeholder: 'Required before generating an Export Invoice' })}
           </div>
 
-          <h3 className="text-sm font-semibold text-gray-700 mt-6 mb-2">
-            Bank Details <span className="text-gray-400 font-normal">(for the &quot;For Bank&quot; invoice variant)</span>
+          <h3 className="text-sm font-semibold text-fg-muted mt-6 mb-2">
+            Bank Details <span className="text-fg-subtle font-normal">(for the &quot;For Bank&quot; invoice variant)</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {field('bank_name', 'Bank Name')}
@@ -188,8 +188,8 @@ export default function CompanyProfilePage() {
             {field('bank_swift', 'SWIFT Code')}
           </div>
 
-          <h3 className="text-sm font-semibold text-gray-700 mt-6 mb-2">
-            Signatory <span className="text-gray-400 font-normal">(printed on the invoice signature block)</span>
+          <h3 className="text-sm font-semibold text-fg-muted mt-6 mb-2">
+            Signatory <span className="text-fg-subtle font-normal">(printed on the invoice signature block)</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {field('signatory_name', 'Name')}
@@ -198,7 +198,7 @@ export default function CompanyProfilePage() {
 
           {can('company-profile.edit') && (
             <div className="mt-6 flex justify-end">
-              <button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium disabled:opacity-50">
+              <button type="submit" disabled={saving} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded text-sm font-medium disabled:opacity-50">
                 <i className="bi bi-check-lg me-1"></i>{saving ? 'Saving...' : 'Save Company Profile'}
               </button>
             </div>

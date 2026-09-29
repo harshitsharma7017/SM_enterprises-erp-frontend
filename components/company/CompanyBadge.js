@@ -10,7 +10,7 @@ export default function CompanyBadge({ label, code, emptyLabel = 'Unassigned' })
   if (!label) {
     return (
       <span
-        className="inline-flex items-center gap-1 rounded-md border border-dashed border-gray-300 bg-white px-2 py-0.5 text-xs font-medium text-gray-500 whitespace-nowrap"
+        className="inline-flex items-center gap-1 rounded-md border border-dashed border-line-strong bg-surface px-2 py-0.5 text-xs font-medium text-fg-subtle whitespace-nowrap"
         title={emptyLabel === 'Shared' ? 'Shared by both companies' : 'No company assigned yet'}
       >
         <i className="bi bi-building" aria-hidden="true"></i>

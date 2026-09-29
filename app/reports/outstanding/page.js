@@ -50,47 +50,47 @@ export default function OutstandingReportPage() {
 
       <div className="mb-4"><ReportCompanySelect value={company} onChange={(v) => { setCompany(v); setData(null); }} allowUnassigned /></div>
 
-      {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       {!company ? (
-        <div className="p-4 text-gray-500">Select a company (or All companies) to see Outstanding.</div>
+        <div className="p-4 text-fg-subtle">Select a company (or All companies) to see Outstanding.</div>
       ) : loading ? (
-        <div className="p-4 text-gray-500">Loading Outstanding...</div>
+        <div className="p-4 text-fg-subtle">Loading Outstanding...</div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
             <Card title="Supplier Outstanding (Payables)">
-              <div className="text-2xl font-semibold text-gray-900">{formatAmount(data?.supplier_outstanding)}</div>
-              <div className="text-xs text-gray-500 mt-1">From Purchase Orders</div>
+              <div className="text-2xl font-semibold text-fg">{formatAmount(data?.supplier_outstanding)}</div>
+              <div className="text-xs text-fg-subtle mt-1">From Purchase Orders</div>
             </Card>
             <Card title="Buyer Outstanding (Receivables)">
-              <div className="text-2xl font-semibold text-gray-900">{formatAmount(data?.buyer_outstanding)}</div>
-              <div className="text-xs text-gray-500 mt-1">From Export Documents</div>
+              <div className="text-2xl font-semibold text-fg">{formatAmount(data?.buyer_outstanding)}</div>
+              <div className="text-xs text-fg-subtle mt-1">From Export Documents</div>
             </Card>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card title="Supplier Side">
-              <div className="overflow-x-auto border border-gray-200 rounded-md">
-                <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-700">
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
                     <tr>
-                      <th className="px-3 py-2 font-medium">Company</th>
-                      <th className="px-3 py-2 font-medium">PO No.</th>
-                      <th className="px-3 py-2 font-medium">Supplier</th>
-                      <th className="px-3 py-2 font-medium text-right">Amount</th>
+                      <th>Company</th>
+                      <th>PO No.</th>
+                      <th>Supplier</th>
+                      <th className="text-right">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
+                  <tbody>
                     {purchaseOrders.length === 0 ? (
-                      <tr><td colSpan="4" className="text-center py-8 text-gray-500">No data.</td></tr>
+                      <tr><td colSpan="4" className="text-center">No data.</td></tr>
                     ) : (
                       purchaseOrders.map((po) => (
-                        <tr key={po.id} className="hover:bg-gray-50">
-                          <td className="px-3 py-2 font-mono text-xs">{po.company_code || 'Unassigned'}</td>
-                          <td className="px-3 py-2 font-mono text-gray-900">{po.po_num}</td>
-                          <td className="px-3 py-2 text-gray-700">{po.supplier_name || '—'}</td>
-                          <td className="px-3 py-2 text-right text-gray-900">{formatAmount(po.total_amount)}</td>
+                        <tr key={po.id}>
+                          <td className="font-mono">{po.company_code || 'Unassigned'}</td>
+                          <td className="font-mono cell-strong">{po.po_num}</td>
+                          <td className="text-fg-muted">{po.supplier_name || '—'}</td>
+                          <td className="text-right cell-strong">{formatAmount(po.total_amount)}</td>
                         </tr>
                       ))
                     )}
@@ -100,26 +100,26 @@ export default function OutstandingReportPage() {
             </Card>
 
             <Card title="Buyer Side">
-              <div className="overflow-x-auto border border-gray-200 rounded-md">
-                <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-700">
+              <div className="table-wrap">
+                <table className="data-table">
+                  <thead>
                     <tr>
-                      <th className="px-3 py-2 font-medium">Company</th>
-                      <th className="px-3 py-2 font-medium">Export Doc</th>
-                      <th className="px-3 py-2 font-medium">Buyer</th>
-                      <th className="px-3 py-2 font-medium text-right">Amount</th>
+                      <th>Company</th>
+                      <th>Export Doc</th>
+                      <th>Buyer</th>
+                      <th className="text-right">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
+                  <tbody>
                     {exportDocuments.length === 0 ? (
-                      <tr><td colSpan="4" className="text-center py-8 text-gray-500">No data.</td></tr>
+                      <tr><td colSpan="4" className="text-center">No data.</td></tr>
                     ) : (
                       exportDocuments.map((doc) => (
-                        <tr key={doc.id} className="hover:bg-gray-50">
-                          <td className="px-3 py-2 font-mono text-xs">{doc.company_code || 'Unassigned'}</td>
-                          <td className="px-3 py-2 font-mono text-gray-900">{doc.doc_num}</td>
-                          <td className="px-3 py-2 text-gray-700">{doc.buyer_name || '—'}</td>
-                          <td className="px-3 py-2 text-right text-gray-900">{formatAmount(doc.total_amount)}</td>
+                        <tr key={doc.id}>
+                          <td className="font-mono">{doc.company_code || 'Unassigned'}</td>
+                          <td className="font-mono cell-strong">{doc.doc_num}</td>
+                          <td className="text-fg-muted">{doc.buyer_name || '—'}</td>
+                          <td className="text-right cell-strong">{formatAmount(doc.total_amount)}</td>
                         </tr>
                       ))
                     )}

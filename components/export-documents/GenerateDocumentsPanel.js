@@ -37,7 +37,7 @@ export default function GenerateDocumentsPanel({ documentId, checklists, can }) 
   };
 
   if (!can('export-document.generate')) {
-    return <p className="text-sm text-gray-400">Generating documents requires the <code>export-document.generate</code> permission.</p>;
+    return <p className="text-sm text-fg-subtle">Generating documents requires the <code>export-document.generate</code> permission.</p>;
   }
 
   return (
@@ -49,7 +49,7 @@ export default function GenerateDocumentsPanel({ documentId, checklists, can }) 
       </div>
 
       {generated.length === 0 ? (
-        <p className="text-sm text-gray-400">No generated-document checklist entries.</p>
+        <p className="text-sm text-fg-subtle">No generated-document checklist entries.</p>
       ) : (
         <div className="space-y-2">
           {generated.map((entry) => {
@@ -57,7 +57,7 @@ export default function GenerateDocumentsPanel({ documentId, checklists, can }) 
             const variantList = Array.isArray(variants) && variants.length > 0 ? variants : [null];
             return (
               <div key={entry.id} className="border rounded p-3">
-                <div className="text-sm font-medium text-gray-800 mb-2">{entry.checklist_type_name}</div>
+                <div className="text-sm font-medium text-fg mb-2">{entry.checklist_type_name}</div>
                 <div className="flex flex-wrap gap-2">
                   {variantList.map((variantLabel) => {
                     const key = `${entry.id}-${variantLabel || 'default'}`;
@@ -68,13 +68,13 @@ export default function GenerateDocumentsPanel({ documentId, checklists, can }) 
                           type="button"
                           disabled={s?.loading}
                           onClick={() => handleGenerate(entry, variantLabel)}
-                          className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-2 py-1 rounded disabled:opacity-50"
+                          className="text-xs bg-surface-raised hover:bg-gray-200 text-fg-muted border border-line-strong px-2 py-1 rounded disabled:opacity-50"
                         >
                           <i className="bi bi-file-earmark-pdf me-1"></i>
                           {s?.loading ? 'Generating…' : `Generate${variantLabel ? ` — ${variantLabel}` : ''}`}
                         </button>
                         {s && !s.loading && (
-                          <span className={`text-[11px] max-w-xs ${s.isError ? 'text-red-600' : 'text-gray-500'}`}>{s.message}</span>
+                          <span className={`text-[11px] max-w-xs ${s.isError ? 'text-[var(--danger)]' : 'text-fg-subtle'}`}>{s.message}</span>
                         )}
                       </div>
                     );

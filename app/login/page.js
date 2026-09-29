@@ -54,23 +54,23 @@ export default function LoginPage() {
             GT
           </span>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight" style={{ margin: 0 }}>
+            <h2 className="text-2xl font-bold text-fg tracking-tight" style={{ margin: 0 }}>
               Guru Traders
             </h2>
-            <p className="text-xs text-gray-400 uppercase tracking-wider font-medium" style={{ margin: 0 }}>
+            <p className="text-xs text-fg-subtle uppercase tracking-wider font-medium" style={{ margin: 0 }}>
               Export ERP
             </p>
           </div>
         </div>
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-fg-subtle">
           Sign in to your workspace
         </p>
       </div>
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-sm sm:rounded-lg sm:px-10 border border-gray-200">
+        <div className="bg-surface py-8 px-4 shadow-sm sm:rounded-lg sm:px-10 border border-line">
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm flex items-center">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-[var(--danger)] rounded-md text-sm flex items-center">
               <i className="bi bi-exclamation-octagon mr-2 flex-shrink-0"></i>
               {error}
             </div>
@@ -78,7 +78,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-fg-muted">
                 Email address
               </label>
               <div className="mt-1">
@@ -90,13 +90,13 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="form-input placeholder-gray-400 focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-fg-muted">
                 Password
               </label>
               <div className="mt-1 relative">
@@ -108,11 +108,11 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                  className="form-input placeholder-gray-400 focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] pr-10"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-gray-500 hover:text-blue-600"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-sm text-fg-subtle hover:text-link"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                   style={{ border: 'none', background: 'none', cursor: 'pointer' }}
@@ -126,7 +126,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--focus-ring)] transition-colors ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 {isSubmitting ? 'Signing in...' : 'Sign in'}
               </button>

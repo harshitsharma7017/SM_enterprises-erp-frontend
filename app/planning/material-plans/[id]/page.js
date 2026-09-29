@@ -65,9 +65,9 @@ export default function MaterialPlanShowPage({ params }) {
     }
   };
 
-  if (loading) return <DashboardLayout><div className="p-4 text-gray-500">Loading material plan...</div></DashboardLayout>;
+  if (loading) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading material plan...</div></DashboardLayout>;
   if (!plan) {
-    return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Material plan not found'}</div></DashboardLayout>;
+    return <DashboardLayout><div className="alert alert-danger">{error || 'Material plan not found'}</div></DashboardLayout>;
   }
 
   const canEdit = can('material-plan.edit');
@@ -80,7 +80,7 @@ export default function MaterialPlanShowPage({ params }) {
         actions={(
           <>
             {plan.status === 'draft' && canEdit && (
-              <Link href={`/planning/material-plans/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}>
+              <Link href={`/planning/material-plans/${id}/edit`} className={`${BTN} border border-line-strong text-link hover:bg-surface-hover`}>
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
             )}
@@ -90,21 +90,21 @@ export default function MaterialPlanShowPage({ params }) {
               </button>
             )}
             {plan.status === 'planned' && canEdit && (
-              <button type="button" disabled={busy} onClick={() => run('revert-to-draft', 'Revert this plan to draft?')} className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>
+              <button type="button" disabled={busy} onClick={() => run('revert-to-draft', 'Revert this plan to draft?')} className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>
                 <i className="bi bi-arrow-counterclockwise me-1"></i> Revert to Draft
               </button>
             )}
             {plan.status === 'planned' && canEdit && (
-              <button type="button" disabled={busy} onClick={() => run('close', 'Close this plan? A closed plan cannot be reopened.')} className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>
+              <button type="button" disabled={busy} onClick={() => run('close', 'Close this plan? A closed plan cannot be reopened.')} className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>
                 <i className="bi bi-lock me-1"></i> Close
               </button>
             )}
             {plan.status === 'draft' && can('material-plan.delete') && (
-              <button type="button" onClick={remove} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}>
+              <button type="button" onClick={remove} className={`${BTN} border border-line-strong text-[var(--danger)] hover:bg-red-50`}>
                 <i className="bi bi-trash me-1"></i> Delete
               </button>
             )}
-            <Link href="/planning/material-plans" className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>Back</Link>
+            <Link href="/planning/material-plans" className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>Back</Link>
           </>
         )}
       />
@@ -114,66 +114,66 @@ export default function MaterialPlanShowPage({ params }) {
 
       <Card title="Plan Details" variant="primary">
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={plan.company_label} code={plan.company_code} /></dd></div>
-          <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Title</dt><dd className="mt-1 text-gray-900">{plan.title}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={plan.status} config={PLAN_STATUS_BADGES} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Planning Period</dt><dd className="mt-1 text-gray-900">{formatDate(plan.period_start)} – {formatDate(plan.period_end)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Financial Year</dt><dd className="mt-1 text-gray-900">{plan.financial_year}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Created By</dt><dd className="mt-1 text-gray-900">{plan.creator_name || '—'}</dd></div>
-          {plan.remarks && <div className="md:col-span-4"><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{plan.remarks}</dd></div>}
+          <div><dt className="text-fg-subtle text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={plan.company_label} code={plan.company_code} /></dd></div>
+          <div className="md:col-span-2"><dt className="text-fg-subtle text-xs">Title</dt><dd className="mt-1 text-fg">{plan.title}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={plan.status} config={PLAN_STATUS_BADGES} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Planning Period</dt><dd className="mt-1 text-fg">{formatDate(plan.period_start)} – {formatDate(plan.period_end)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Financial Year</dt><dd className="mt-1 text-fg">{plan.financial_year}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Created By</dt><dd className="mt-1 text-fg">{plan.creator_name || '—'}</dd></div>
+          {plan.remarks && <div className="md:col-span-4"><dt className="text-fg-subtle text-xs">Remarks</dt><dd className="mt-1 text-fg whitespace-pre-line">{plan.remarks}</dd></div>}
         </dl>
       </Card>
 
       <Card title="Planned Materials" variant="info">
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-3 py-2 font-medium">Requirement</th>
-                <th className="px-3 py-2 font-medium">Source Projection</th>
-                <th className="px-3 py-2 font-medium">Material</th>
-                <th className="px-3 py-2 font-medium text-right">Required</th>
-                <th className="px-3 py-2 font-medium text-right">Planned (this plan)</th>
-                <th className="px-3 py-2 font-medium text-right">Pending (plan)</th>
-                <th className="px-3 py-2 font-medium text-right">Ordered</th>
-                <th className="px-3 py-2 font-medium text-right">Pending (order)</th>
-                <th className="px-3 py-2 font-medium text-right bg-blue-50">In stock</th>
-                <th className="px-3 py-2 font-medium text-right bg-blue-50">Open POs</th>
-                <th className="px-3 py-2 font-medium text-right bg-blue-50">Stock + open POs</th>
-                <th className="px-3 py-2 font-medium">UOM</th>
-                <th className="px-3 py-2 font-medium">Remarks</th>
+                <th>Requirement</th>
+                <th>Source Projection</th>
+                <th>Material</th>
+                <th className="text-right">Required</th>
+                <th className="text-right">Planned (this plan)</th>
+                <th className="text-right">Pending (plan)</th>
+                <th className="text-right">Ordered</th>
+                <th className="text-right">Pending (order)</th>
+                <th className="text-right bg-blue-50">In stock</th>
+                <th className="text-right bg-blue-50">Open POs</th>
+                <th className="text-right bg-blue-50">Stock + open POs</th>
+                <th>UOM</th>
+                <th>Remarks</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {plan.items.map((item) => (
                 <tr key={item.id}>
-                  <td className="px-3 py-2">
+                  <td>
                     {can('material-requirement.view')
-                      ? <Link href={`/planning/material-requirements/${item.material_requirement_id}`} className="font-mono text-blue-600 hover:underline">{item.requirement_no}</Link>
+                      ? <Link href={`/planning/material-requirements/${item.material_requirement_id}`} className="font-mono text-link hover:underline">{item.requirement_no}</Link>
                       : <span className="font-mono">{item.requirement_no}</span>}
                     <div className="mt-1"><WorkflowBadge status={item.requirement_status} config={REQUIREMENT_STATUS_BADGES} /></div>
                   </td>
-                  <td className="px-3 py-2 text-gray-600">
+                  <td className="text-fg-muted">
                     <div className="font-mono">{item.projection_no}</div>
-                    <div className="text-xs text-gray-500">{item.brand_name}</div>
+                    <div className="text-xs text-fg-subtle">{item.brand_name}</div>
                   </td>
-                  <td className="px-3 py-2 text-gray-900">{item.product_name}</td>
-                  <td className="px-3 py-2 text-right">{formatQuantity(item.required_quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right font-medium">{formatQuantity(item.planned_quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right">{formatQuantity(item.pending_quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right">{formatQuantity(item.ordered_quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right">{formatQuantity(item.order_pending_quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right bg-blue-50/40">{formatQuantity(item.stock_quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right bg-blue-50/40">{formatQuantity(item.open_po_quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right bg-blue-50/40 font-medium">{formatQuantity(Number(item.stock_quantity || 0) + Number(item.open_po_quantity || 0), item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 font-mono text-gray-600">{item.uom_code}</td>
-                  <td className="px-3 py-2 text-gray-500">{item.remarks || '—'}</td>
+                  <td className="cell-strong">{item.product_name}</td>
+                  <td className="text-right">{formatQuantity(item.required_quantity, item.uom_decimal_places)}</td>
+                  <td className="text-right">{formatQuantity(item.planned_quantity, item.uom_decimal_places)}</td>
+                  <td className="text-right">{formatQuantity(item.pending_quantity, item.uom_decimal_places)}</td>
+                  <td className="text-right">{formatQuantity(item.ordered_quantity, item.uom_decimal_places)}</td>
+                  <td className="text-right">{formatQuantity(item.order_pending_quantity, item.uom_decimal_places)}</td>
+                  <td className="text-right bg-blue-50/40">{formatQuantity(item.stock_quantity, item.uom_decimal_places)}</td>
+                  <td className="text-right bg-blue-50/40">{formatQuantity(item.open_po_quantity, item.uom_decimal_places)}</td>
+                  <td className="text-right bg-blue-50/40">{formatQuantity(Number(item.stock_quantity || 0) + Number(item.open_po_quantity || 0), item.uom_decimal_places)}</td>
+                  <td className="font-mono text-fg-muted">{item.uom_code}</td>
+                  <td>{item.remarks || '—'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Pending (plan) is per requirement across all planned/closed plans. Ordered counts confirmed purchase orders raised from this plan line; Pending (order) = planned on this plan − ordered. Material availability (shaded) is live for the plan&apos;s company: In stock = the stock ledger across all locations; Open POs = still to arrive on raised / partial purchase orders of the product. It is not reserved for this plan and may also serve other plans or orders.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">Pending (plan) is per requirement across all planned/closed plans. Ordered counts confirmed purchase orders raised from this plan line; Pending (order) = planned on this plan − ordered. Material availability (shaded) is live for the plan&apos;s company: In stock = the stock ledger across all locations; Open POs = still to arrive on raised / partial purchase orders of the product. It is not reserved for this plan and may also serve other plans or orders.</p>
       </Card>
     </DashboardLayout>
   );

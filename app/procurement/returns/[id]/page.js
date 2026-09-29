@@ -54,8 +54,8 @@ export default function SupplierReturnShowPage({ params }) {
     }
   };
 
-  if (loading) return <DashboardLayout><div className="p-4 text-gray-500">Loading return...</div></DashboardLayout>;
-  if (!ret) return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Return not found'}</div></DashboardLayout>;
+  if (loading) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading return...</div></DashboardLayout>;
+  if (!ret) return <DashboardLayout><div className="alert alert-danger">{error || 'Return not found'}</div></DashboardLayout>;
 
   const dp = ret.uom_decimal_places;
   const q = (v) => (v === null || v === undefined ? '—' : `${formatQuantity(v, dp)} ${ret.unit || ''}`);
@@ -76,9 +76,9 @@ export default function SupplierReturnShowPage({ params }) {
               <Link href={`/finance/debit-notes/create?quality_inspection_id=${ret.quality_inspection_id}&supplier_return_id=${ret.id}`} className={`${BTN} border border-purple-300 text-purple-800 hover:bg-purple-50`}><i className="bi bi-file-earmark-minus me-1"></i> Debit Note</Link>
             )}
             {ret.status !== 'cancelled' && can('supplier-return.cancel') && (
-              <button type="button" disabled={busy} onClick={() => run('cancel', `Cancel ${ret.return_no}?`)} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>
+              <button type="button" disabled={busy} onClick={() => run('cancel', `Cancel ${ret.return_no}?`)} className={`${BTN} border border-line-strong text-[var(--danger)] hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>
             )}
-            <Link href="/procurement/returns" className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>Back</Link>
+            <Link href="/procurement/returns" className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>Back</Link>
           </>
         )}
       />
@@ -89,22 +89,22 @@ export default function SupplierReturnShowPage({ params }) {
 
       <Card title="Return" variant="primary">
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={ret.status} config={POSTING_STATUS_BADGES} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Return Date</dt><dd className="mt-1 text-gray-900">{formatDate(ret.return_date)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Quantity</dt><dd className="mt-1 text-lg font-semibold">{q(ret.quantity)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={ret.status} config={POSTING_STATUS_BADGES} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Return Date</dt><dd className="mt-1 text-fg">{formatDate(ret.return_date)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Quantity</dt><dd className="mt-1 text-lg font-semibold">{q(ret.quantity)}</dd></div>
           <div>
-            <dt className="text-gray-500 text-xs">Inspection</dt>
+            <dt className="text-fg-subtle text-xs">Inspection</dt>
             <dd className="mt-1">
-              <Link href={`/quality-control/${ret.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{ret.qc_no}</Link>{' '}
+              <Link href={`/quality-control/${ret.quality_inspection_id}`} className="font-mono text-link hover:underline">{ret.qc_no}</Link>{' '}
               <WorkflowBadge status={ret.qc_status === 'completed' ? ret.qc_result : ret.qc_status} config={QC_STATUS_BADGES} />
-              <div className="text-xs text-gray-500">Rejected {q(ret.qc_rejected_quantity)}{ret.qc_marked_return_quantity !== null ? ` · marked for return ${q(ret.qc_marked_return_quantity)}` : ''}</div>
+              <div className="text-xs text-fg-subtle">Rejected {q(ret.qc_rejected_quantity)}{ret.qc_marked_return_quantity !== null ? ` · marked for return ${q(ret.qc_marked_return_quantity)}` : ''}</div>
             </dd>
           </div>
-          <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Reason</dt><dd className="mt-1 text-gray-900">{ret.reason || '—'}</dd></div>
-          <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{ret.remarks || '—'}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Created</dt><dd className="mt-1 text-gray-900">{ret.creator_name || '—'} · {formatDateTime(ret.created_at)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Posted</dt><dd className="mt-1 text-gray-900">{ret.posted_at ? `${formatDateTime(ret.posted_at)} · ${ret.poster_name || '—'}` : '—'}</dd></div>
-          {ret.cancelled_at && <div><dt className="text-gray-500 text-xs">Cancelled</dt><dd className="mt-1 text-gray-900">{formatDateTime(ret.cancelled_at)} · {ret.canceller_name || '—'}</dd></div>}
+          <div className="md:col-span-2"><dt className="text-fg-subtle text-xs">Reason</dt><dd className="mt-1 text-fg">{ret.reason || '—'}</dd></div>
+          <div className="md:col-span-2"><dt className="text-fg-subtle text-xs">Remarks</dt><dd className="mt-1 text-fg whitespace-pre-line">{ret.remarks || '—'}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Created</dt><dd className="mt-1 text-fg">{ret.creator_name || '—'} · {formatDateTime(ret.created_at)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Posted</dt><dd className="mt-1 text-fg">{ret.posted_at ? `${formatDateTime(ret.posted_at)} · ${ret.poster_name || '—'}` : '—'}</dd></div>
+          {ret.cancelled_at && <div><dt className="text-fg-subtle text-xs">Cancelled</dt><dd className="mt-1 text-fg">{formatDateTime(ret.cancelled_at)} · {ret.canceller_name || '—'}</dd></div>}
         </dl>
       </Card>
 
@@ -113,12 +113,12 @@ export default function SupplierReturnShowPage({ params }) {
       </Card>
 
       <Card title="Debit Notes" variant="info">
-        {ret.debit_notes.length === 0 ? <p className="text-sm text-gray-500 m-0">No debit notes against this return.</p> : (
+        {ret.debit_notes.length === 0 ? <p className="text-sm text-fg-subtle m-0">No debit notes against this return.</p> : (
           <ul className="list-none p-0 m-0 space-y-1 text-sm">
             {ret.debit_notes.map((d) => (
               <li key={d.id} className="flex items-center gap-3">
-                {can('debit-note.view') ? <Link href={`/finance/debit-notes/${d.id}`} className="font-mono text-blue-600 hover:underline">{d.debit_note_no}</Link> : <span className="font-mono">{d.debit_note_no}</span>}
-                <span className="text-gray-500">{formatDate(d.debit_note_date)} · {q(d.quantity)}{d.amount !== null ? ` · ${formatAmount(d.amount)}` : ''}</span>
+                {can('debit-note.view') ? <Link href={`/finance/debit-notes/${d.id}`} className="font-mono text-link hover:underline">{d.debit_note_no}</Link> : <span className="font-mono">{d.debit_note_no}</span>}
+                <span className="text-fg-subtle">{formatDate(d.debit_note_date)} · {q(d.quantity)}{d.amount !== null ? ` · ${formatAmount(d.amount)}` : ''}</span>
                 <WorkflowBadge status={d.status} config={POSTING_STATUS_BADGES} />
               </li>
             ))}

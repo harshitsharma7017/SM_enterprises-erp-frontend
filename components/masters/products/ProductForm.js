@@ -295,25 +295,24 @@ export default function ProductForm({ productId = null }) {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
       
       {/* Identification */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-tag text-gray-500"></i>
+      <div className="bg-surface border rounded shadow-sm">
+        <div className="bg-surface-raised px-4 py-3 border-b flex items-center gap-2">
+          <i className="bi bi-tag text-fg-subtle"></i>
           <div>
             <h3 className="text-base font-semibold">Identification</h3>
-            <p className="text-xs text-gray-500">What the product is called, here and on export documents.</p>
+            <p className="text-xs text-fg-subtle">What the product is called, here and on export documents.</p>
           </div>
         </div>
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Company <span className="text-red-500">*</span></label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Company <span className="text-[var(--danger)]">*</span></label>
             <div className="md:col-span-3">
               <CompanySelect
                 value={formData.company_id}
                 onChange={handleCompanyChange}
                 required
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-fg-subtle mt-1">
                 {productId && !formData.company_id
                   ? 'This product predates multi-company support — choose the company that owns it.'
                   : 'The company that sells this product. Only its own transactions can use it.'}
@@ -322,62 +321,60 @@ export default function ProductForm({ productId = null }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Category <span className="text-red-500">*</span></label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Category <span className="text-[var(--danger)]">*</span></label>
             <div className="md:col-span-3">
               <select 
                 name="category_id" 
                 value={formData.category_id} 
                 onChange={handleChange}
                 required
-                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.category_id ? 'border-red-500' : ''}`}
+                className={`form-select focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] ${errors.category_id ? 'border-red-500' : ''}`}
               >
                 <option value="">Search category...</option>
                 {(Array.isArray(categories) ? categories : Object.entries(categories || {}).map(([id, name]) => ({id, name}))).map(item => { const id = item.id ?? item; const name = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{name}</option>; })}
               </select>
-              {errors.category_id && <p className="text-xs text-red-500 mt-1">{errors.category_id[0]}</p>}
+              {errors.category_id && <p className="text-xs text-[var(--danger)] mt-1">{errors.category_id[0]}</p>}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Material Type</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Material Type</label>
             <div className="md:col-span-3">
               <select
                 name="material_type_id"
                 value={formData.material_type_id}
                 onChange={handleChange}
                 disabled={!formData.company_id}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm disabled:bg-gray-50"
-              >
+              className="form-select">
                 <option value="">{formData.company_id ? '— None —' : 'Select a company first'}</option>
                 {companyMaterialTypes.map(m => (
                   <option key={m.id} value={m.id}>{m.name}{m.status === 'active' ? '' : ' (inactive)'}</option>
                 ))}
               </select>
-              <p className="text-xs text-gray-500 mt-1">Optional. Only the selected company&apos;s material types are listed.</p>
+              <p className="text-xs text-fg-subtle mt-1">Optional. Only the selected company&apos;s material types are listed.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">UOM <span className="text-red-500">*</span></label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">UOM <span className="text-[var(--danger)]">*</span></label>
             <div className="md:col-span-3">
               <select
                 name="uom_id"
                 value={formData.uom_id}
                 onChange={handleChange}
                 required
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-              >
+              className="form-select">
                 <option value="">Select unit...</option>
                 {uoms.map(u => (
                   <option key={u.id} value={u.id}>{u.code} — {u.name}{u.status === 'active' ? '' : ' (inactive)'}</option>
                 ))}
               </select>
-              <p className="text-xs text-gray-500 mt-1">The unit this product&apos;s quantities are kept in, e.g. MTR for pocketing and elastic.</p>
+              <p className="text-xs text-fg-subtle mt-1">The unit this product&apos;s quantities are kept in, e.g. MTR for pocketing and elastic.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Item Group Code <span className="text-red-500">*</span></label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Item Group Code <span className="text-[var(--danger)]">*</span></label>
             <div className="md:col-span-3">
               <input 
                 type="text" 
@@ -387,17 +384,17 @@ export default function ProductForm({ productId = null }) {
                 required
                 maxLength="5"
                 placeholder="PRD01"
-                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm uppercase ${errors.item_group_code ? 'border-red-500' : ''} ${codeAvailable === false ? 'border-red-500' : ''} ${codeAvailable === true ? 'border-green-500' : ''}`}
+                className={`form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] uppercase ${errors.item_group_code ? 'border-red-500' : ''} ${codeAvailable === false ? 'border-red-500' : ''} ${codeAvailable === true ? 'border-green-500' : ''}`}
               />
-              {errors.item_group_code && <p className="text-xs text-red-500 mt-1">{errors.item_group_code[0]}</p>}
-              <p className={`text-xs mt-1 ${codeAvailable === false ? 'text-red-500' : codeAvailable === true ? 'text-green-600' : 'text-gray-500'}`}>
+              {errors.item_group_code && <p className="text-xs text-[var(--danger)] mt-1">{errors.item_group_code[0]}</p>}
+              <p className={`text-xs mt-1 ${codeAvailable === false ? 'text-[var(--danger)]' : codeAvailable === true ? 'text-green-600' : 'text-fg-subtle'}`}>
                 {codeAvailable === false ? 'Already taken — choose another.' : codeAvailable === true ? 'Available.' : 'Up to 5 characters. Must be unique.'}
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Product Name <span className="text-red-500">*</span></label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Product Name <span className="text-[var(--danger)]">*</span></label>
             <div className="md:col-span-3">
               <input 
                 type="text" 
@@ -407,17 +404,17 @@ export default function ProductForm({ productId = null }) {
                 required
                 maxLength="200"
                 placeholder="Cotton Casual Shirt"
-                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.name ? 'border-red-500' : ''} ${nameAvailable === false ? 'border-red-500' : ''} ${nameAvailable === true ? 'border-green-500' : ''}`}
+                className={`form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] ${errors.name ? 'border-red-500' : ''} ${nameAvailable === false ? 'border-red-500' : ''} ${nameAvailable === true ? 'border-green-500' : ''}`}
               />
-              {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name[0]}</p>}
-              <p className={`text-xs mt-1 ${nameAvailable === false ? 'text-red-500' : nameAvailable === true ? 'text-green-600' : 'text-gray-500'}`}>
+              {errors.name && <p className="text-xs text-[var(--danger)] mt-1">{errors.name[0]}</p>}
+              <p className={`text-xs mt-1 ${nameAvailable === false ? 'text-[var(--danger)]' : nameAvailable === true ? 'text-green-600' : 'text-fg-subtle'}`}>
                 {nameAvailable === false ? 'Already taken — choose another.' : nameAvailable === true ? 'Available.' : ''}
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Product Name as per Export Document</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Product Name as per Export Document</label>
             <div className="md:col-span-3">
               <input 
                 type="text" 
@@ -425,14 +422,14 @@ export default function ProductForm({ productId = null }) {
                 value={formData.name_on_export_document} 
                 onChange={handleChange}
                 placeholder="Exactly as it must print on the invoice"
-                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.name_on_export_document ? 'border-red-500' : ''}`}
+                className={`form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] ${errors.name_on_export_document ? 'border-red-500' : ''}`}
               />
-              {errors.name_on_export_document && <p className="text-xs text-red-500 mt-1">{errors.name_on_export_document[0]}</p>}
+              {errors.name_on_export_document && <p className="text-xs text-[var(--danger)] mt-1">{errors.name_on_export_document[0]}</p>}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Barcode</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Barcode</label>
             <div className="md:col-span-3">
               <input 
                 type="text" 
@@ -440,49 +437,47 @@ export default function ProductForm({ productId = null }) {
                 value={formData.barcode} 
                 onChange={handleChange}
                 placeholder="Letters and numbers"
-                className={`px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm ${errors.barcode ? 'border-red-500' : ''}`}
+                className={`form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] ${errors.barcode ? 'border-red-500' : ''}`}
               />
-              {errors.barcode && <p className="text-xs text-red-500 mt-1">{errors.barcode[0]}</p>}
+              {errors.barcode && <p className="text-xs text-[var(--danger)] mt-1">{errors.barcode[0]}</p>}
             </div>
           </div>
         </div>
       </div>
 
       {/* Units & Classification */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-rulers text-gray-500"></i>
+      <div className="bg-surface border rounded shadow-sm">
+        <div className="bg-surface-raised px-4 py-3 border-b flex items-center gap-2">
+          <i className="bi bi-rulers text-fg-subtle"></i>
           <div>
             <h3 className="text-base font-semibold">Units & Classification</h3>
-            <p className="text-xs text-gray-500">Units, HSN, price band and tax rate.</p>
+            <p className="text-xs text-fg-subtle">Units, HSN, price band and tax rate.</p>
           </div>
         </div>
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Unit (PO & OC)</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Unit (PO & OC)</label>
             <div className="md:col-span-3">
               <select 
                 name="unit_po" 
                 value={formData.unit_po} 
                 onChange={handleChange}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-              >
+              className="form-select">
                 <option value="">Search unit...</option>
                 {(Array.isArray(units) ? units : Object.entries(units || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
               </select>
-              <p className="text-xs text-gray-500 mt-1">From the Units defined on the Order Format master.</p>
+              <p className="text-xs text-fg-subtle mt-1">From the Units defined on the Order Format master.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Unit (Export Docs)</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Unit (Export Docs)</label>
             <div className="md:col-span-3">
               <select 
                 name="unit_export" 
                 value={formData.unit_export} 
                 onChange={handleChange}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-              >
+              className="form-select">
                 <option value="">Search unit...</option>
                 {(Array.isArray(units) ? units : Object.entries(units || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
               </select>
@@ -490,7 +485,7 @@ export default function ProductForm({ productId = null }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">HSN Code</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">HSN Code</label>
             <div className="md:col-span-3">
               <input 
                 type="text" 
@@ -498,20 +493,19 @@ export default function ProductForm({ productId = null }) {
                 value={formData.hsn_code} 
                 onChange={handleChange}
                 placeholder="620520"
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Price Band</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Price Band</label>
             <div className="md:col-span-3">
               <select 
                 name="price_band_id" 
                 value={formData.price_band_id} 
                 onChange={handleChange}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-              >
+              className="form-select">
                 <option value="">Search band...</option>
                 {(Array.isArray(priceBands) ? priceBands : Object.entries(priceBands || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
               </select>
@@ -519,14 +513,13 @@ export default function ProductForm({ productId = null }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">GST %</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">GST %</label>
             <div className="md:col-span-3">
               <select 
                 name="gst_rate_id" 
                 value={formData.gst_rate_id} 
                 onChange={handleChange}
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-              >
+              className="form-select">
                 <option value="">Search or type a new rate...</option>
                 {(Array.isArray(gstRates) ? gstRates : Object.entries(gstRates || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
               </select>
@@ -534,7 +527,7 @@ export default function ProductForm({ productId = null }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Drawback Sr. No.</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Drawback Sr. No.</label>
             <div className="md:col-span-3">
               <input 
                 type="text" 
@@ -542,7 +535,7 @@ export default function ProductForm({ productId = null }) {
                 value={formData.drawback_sr_no} 
                 onChange={handleChange}
                 placeholder="B001"
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
               />
             </div>
           </div>
@@ -550,24 +543,24 @@ export default function ProductForm({ productId = null }) {
       </div>
 
       {/* Export Incentives */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-cash-coin text-gray-500"></i>
+      <div className="bg-surface border rounded shadow-sm">
+        <div className="bg-surface-raised px-4 py-3 border-b flex items-center gap-2">
+          <i className="bi bi-cash-coin text-fg-subtle"></i>
           <div>
             <h3 className="text-base font-semibold">Export Incentives</h3>
-            <p className="text-xs text-gray-500">Leave a row blank if that scheme does not apply to this product.</p>
+            <p className="text-xs text-fg-subtle">Leave a row blank if that scheme does not apply to this product.</p>
           </div>
         </div>
-        <div className="overflow-x-auto p-4">
-          <table className="min-w-full text-sm text-left">
+        <div className="table-wrap m-4">
+          <table className="data-table">
             <thead>
               <tr className="border-b">
-                <th className="py-2 px-3">Applicable</th>
-                <th className="py-2 px-3">Scheme</th>
-                <th className="py-2 px-3">Rate %</th>
-                <th className="py-2 px-3">Rate % 2</th>
-                <th className="py-2 px-3">Cap Value</th>
-                <th className="py-2 px-3">Calculated On</th>
+                <th>Applicable</th>
+                <th>Scheme</th>
+                <th>Rate %</th>
+                <th>Rate % 2</th>
+                <th>Cap Value</th>
+                <th>Calculated On</th>
               </tr>
             </thead>
             <tbody>
@@ -576,52 +569,51 @@ export default function ProductForm({ productId = null }) {
                 const twoPercent = TWO_PERCENT_SCHEMES.includes(scheme);
                 
                 return (
-                  <tr key={scheme} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-3">
+                  <tr key={scheme} className="border-b">
+                    <td>
                       <input 
                         type="checkbox" 
                         checked={inc.enabled}
                         onChange={(e) => handleIncentiveChange(scheme, 'enabled', e.target.checked)}
-                        className="rounded border border-gray-300"
+                        className="rounded border border-line-strong"
                       />
                     </td>
-                    <td className="py-2 px-3 font-medium">{label}</td>
-                    <td className="py-2 px-3">
+                    <td>{label}</td>
+                    <td>
                       <input 
                         type="number" step="0.001" min="0" max="100" placeholder="0.000"
                         value={inc.percent_1}
                         disabled={!inc.enabled}
                         onChange={(e) => handleIncentiveChange(scheme, 'percent_1', e.target.value)}
-                        className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-24 rounded border border-gray-300 text-sm p-1"
+                        className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] w-24"
                       />
                     </td>
-                    <td className="py-2 px-3">
+                    <td>
                       {twoPercent ? (
                         <input 
                           type="number" step="0.001" min="0" max="100" placeholder="0.000"
                           value={inc.percent_2}
                           disabled={!inc.enabled}
                           onChange={(e) => handleIncentiveChange(scheme, 'percent_2', e.target.value)}
-                          className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-24 rounded border border-gray-300 text-sm p-1"
+                          className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] w-24"
                         />
-                      ) : <span className="text-gray-400">—</span>}
+                      ) : <span className="text-fg-subtle">—</span>}
                     </td>
-                    <td className="py-2 px-3">
+                    <td>
                       <input 
                         type="number" step="0.0001" min="0" placeholder="0.0000"
                         value={inc.cap_value}
                         disabled={!inc.enabled}
                         onChange={(e) => handleIncentiveChange(scheme, 'cap_value', e.target.value)}
-                        className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-28 rounded border border-gray-300 text-sm p-1"
+                        className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] w-28"
                       />
                     </td>
-                    <td className="py-2 px-3">
+                    <td>
                       <select 
                         value={inc.calculation_basis_id}
                         disabled={!inc.enabled}
                         onChange={(e) => handleIncentiveChange(scheme, 'calculation_basis_id', e.target.value)}
-                        className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-40 rounded border border-gray-300 text-sm p-1"
-                      >
+                      className="form-select">
                         <option value="">— Select —</option>
                         {(Array.isArray(calculationBases) ? calculationBases : Object.entries(calculationBases || {}).map(([id, basis]) => ({id, basis}))).map(item => { const id = item.id ?? item; const basis = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{basis}</option>; })}
                       </select>
@@ -635,83 +627,82 @@ export default function ProductForm({ productId = null }) {
       </div>
 
       {/* BOM / Components */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-diagram-3 text-gray-500"></i>
+      <div className="bg-surface border rounded shadow-sm">
+        <div className="bg-surface-raised px-4 py-3 border-b flex items-center gap-2">
+          <i className="bi bi-diagram-3 text-fg-subtle"></i>
           <div>
             <h3 className="text-base font-semibold">BOM / Components</h3>
-            <p className="text-xs text-gray-500">Optional. Free-text components per finished piece. Leave empty if this product has no BOM.</p>
+            <p className="text-xs text-fg-subtle">Optional. Free-text components per finished piece. Leave empty if this product has no BOM.</p>
           </div>
         </div>
         <div className="p-4 space-y-4">
           {formData.bom.map((row, index) => (
             <div key={index} className="flex flex-wrap items-end gap-3">
               <div className="flex-1 min-w-[200px]">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Component</label>
+                <label className="block text-xs font-medium text-fg-muted mb-1">Component</label>
                 <input 
                   type="text" 
                   value={row.component_name} 
                   onChange={(e) => handleBomChange(index, 'component_name', e.target.value)}
                   placeholder="e.g. Lining fabric"
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                  className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
                   maxLength="200"
                 />
               </div>
               <div className="w-24">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Qty / piece</label>
+                <label className="block text-xs font-medium text-fg-muted mb-1">Qty / piece</label>
                 <input 
                   type="number" step="0.0001" min="0" 
                   value={row.qty} 
                   onChange={(e) => handleBomChange(index, 'qty', e.target.value)}
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                  className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
                 />
               </div>
               <div className="w-32">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Unit</label>
+                <label className="block text-xs font-medium text-fg-muted mb-1">Unit</label>
                 <select 
                   value={row.unit} 
                   onChange={(e) => handleBomChange(index, 'unit', e.target.value)}
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-                >
+                className="form-select">
                   <option value="">—</option>
                   {(Array.isArray(units) ? units : Object.entries(units || {}).map(([id, label]) => ({id, label}))).map(item => { const id = item.id ?? item; const label = item.name ?? item.label ?? item.value ?? item; return <option key={id} value={id}>{label}</option>; })}
                 </select>
               </div>
               <div className="flex-1 min-w-[200px]">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
+                <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
                 <input 
                   type="text" 
                   value={row.remarks} 
                   onChange={(e) => handleBomChange(index, 'remarks', e.target.value)}
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                  className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
                   maxLength="500"
                 />
               </div>
               <div>
-                <button type="button" onClick={() => removeBomRow(index)} className="btn btn-sm btn-outline-danger px-3 py-2 border rounded text-red-600 border-red-600 hover:bg-red-50">
+                <button type="button" onClick={() => removeBomRow(index)} className="btn btn-sm btn-outline-danger px-3 py-2 border rounded text-[var(--danger)] border-red-600 hover:bg-red-50">
                   <i className="bi bi-trash"></i>
                 </button>
               </div>
             </div>
           ))}
-          <button type="button" onClick={addBomRow} className="btn btn-sm text-blue-600 border border-blue-600 rounded px-3 py-1 hover:bg-blue-50">
+          <button type="button" onClick={addBomRow} className="btn btn-sm text-link border border-blue-600 rounded px-3 py-1 hover:bg-surface-hover">
             <i className="bi bi-plus-lg me-1"></i> Add component
           </button>
         </div>
       </div>
 
       {/* Fabric Measurement */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-bounding-box text-gray-500"></i>
+      <div className="bg-surface border rounded shadow-sm">
+        <div className="bg-surface-raised px-4 py-3 border-b flex items-center gap-2">
+          <i className="bi bi-bounding-box text-fg-subtle"></i>
           <div>
             <h3 className="text-base font-semibold">Fabric Measurement</h3>
-            <p className="text-xs text-gray-500">For fabrics and sarees. Leave blank for other products.</p>
+            <p className="text-xs text-fg-subtle">For fabrics and sarees. Leave blank for other products.</p>
           </div>
         </div>
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Fabric Length (mtrs)</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Fabric Length (mtrs)</label>
             <div className="md:col-span-3">
               <input 
                 type="number" step="0.001" min="0" 
@@ -719,12 +710,12 @@ export default function ProductForm({ productId = null }) {
                 value={formData.fabric_length_mtr} 
                 onChange={handleChange}
                 placeholder="0.000"
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
               />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Fabric Width (inch)</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Fabric Width (inch)</label>
             <div className="md:col-span-3">
               <input 
                 type="number" step="0.001" min="0" 
@@ -732,15 +723,15 @@ export default function ProductForm({ productId = null }) {
                 value={formData.fabric_width_inch} 
                 onChange={handleChange}
                 placeholder="0.000"
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
               />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Sq. Mtrs / Unit</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Sq. Mtrs / Unit</label>
             <div className="md:col-span-3">
               <div className="flex">
-                <span className="inline-flex items-center px-3 border border-r-0 border border-gray-300 bg-gray-100 rounded-l text-gray-500">
+                <span className="inline-flex items-center px-3 border border-r-0 border border-line-strong bg-surface-raised rounded-l text-fg-subtle">
                   <i className="bi bi-calculator"></i>
                 </span>
                 <input 
@@ -748,7 +739,7 @@ export default function ProductForm({ productId = null }) {
                   readOnly
                   value={sqmPreview}
                   placeholder="Calculated"
-                  className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 flex-1 rounded-r border border-gray-300 text-sm bg-gray-50"
+                  className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)] flex-1 rounded-r"
                 />
               </div>
             </div>
@@ -757,29 +748,28 @@ export default function ProductForm({ productId = null }) {
       </div>
 
       {/* Other Details */}
-      <div className="bg-white border rounded shadow-sm">
-        <div className="bg-gray-50 px-4 py-3 border-b flex items-center gap-2">
-          <i className="bi bi-card-text text-gray-500"></i>
+      <div className="bg-surface border rounded shadow-sm">
+        <div className="bg-surface-raised px-4 py-3 border-b flex items-center gap-2">
+          <i className="bi bi-card-text text-fg-subtle"></i>
           <h3 className="text-base font-semibold">Other Details</h3>
         </div>
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700">Status <span className="text-red-500">*</span></label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted">Status <span className="text-[var(--danger)]">*</span></label>
             <div className="md:col-span-3">
               <select 
                 name="status" 
                 value={formData.status} 
                 onChange={handleChange}
                 required
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
-              >
+              className="form-select">
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700 pt-2">Description</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted pt-2">Description</label>
             <div className="md:col-span-3">
               <textarea 
                 name="description" 
@@ -787,12 +777,12 @@ export default function ProductForm({ productId = null }) {
                 onChange={handleChange}
                 rows="2"
                 placeholder="100% Cotton, 180 GSM"
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                className="form-textarea focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
               ></textarea>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700 pt-2">Remarks</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted pt-2">Remarks</label>
             <div className="md:col-span-3">
               <textarea 
                 name="remarks" 
@@ -800,12 +790,12 @@ export default function ProductForm({ productId = null }) {
                 onChange={handleChange}
                 rows="2"
                 placeholder="Optional notes"
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                className="form-textarea focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
               ></textarea>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-            <label className="md:col-span-1 font-medium text-sm text-gray-700 pt-2">Comments</label>
+            <label className="md:col-span-1 font-medium text-sm text-fg-muted pt-2">Comments</label>
             <div className="md:col-span-3">
               <textarea 
                 name="comments" 
@@ -813,7 +803,7 @@ export default function ProductForm({ productId = null }) {
                 onChange={handleChange}
                 rows="2"
                 placeholder="Optional comments"
-                className="px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full rounded border border-gray-300 text-sm"
+                className="form-textarea focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
               ></textarea>
             </div>
           </div>
@@ -824,11 +814,11 @@ export default function ProductForm({ productId = null }) {
         <button 
           type="submit" 
           disabled={saving}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
+          className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium disabled:opacity-50"
         >
           <i className="bi bi-check-lg me-1"></i> {productId ? 'Update' : 'Save'} Product
         </button>
-        <Link href="/masters/products" className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium">
+        <Link href="/masters/products" className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium">
           Cancel
         </Link>
       </div>

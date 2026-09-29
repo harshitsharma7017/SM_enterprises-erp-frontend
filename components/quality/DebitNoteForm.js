@@ -8,9 +8,7 @@ import CompanySelect from '@/components/company/CompanySelect';
 import TraceChain from '@/components/quality/TraceChain';
 import { apiClient } from '@/lib/api-client';
 import { toDateInputValue, todayDateInputValue, formatQuantity, formatAmount } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
-const LABEL = 'block text-xs font-medium text-gray-700 mb-1';
+const LABEL = 'block text-xs font-medium text-fg-muted mb-1';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 const micro = (v) => Math.round(Number(v || 0) * 1e6);
 
@@ -130,7 +128,7 @@ export default function DebitNoteForm({ noteId = null, initialQcId = null, initi
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading...</div>;
 
   const dp = qc?.uom_decimal_places ?? 0;
   const ret = qc?.returns.find((r) => String(r.id) === String(returnId)) || null;
@@ -154,12 +152,12 @@ export default function DebitNoteForm({ noteId = null, initialQcId = null, initi
         {!noteId && !initialQcId && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className={LABEL}>Company <span className="text-red-500">*</span></label>
-              <CompanySelect value={companyId} onChange={handleCompanyChange} required className="form-select w-full rounded border-gray-300 text-sm" />
+              <label className={LABEL}>Company <span className="text-[var(--danger)]">*</span></label>
+              <CompanySelect value={companyId} onChange={handleCompanyChange} required />
             </div>
             <div className="md:col-span-2">
-              <label className={LABEL}>Inspection <span className="text-red-500">*</span></label>
-              <select value={qcId} onChange={handleQcChange} required disabled={!companyId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <label className={LABEL}>Inspection <span className="text-[var(--danger)]">*</span></label>
+              <select value={qcId} onChange={handleQcChange} required disabled={!companyId} className="form-select">
                 <option value="">{companyId ? (options.length ? '— Select an inspection with rejected material —' : 'No rejected material awaiting a debit note') : 'Select a company first'}</option>
                 {options.map((o) => (
                   <option key={o.id} value={o.id}>
@@ -172,7 +170,7 @@ export default function DebitNoteForm({ noteId = null, initialQcId = null, initi
         )}
         {qc ? (
           <>
-            <p className="text-sm mb-3">Inspection <Link href={`/quality-control/${qc.id}`} className="font-mono text-blue-600 hover:underline">{qc.qc_no}</Link></p>
+            <p className="text-sm mb-3">Inspection <Link href={`/quality-control/${qc.id}`} className="font-mono text-link hover:underline">{qc.qc_no}</Link></p>
             <TraceChain doc={qc} />
             <div className="mt-4">
               <label className={LABEL}>Debit against</label>
@@ -193,57 +191,57 @@ export default function DebitNoteForm({ noteId = null, initialQcId = null, initi
               )}
             </div>
             <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-              <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">Rejected</div><div className="font-semibold text-red-700">{formatQuantity(qc.rejected_quantity, dp)} {qc.unit}</div></div>
-              <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">Returned</div><div className="font-semibold">{formatQuantity(qc.returned_quantity, dp)}</div></div>
-              <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">Debited (posted)</div><div className="font-semibold">{formatQuantity(qc.debited_quantity, dp)}</div></div>
-              <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">PO price</div><div className="font-semibold">{hasPrice ? `${formatAmount(qc.po_unit_price)} / ${qc.unit}` : 'Not set'}</div></div>
-              <div className="rounded border border-blue-200 bg-blue-50 p-2"><div className="text-xs text-blue-700">Available to debit</div><div className="font-semibold text-blue-900">{formatQuantity(remaining, dp)} {qc.unit}</div></div>
+              <div className="rounded border border-line p-2"><div className="text-xs text-fg-subtle">Rejected</div><div className="font-semibold text-red-700">{formatQuantity(qc.rejected_quantity, dp)} {qc.unit}</div></div>
+              <div className="rounded border border-line p-2"><div className="text-xs text-fg-subtle">Returned</div><div className="font-semibold">{formatQuantity(qc.returned_quantity, dp)}</div></div>
+              <div className="rounded border border-line p-2"><div className="text-xs text-fg-subtle">Debited (posted)</div><div className="font-semibold">{formatQuantity(qc.debited_quantity, dp)}</div></div>
+              <div className="rounded border border-line p-2"><div className="text-xs text-fg-subtle">PO price</div><div className="font-semibold">{hasPrice ? `${formatAmount(qc.po_unit_price)} / ${qc.unit}` : 'Not set'}</div></div>
+              <div className="rounded border border-blue-200 bg-blue-50 p-2"><div className="text-xs text-link">Available to debit</div><div className="font-semibold text-blue-900">{formatQuantity(remaining, dp)} {qc.unit}</div></div>
             </div>
           </>
         ) : (
-          <p className="text-sm text-gray-500 m-0">Select an inspection to load its rejected material.</p>
+          <p className="text-sm text-fg-subtle m-0">Select an inspection to load its rejected material.</p>
         )}
       </FormSection>
 
       <FormSection title="Debit Note" icon="bi-file-earmark-minus" subtitle="Saved as a draft; editable until posted.">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className={LABEL}>Date <span className="text-red-500">*</span></label>
-            <input type="date" required value={form.debit_note_date} onChange={set('debit_note_date')} className={INPUT} />
+            <label className={LABEL}>Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" required value={form.debit_note_date} onChange={set('debit_note_date')} className="form-input" />
           </div>
           <div>
-            <label className={LABEL}>Quantity {qc?.unit ? `(${qc.unit})` : ''} <span className="text-red-500">*</span></label>
-            <input type="number" required min="0" step={stepFor(dp)} value={form.quantity} onChange={set('quantity')} className={`${INPUT} text-right`} />
-            {over && <p className="text-xs text-red-600 mt-1 mb-0">More than the {formatQuantity(remaining, dp)} available; it will be rejected.</p>}
+            <label className={LABEL}>Quantity {qc?.unit ? `(${qc.unit})` : ''} <span className="text-[var(--danger)]">*</span></label>
+            <input type="number" required min="0" step={stepFor(dp)} value={form.quantity} onChange={set('quantity')} className={`form-input text-right`} />
+            {over && <p className="text-xs text-[var(--danger)] mt-1 mb-0">More than the {formatQuantity(remaining, dp)} available; it will be rejected.</p>}
           </div>
           <div>
             <label className={LABEL}>Amount</label>
             {hasPrice ? (
-              <div className="py-1.5 text-sm font-semibold">{derivedAmount === null ? '—' : formatAmount(derivedAmount)} <span className="text-xs font-normal text-gray-500">qty × PO price</span></div>
+              <div className="py-1.5 text-sm font-semibold">{derivedAmount === null ? '—' : formatAmount(derivedAmount)} <span className="text-xs font-normal text-fg-subtle">qty × PO price</span></div>
             ) : (
               <>
-                <input type="number" min="0" step="0.01" value={form.amount} onChange={set('amount')} className={`${INPUT} text-right`} />
-                <p className="text-xs text-gray-500 mt-1 mb-0">The PO line has no price — enter the amount or leave it empty.</p>
+                <input type="number" min="0" step="0.01" value={form.amount} onChange={set('amount')} className={`form-input text-right`} />
+                <p className="text-xs text-fg-subtle mt-1 mb-0">The PO line has no price — enter the amount or leave it empty.</p>
               </>
             )}
           </div>
           <div>
             <label className={LABEL}>Reason</label>
-            <input type="text" maxLength={255} value={form.reason} onChange={set('reason')} className={INPUT} />
+            <input type="text" maxLength={255} value={form.reason} onChange={set('reason')} className="form-input" />
           </div>
           <div className="md:col-span-4">
             <label className={LABEL}>Remarks</label>
-            <textarea rows={2} maxLength={2000} value={form.remarks} onChange={set('remarks')} className={INPUT}></textarea>
+            <textarea rows={2} maxLength={2000} value={form.remarks} onChange={set('remarks')} className="form-textarea"></textarea>
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">No tax is calculated on debit notes; tax rules have not been defined.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">No tax is calculated on debit notes; tax rules have not been defined.</p>
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving || !qc} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving || !qc} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
           <i className="bi bi-check-lg mr-1"></i> {noteId ? 'Update' : 'Save'} Draft
         </button>
-        <Link href={noteId ? `/finance/debit-notes/${noteId}` : '/finance/debit-notes'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={noteId ? `/finance/debit-notes/${noteId}` : '/finance/debit-notes'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
       </div>

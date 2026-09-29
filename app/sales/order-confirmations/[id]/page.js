@@ -147,7 +147,7 @@ export default function OcShowPage({ params }) {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="p-4 text-gray-500">Loading Order Confirmation...</div>
+        <div className="p-4 text-fg-subtle">Loading Order Confirmation...</div>
       </DashboardLayout>
     );
   }
@@ -155,7 +155,7 @@ export default function OcShowPage({ params }) {
   if (error || !oc) {
     return (
       <DashboardLayout>
-        <div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Order Confirmation not found'}</div>
+        <div className="alert alert-danger">{error || 'Order Confirmation not found'}</div>
       </DashboardLayout>
     );
   }
@@ -191,16 +191,16 @@ export default function OcShowPage({ params }) {
         actions={(
           <>
             {can('order-confirmation.edit') && !isCancelled && (
-              <Link href={`/sales/order-confirmations/${id}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium">
+              <Link href={`/sales/order-confirmations/${id}/edit`} className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded text-sm font-medium">
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
             )}
             {can('order-confirmation.edit') && !isCancelled && (
-              <button type="button" onClick={cancelOrder} className="border border-red-300 text-red-600 hover:bg-red-50 px-3 py-1.5 rounded text-sm font-medium">
+              <button type="button" onClick={cancelOrder} className="border border-line-strong text-[var(--danger)] hover:bg-red-50 px-3 py-1.5 rounded text-sm font-medium">
                 <i className="bi bi-x-circle me-1"></i> Cancel Order
               </button>
             )}
-            <Link href="/sales/order-confirmations" className="border border-gray-300 px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
+            <Link href="/sales/order-confirmations" className="border border-line-strong px-3 py-1.5 rounded text-sm text-fg-muted hover:bg-surface-hover">
               Back
             </Link>
           </>
@@ -212,26 +212,26 @@ export default function OcShowPage({ params }) {
           Converted from Inquiry <Link href="/sales/inquiries" className="font-medium underline">{sourceInquiryNo}</Link> — item data, sizes, colours &amp; costing pre-filled.
         </div>
       ) : oc.mode === 'direct' ? (
-        <div className="bg-gray-50 border border-gray-200 text-gray-700 rounded p-3 text-sm mb-4">
+        <div className="bg-surface-raised border border-line text-fg-muted rounded p-3 text-sm mb-4">
           Direct Buyer Contract — no OC document sent, this contract number is the anchor for POs raised against it.
         </div>
       ) : null}
 
-      <div className="bg-white border rounded shadow-sm p-4 mb-4">
+      <div className="bg-surface border rounded shadow-sm p-4 mb-4">
         <dl className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500">Status</dt><dd className="mt-0.5"><WorkflowBadge status={oc.status} config={OC_STATUS_BADGES} /></dd></div>
-          <div><dt className="text-gray-500">Type</dt><dd className="mt-0.5 text-gray-900">{MODE_LABELS[oc.mode] || oc.mode}</dd></div>
-          <div><dt className="text-gray-500">OC Date</dt><dd className="mt-0.5 text-gray-900">{formatDate(oc.oc_date)}</dd></div>
-          <div><dt className="text-gray-500">Buyer&apos;s Ref</dt><dd className="mt-0.5 text-gray-900">{oc.buyer_ref || '—'}</dd></div>
-          <div><dt className="text-gray-500">Buyer</dt><dd className="mt-0.5 text-gray-900">{buyer ? `${buyer.company_name}${buyer.display_code ? ` (${buyer.display_code})` : ''}` : `#${oc.buyer_id}`}</dd></div>
-          <div><dt className="text-gray-500">Brand</dt><dd className="mt-0.5 text-gray-900">{oc.brand_name || '—'}</dd></div>
-          <div><dt className="text-gray-500">Category / Order Format</dt><dd className="mt-0.5 text-gray-900">{category?.name || '—'} / {format?.name || '—'}</dd></div>
-          <div><dt className="text-gray-500">Agent</dt><dd className="mt-0.5 text-gray-900">{agent ? `${agent.name}${oc.agent_commission_value != null ? ` (${oc.agent_commission_value}${oc.agent_commission_type === 'percent' ? '%' : ''})` : ''}` : '—'}</dd></div>
-          <div><dt className="text-gray-500">Currency / Incoterm</dt><dd className="mt-0.5 text-gray-900">{currency?.iso_code || '—'} / {oc.incoterm || '—'}</dd></div>
-          <div><dt className="text-gray-500">Shipment</dt><dd className="mt-0.5 text-gray-900">{shipmentParts.length > 0 ? shipmentParts.join(' · ') : '—'}</dd></div>
-          <div><dt className="text-gray-500">Payment Terms</dt><dd className="mt-0.5 text-gray-900">{oc.payment_terms || '—'}</dd></div>
-          <div className="md:col-span-2"><dt className="text-gray-500">Remarks</dt><dd className="mt-0.5 text-gray-900">{oc.remarks || '—'}</dd></div>
-          {isCancelled && <div className="md:col-span-3"><dt className="text-gray-500">Cancelled</dt><dd className="mt-0.5 text-red-700">{formatDateTime(oc.cancelled_at)} · {oc.canceller_name || '—'}{oc.cancellation_reason ? ` — ${oc.cancellation_reason}` : ''}</dd></div>}
+          <div><dt className="text-fg-subtle">Status</dt><dd className="mt-0.5"><WorkflowBadge status={oc.status} config={OC_STATUS_BADGES} /></dd></div>
+          <div><dt className="text-fg-subtle">Type</dt><dd className="mt-0.5 text-fg">{MODE_LABELS[oc.mode] || oc.mode}</dd></div>
+          <div><dt className="text-fg-subtle">OC Date</dt><dd className="mt-0.5 text-fg">{formatDate(oc.oc_date)}</dd></div>
+          <div><dt className="text-fg-subtle">Buyer&apos;s Ref</dt><dd className="mt-0.5 text-fg">{oc.buyer_ref || '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Buyer</dt><dd className="mt-0.5 text-fg">{buyer ? `${buyer.company_name}${buyer.display_code ? ` (${buyer.display_code})` : ''}` : `#${oc.buyer_id}`}</dd></div>
+          <div><dt className="text-fg-subtle">Brand</dt><dd className="mt-0.5 text-fg">{oc.brand_name || '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Category / Order Format</dt><dd className="mt-0.5 text-fg">{category?.name || '—'} / {format?.name || '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Agent</dt><dd className="mt-0.5 text-fg">{agent ? `${agent.name}${oc.agent_commission_value != null ? ` (${oc.agent_commission_value}${oc.agent_commission_type === 'percent' ? '%' : ''})` : ''}` : '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Currency / Incoterm</dt><dd className="mt-0.5 text-fg">{currency?.iso_code || '—'} / {oc.incoterm || '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Shipment</dt><dd className="mt-0.5 text-fg">{shipmentParts.length > 0 ? shipmentParts.join(' · ') : '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Payment Terms</dt><dd className="mt-0.5 text-fg">{oc.payment_terms || '—'}</dd></div>
+          <div className="md:col-span-2"><dt className="text-fg-subtle">Remarks</dt><dd className="mt-0.5 text-fg">{oc.remarks || '—'}</dd></div>
+          {isCancelled && <div className="md:col-span-3"><dt className="text-fg-subtle">Cancelled</dt><dd className="mt-0.5 text-red-700">{formatDateTime(oc.cancelled_at)} · {oc.canceller_name || '—'}{oc.cancellation_reason ? ` — ${oc.cancellation_reason}` : ''}</dd></div>}
         </dl>
       </div>
 
@@ -239,52 +239,52 @@ export default function OcShowPage({ params }) {
 
       <OrderCommercialDocuments ocId={id} orderStatus={oc.status} />
 
-      <div className="bg-white border rounded shadow-sm mb-4 overflow-hidden">
-        <div className="bg-gray-50 px-4 py-2.5 border-b font-semibold text-sm text-gray-700">Items</div>
+      <div className="bg-surface border rounded shadow-sm mb-4 overflow-hidden">
+        <div className="bg-surface-raised px-4 py-2.5 border-b font-semibold text-sm text-fg-muted">Items</div>
         {oc.mode === 'direct' ? (
-          <div className="p-4 text-sm text-gray-500">Items are entered at PO stage for a direct contract.</div>
+          <div className="p-4 text-sm text-fg-subtle">Items are entered at PO stage for a direct contract.</div>
         ) : (oc.items || []).length === 0 ? (
-          <div className="p-4 text-sm text-gray-500">No items — add items in Edit.</div>
+          <div className="p-4 text-sm text-fg-subtle">No items — add items in Edit.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-50 text-gray-600">
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  {canRaise && <th className="px-3 py-2 font-medium" title="Raise PO"><i className="bi bi-cart-check"></i></th>}
-                  <th className="px-3 py-2 font-medium">#</th>
-                  <th className="px-3 py-2 font-medium">Design No.</th>
-                  <th className="px-3 py-2 font-medium">Product</th>
-                  <th className="px-3 py-2 font-medium">Supplier</th>
-                  <th className="px-3 py-2 font-medium">Colour / Size</th>
-                  <th className="px-3 py-2 font-medium">Unit</th>
-                  <th className="px-3 py-2 font-medium text-right">Price</th>
-                  <th className="px-3 py-2 font-medium text-right">Cost Price</th>
-                  <th className="px-3 py-2 font-medium text-right">Qty</th>
-                  <th className="px-3 py-2 font-medium text-right">Amount</th>
+                  {canRaise && <th title="Raise PO"><i className="bi bi-cart-check"></i></th>}
+                  <th>#</th>
+                  <th>Design No.</th>
+                  <th>Product</th>
+                  <th>Supplier</th>
+                  <th>Colour / Size</th>
+                  <th>Unit</th>
+                  <th className="text-right">Price</th>
+                  <th className="text-right">Cost Price</th>
+                  <th className="text-right">Qty</th>
+                  <th className="text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {oc.items.map((item, i) => (
                   <tr key={item.id}>
                     {canRaise && (
-                      <td className="px-3 py-2">
+                      <td>
                         {item.supplier_id ? (
                           <input
                             type="checkbox"
                             checked={selectedItemIds.includes(item.id)}
                             onChange={() => toggleItemSelected(item.id)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-line-strong text-link focus:ring-[var(--focus-ring)]"
                           />
                         ) : (
-                          <span className="text-gray-300" title="No supplier set">—</span>
+                          <span className="text-[var(--control-fg-disabled)]" title="No supplier set">—</span>
                         )}
                       </td>
                     )}
-                    <td className="px-3 py-2 text-gray-500">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-900">{item.design_no || '—'}<BrandSpecNote spec={item.brand_spec} /></td>
-                    <td className="px-3 py-2 text-gray-700">{item.product_id ? `#${item.product_id}` : '—'}</td>
-                    <td className="px-3 py-2 text-gray-700">{item.supplier_id ? `#${item.supplier_id}` : '—'}</td>
-                    <td className="px-3 py-2 text-gray-700">
+                    <td>{i + 1}</td>
+                    <td className="cell-strong">{item.design_no || '—'}<BrandSpecNote spec={item.brand_spec} /></td>
+                    <td className="text-fg-muted">{item.product_id ? `#${item.product_id}` : '—'}</td>
+                    <td className="text-fg-muted">{item.supplier_id ? `#${item.supplier_id}` : '—'}</td>
+                    <td className="text-fg-muted">
                       {(item.colours || []).map((c, ci) => (
                         <div key={ci} className="mb-0.5">
                           {c.colour && <span className="font-medium">{c.colour}: </span>}
@@ -292,18 +292,18 @@ export default function OcShowPage({ params }) {
                         </div>
                       ))}
                     </td>
-                    <td className="px-3 py-2 text-gray-700">{item.unit || '—'}</td>
-                    <td className="px-3 py-2 text-right text-gray-900">{formatAmount(item.price)}</td>
-                    <td className="px-3 py-2 text-right text-gray-500">{formatAmount(item.cost_price)}</td>
-                    <td className="px-3 py-2 text-right text-gray-900">{item.qty}</td>
-                    <td className="px-3 py-2 text-right text-gray-900 font-medium">{formatAmount(item.amount)}</td>
+                    <td className="text-fg-muted">{item.unit || '—'}</td>
+                    <td className="text-right cell-strong">{formatAmount(item.price)}</td>
+                    <td className="text-right">{formatAmount(item.cost_price)}</td>
+                    <td className="text-right cell-strong">{item.qty}</td>
+                    <td className="text-right cell-strong">{formatAmount(item.amount)}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t bg-gray-50">
-                  <td colSpan={canRaise ? 10 : 9} className="px-3 py-2 text-right font-semibold text-gray-700">Total</td>
-                  <td className="px-3 py-2 text-right font-semibold text-gray-900">{formatAmount(total)}</td>
+                <tr className="border-t">
+                  <td colSpan={canRaise ? 10 : 9} className="text-right font-semibold text-fg-muted">Total</td>
+                  <td className="text-right cell-strong">{formatAmount(total)}</td>
                 </tr>
               </tfoot>
             </table>
@@ -325,20 +325,20 @@ export default function OcShowPage({ params }) {
             >
               <i className="bi bi-arrow-right-circle me-1"></i> {raising ? 'Raising…' : 'Raise PO for Selected'}
             </button>
-            <p className="text-xs text-gray-500 mt-1">Grouped by supplier — one PO per supplier. Items already raised to a PO are skipped automatically.</p>
+            <p className="text-xs text-fg-subtle mt-1">Grouped by supplier — one PO per supplier. Items already raised to a PO are skipped automatically.</p>
           </div>
         )}
         {!canRaise && can('order-confirmation.approve') && oc.status !== 'confirmed' && oc.mode !== 'direct' && (oc.items || []).length > 0 && (
-          <div className="border-t p-4 text-sm text-gray-500">Mark the OC Confirmed before raising a PO.</div>
+          <div className="border-t p-4 text-sm text-fg-subtle">Mark the OC Confirmed before raising a PO.</div>
         )}
       </div>
 
       {raisedPos.length > 0 && (
-        <div className="bg-white border rounded shadow-sm p-4 mb-4">
-          <div className="text-sm font-semibold text-gray-700 mb-2">Purchase Orders Raised</div>
+        <div className="bg-surface border rounded shadow-sm p-4 mb-4">
+          <div className="text-sm font-semibold text-fg-muted mb-2">Purchase Orders Raised</div>
           <div className="flex flex-wrap gap-2">
             {raisedPos.map((po) => (
-              <Link key={po.id} href={`/procurement/purchase-orders/${po.id}`} className="text-xs px-2 py-1 rounded border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100">
+              <Link key={po.id} href={`/procurement/purchase-orders/${po.id}`} className="text-xs px-2 py-1 rounded border border-line bg-surface-raised text-fg-muted hover:bg-surface-hover">
                 {po.po_num} — {po.supplier_company_name || 'Supplier'} ({PO_STATUS_BADGES[po.status]?.label || po.status})
               </Link>
             ))}
@@ -347,8 +347,8 @@ export default function OcShowPage({ params }) {
       )}
 
       {(canShip || raisedDocs.length > 0) && (
-        <div className="bg-white border rounded shadow-sm p-4 mb-4">
-          <div className="text-sm font-semibold text-gray-700 mb-2">Export Documents</div>
+        <div className="bg-surface border rounded shadow-sm p-4 mb-4">
+          <div className="text-sm font-semibold text-fg-muted mb-2">Export Documents</div>
           {canShip && (
             <>
               {raiseDocMessage && (
@@ -364,13 +364,13 @@ export default function OcShowPage({ params }) {
               >
                 <i className="bi bi-box-seam me-1"></i> {raisingDoc ? 'Raising…' : 'Raise Export Document'}
               </button>
-              <p className="text-xs text-gray-500 mt-1">Creates one Export Document with all of this OC&apos;s items and the full document checklist.</p>
+              <p className="text-xs text-fg-subtle mt-1">Creates one Export Document with all of this OC&apos;s items and the full document checklist.</p>
             </>
           )}
           {raisedDocs.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {raisedDocs.map((d) => (
-                <Link key={d.id} href={`/export/documents/${d.id}`} className="text-xs px-2 py-1 rounded border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100">
+                <Link key={d.id} href={`/export/documents/${d.id}`} className="text-xs px-2 py-1 rounded border border-line bg-surface-raised text-fg-muted hover:bg-surface-hover">
                   {d.doc_num} ({EXPORT_DOC_STATUS_BADGES[d.status]?.label || d.status})
                 </Link>
               ))}
@@ -380,17 +380,17 @@ export default function OcShowPage({ params }) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div className="bg-gray-50 border rounded p-3">
-          <div className="text-xs font-semibold text-gray-500 mb-1">Delivery Details</div>
-          <div className="text-sm text-gray-800 whitespace-pre-wrap">{oc.delivery_details || 'None recorded.'}</div>
+        <div className="bg-surface-raised border rounded p-3">
+          <div className="text-xs font-semibold text-fg-subtle mb-1">Delivery Details</div>
+          <div className="text-sm text-fg whitespace-pre-wrap">{oc.delivery_details || 'None recorded.'}</div>
         </div>
-        <div className="bg-gray-50 border rounded p-3">
-          <div className="text-xs font-semibold text-gray-500 mb-1">Packing Details</div>
-          <div className="text-sm text-gray-800 whitespace-pre-wrap">{oc.packing_details || 'None recorded.'}</div>
+        <div className="bg-surface-raised border rounded p-3">
+          <div className="text-xs font-semibold text-fg-subtle mb-1">Packing Details</div>
+          <div className="text-sm text-fg whitespace-pre-wrap">{oc.packing_details || 'None recorded.'}</div>
         </div>
       </div>
 
-      <div className="text-xs text-gray-400">
+      <div className="text-xs text-fg-subtle">
         Created {formatDateTime(oc.created_at)} · Last updated {formatDateTime(oc.updated_at)}
       </div>
     </DashboardLayout>

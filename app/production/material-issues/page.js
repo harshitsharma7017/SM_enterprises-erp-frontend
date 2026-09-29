@@ -55,7 +55,7 @@ export default function MaterialIssuesPage() {
   };
 
   const Actions = can('material-issue.create') ? (
-    <Link href="/production/material-issues/create" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+    <Link href="/production/material-issues/create" className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
       <i className="bi bi-plus-lg mr-1"></i> New Material Issue
     </Link>
   ) : null;
@@ -64,7 +64,7 @@ export default function MaterialIssuesPage() {
     <DashboardLayout>
       <PageHeading title="Material Issues" breadcrumbs={[{ label: 'Production' }, { label: 'Material Issues' }]} />
       <Card title="Store → Supervisor / Cutting" variant="primary" actions={Actions}>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
         <InventoryFilters
           filters={filters}
           setFilter={setFilter}
@@ -73,43 +73,43 @@ export default function MaterialIssuesPage() {
           statuses={STATUSES}
           searchPlaceholder="Issue, job reference, person, lot or material"
         />
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Issue No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium">Location</th>
-                <th className="px-4 py-2 font-medium">Job Ref.</th>
-                <th className="px-4 py-2 font-medium">Receiver / Supervisor / Foreman</th>
-                <th className="px-4 py-2 font-medium text-center">Lots</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Processing</th>
+                <th>Issue No.</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Job Ref.</th>
+                <th>Receiver / Supervisor / Foreman</th>
+                <th className="text-center">Lots</th>
+                <th>Status</th>
+                <th>Processing</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading material issues...</td></tr>
+                <tr><td colSpan="9" className="text-center">Loading material issues...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={9} icon="bi-box-arrow-right" title="No material issues" message="Issue usable stock to a supervisor / cutting." />
               ) : rows.map((mi) => (
-                <tr key={mi.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2"><Link href={`/production/material-issues/${mi.id}`} className="font-mono font-semibold text-gray-900 hover:text-blue-600">{mi.issue_no}</Link></td>
-                  <td className="px-4 py-2"><CompanyBadge label={mi.company_label} code={mi.company_code} /></td>
-                  <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{formatDate(mi.issue_date)}</td>
-                  <td className="px-4 py-2 font-mono text-xs">{mi.location_code}</td>
-                  <td className="px-4 py-2 text-gray-700">{mi.job_reference || '—'}</td>
-                  <td className="px-4 py-2 text-xs text-gray-700">{mi.receiver_name || '—'} / {mi.supervisor_name || '—'} / {mi.foreman_name || '—'}</td>
-                  <td className="px-4 py-2 text-center">{mi.lines_count}</td>
-                  <td className="px-4 py-2"><WorkflowBadge status={mi.status} config={MATERIAL_ISSUE_STATUS_BADGES} /></td>
-                  <td className="px-4 py-2">
+                <tr key={mi.id}>
+                  <td><Link href={`/production/material-issues/${mi.id}`} className="font-mono font-semibold text-fg hover:text-link">{mi.issue_no}</Link></td>
+                  <td><CompanyBadge label={mi.company_label} code={mi.company_code} /></td>
+                  <td className="whitespace-nowrap">{formatDate(mi.issue_date)}</td>
+                  <td className="font-mono">{mi.location_code}</td>
+                  <td className="text-fg-muted">{mi.job_reference || '—'}</td>
+                  <td className="text-fg-muted">{mi.receiver_name || '—'} / {mi.supervisor_name || '—'} / {mi.foreman_name || '—'}</td>
+                  <td className="text-center">{mi.lines_count}</td>
+                  <td><WorkflowBadge status={mi.status} config={MATERIAL_ISSUE_STATUS_BADGES} /></td>
+                  <td>
                     {mi.processing_record_id ? (
                       <Link href={`/production/processing/${mi.processing_record_id}`} className="inline-flex items-center gap-1">
-                        <span className="font-mono text-xs text-blue-600">{mi.processing_no}</span>
+                        <span className="font-mono text-xs text-link">{mi.processing_no}</span>
                         <WorkflowBadge status={mi.processing_status} config={PROCESSING_STATUS_BADGES} />
                       </Link>
-                    ) : <span className="text-gray-400 text-xs">—</span>}
+                    ) : <span className="text-fg-subtle text-xs">—</span>}
                   </td>
                 </tr>
               ))}

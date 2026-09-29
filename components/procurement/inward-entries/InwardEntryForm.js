@@ -194,7 +194,7 @@ export default function InwardEntryForm({ entryId = null }) {
   };
 
   if (loading) {
-    return <div className="p-4 text-gray-500">Loading form data...</div>;
+    return <div className="p-4 text-fg-subtle">Loading form data...</div>;
   }
 
   if (blockedReason) {
@@ -221,92 +221,92 @@ export default function InwardEntryForm({ entryId = null }) {
       <FormSection title="Header Details" icon="bi-box-arrow-in-down">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Inward Number</label>
-            <input type="text" readOnly value={entryId ? inwardNo : 'Auto-generated (GT/INW/xxx)'} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Inward Number</label>
+            <input type="text" readOnly value={entryId ? inwardNo : 'Auto-generated (GT/INW/xxx)'} className="form-input border-dashed" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Purchase Order <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Purchase Order <span className="text-[var(--danger)]">*</span></label>
             {entryId ? (
-              <input type="text" readOnly value={selectedPo?.po_num || `#${purchaseOrderId}`} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
+              <input type="text" readOnly value={selectedPo?.po_num || `#${purchaseOrderId}`} className="form-input border-dashed" />
             ) : (
-              <select value={purchaseOrderId} onChange={handlePoChange} className="form-select w-full rounded border-gray-300 text-sm">
+              <select value={purchaseOrderId} onChange={handlePoChange} className="form-select">
                 <option value="">Select Raised / Partial PO...</option>
                 {pos.map((p) => <option key={p.id} value={p.id}>{p.po_num} — {p.supplier_company_name} ({PO_STATUS_BADGES[p.status]?.label || p.status})</option>)}
               </select>
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Company</label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Company</label>
             <div className="py-1.5">
-              {company ? <CompanyBadge label={company.label} code={company.code} /> : <span className="text-sm text-gray-400">From the selected purchase order</span>}
+              {company ? <CompanyBadge label={company.label} code={company.code} /> : <span className="text-sm text-fg-subtle">From the selected purchase order</span>}
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Inward Date <span className="text-red-500">*</span></label>
-            <input type="date" required value={inwardDate} onChange={(e) => setInwardDate(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Inward Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" required value={inwardDate} onChange={(e) => setInwardDate(e.target.value)} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Challan / DC No.</label>
-            <input type="text" value={challanNo} onChange={(e) => setChallanNo(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Challan / DC No.</label>
+            <input type="text" value={challanNo} onChange={(e) => setChallanNo(e.target.value)} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Challan Date</label>
-            <input type="date" value={challanDate} onChange={(e) => setChallanDate(e.target.value)} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Challan Date</label>
+            <input type="date" value={challanDate} onChange={(e) => setChallanDate(e.target.value)} className="form-input" />
           </div>
           <div className="md:col-span-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Receipt Remarks</label>
-            <textarea rows={2} value={remarks} onChange={(e) => setRemarks(e.target.value)} className="form-textarea w-full rounded border-gray-300 text-sm"></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Receipt Remarks</label>
+            <textarea rows={2} value={remarks} onChange={(e) => setRemarks(e.target.value)} className="form-textarea"></textarea>
           </div>
         </div>
       </FormSection>
 
       <FormSection title="Items" icon="bi-table">
         {!entryId && !purchaseOrderId && (
-          <p className="text-sm text-gray-500">Select a Purchase Order above to load its items.</p>
+          <p className="text-sm text-fg-subtle">Select a Purchase Order above to load its items.</p>
         )}
         {poItemsLoading && (
-          <div className="flex items-center gap-2 text-sm text-gray-500 py-3">
-            <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></span>
+          <div className="flex items-center gap-2 text-sm text-fg-subtle py-3">
+            <span className="inline-block w-4 h-4 border-2 border-line-strong border-t-blue-600 rounded-full animate-spin"></span>
             Loading PO items...
           </div>
         )}
         {items.length > 0 && (
-          <div className="overflow-x-auto border border-gray-200 rounded-md">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-50 text-gray-600">
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">Product / Description</th>
-                  <th className="px-3 py-2 font-medium">Unit</th>
-                  <th className="px-3 py-2 font-medium text-right">Ordered</th>
-                  {!entryId && <th className="px-3 py-2 font-medium text-right">Prev. Received</th>}
-                  {!entryId && <th className="px-3 py-2 font-medium text-right">Balance</th>}
-                  <th className="px-3 py-2 font-medium text-right w-32">Received Qty</th>
-                  <th className="px-3 py-2 font-medium">Remarks</th>
+                  <th>Product / Description</th>
+                  <th>Unit</th>
+                  <th className="text-right">Ordered</th>
+                  {!entryId && <th className="text-right">Prev. Received</th>}
+                  {!entryId && <th className="text-right">Balance</th>}
+                  <th className="text-right w-32">Received Qty</th>
+                  <th>Remarks</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {items.map((item, index) => (
                   <tr key={item.id || item.purchase_order_item_id}>
-                    <td className="px-3 py-2 text-gray-900">
+                    <td className="cell-strong">
                       {item.product_name || item.design_no || '—'}
-                      {item.description && <div className="text-xs text-gray-500">{item.description}</div>}
+                      {item.description && <div className="text-xs text-fg-subtle">{item.description}</div>}
                     </td>
-                    <td className="px-3 py-2 text-gray-700">{item.unit || '—'}</td>
-                    <td className="px-3 py-2 text-right text-gray-700">{item.ordered_qty}</td>
-                    {!entryId && <td className="px-3 py-2 text-right text-gray-500">{item.previously_received_qty}</td>}
-                    {!entryId && <td className="px-3 py-2 text-right font-semibold text-blue-700">{item.remaining_qty}</td>}
-                    <td className="px-3 py-2 text-right">
+                    <td className="text-fg-muted">{item.unit || '—'}</td>
+                    <td className="text-right text-fg-muted">{item.ordered_qty}</td>
+                    {!entryId && <td className="text-right">{item.previously_received_qty}</td>}
+                    {!entryId && <td className="text-right font-semibold text-link">{item.remaining_qty}</td>}
+                    <td className="text-right">
                       <input
                         type="number"
                         min="0"
                         max={entryId ? undefined : item.ordered_qty}
                         value={item.received_qty}
                         onChange={(e) => updateItem(index, { received_qty: e.target.value })}
-                        className="form-input w-24 rounded border-gray-300 text-sm text-right"
+                        className="form-input w-24 text-right"
                       />
                     </td>
-                    <td className="px-3 py-2">
-                      <input type="text" value={item.remarks} onChange={(e) => updateItem(index, { remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                    <td>
+                      <input type="text" value={item.remarks} onChange={(e) => updateItem(index, { remarks: e.target.value })} className="form-input" />
                     </td>
                   </tr>
                 ))}
@@ -316,12 +316,12 @@ export default function InwardEntryForm({ entryId = null }) {
         )}
       </FormSection>
 
-      <div className="bg-white border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">
+      <div className="bg-surface border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">
         <div className="flex-1" />
-        <Link href={entryId ? `/procurement/inward-entries/${entryId}` : '/procurement/inward-entries'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={entryId ? `/procurement/inward-entries/${entryId}` : '/procurement/inward-entries'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
-        <button type="button" disabled={saving || items.length === 0} onClick={submit} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-50">
+        <button type="button" disabled={saving || items.length === 0} onClick={submit} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-50">
           <i className="bi bi-check-lg me-1"></i> {saving ? 'Saving…' : entryId ? 'Update Inward Receipt' : 'Save Inward Receipt'}
         </button>
       </div>

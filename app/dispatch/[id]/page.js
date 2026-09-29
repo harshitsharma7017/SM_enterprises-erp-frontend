@@ -14,7 +14,7 @@ import { formatDate, formatDateTime, formatQuantity, formatAmount } from '@/comp
 import DocumentButton from '@/components/ui/DocumentButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
-const LINK = 'font-mono text-blue-600 hover:underline';
+const LINK = 'font-mono text-link hover:underline';
 
 export default function DispatchShowPage({ params }) {
   const { id } = use(params);
@@ -63,8 +63,8 @@ export default function DispatchShowPage({ params }) {
     }
   };
 
-  if (loading) return <DashboardLayout><div className="p-4 text-gray-500">Loading dispatch...</div></DashboardLayout>;
-  if (!dispatch) return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Dispatch not found'}</div></DashboardLayout>;
+  if (loading) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading dispatch...</div></DashboardLayout>;
+  if (!dispatch) return <DashboardLayout><div className="alert alert-danger">{error || 'Dispatch not found'}</div></DashboardLayout>;
 
   const isDraft = dispatch.status === 'draft';
   const isStock = dispatch.dispatch_type === 'STOCK_DISPATCH';
@@ -87,10 +87,10 @@ export default function DispatchShowPage({ params }) {
         actions={(
           <>
             <DocumentButton entityType="dispatch" entityId={id} endpoint={`/dispatches/${id}/document`} number={dispatch.dispatch_no || `DISPATCH-DRAFT-${id}`} label="Delivery Challan" onError={setError} />
-            {isDraft && can('dispatch.edit') && <Link href={`/dispatch/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-pencil me-1"></i> Edit</Link>}
+            {isDraft && can('dispatch.edit') && <Link href={`/dispatch/${id}/edit`} className={`${BTN} border border-line-strong text-link hover:bg-surface-hover`}><i className="bi bi-pencil me-1"></i> Edit</Link>}
             {isDraft && can('dispatch.post') && <button type="button" disabled={busy} onClick={post} className={`${BTN} bg-green-600 hover:bg-green-700 text-white`}><i className="bi bi-check2-circle me-1"></i> Post Dispatch</button>}
-            {isDraft && can('dispatch.cancel') && <button type="button" disabled={busy} onClick={cancel} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>}
-            <Link href="/dispatch" className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>Back</Link>
+            {isDraft && can('dispatch.cancel') && <button type="button" disabled={busy} onClick={cancel} className={`${BTN} border border-line-strong text-[var(--danger)] hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>}
+            <Link href="/dispatch" className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>Back</Link>
           </>
         )}
       />
@@ -101,80 +101,80 @@ export default function DispatchShowPage({ params }) {
 
       <Card title="Dispatch" variant="primary">
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={dispatch.company_label} code={dispatch.company_code} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={dispatch.status} config={POSTING_STATUS_BADGES} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Type</dt><dd className="mt-1 text-gray-900">{DISPATCH_TYPE_LABELS[dispatch.dispatch_type]}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Date</dt><dd className="mt-1 text-gray-900">{formatDate(dispatch.dispatch_date)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Customer</dt><dd className="mt-1 text-gray-900">{dispatch.buyer_name || '—'}</dd></div>
-          <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Destination</dt><dd className="mt-1 text-gray-900">{dispatch.destination_name || '—'}{dispatch.destination_address && <div className="text-xs text-gray-600 whitespace-pre-line">{dispatch.destination_address}</div>}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={dispatch.company_label} code={dispatch.company_code} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={dispatch.status} config={POSTING_STATUS_BADGES} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Type</dt><dd className="mt-1 text-fg">{DISPATCH_TYPE_LABELS[dispatch.dispatch_type]}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Date</dt><dd className="mt-1 text-fg">{formatDate(dispatch.dispatch_date)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Customer</dt><dd className="mt-1 text-fg">{dispatch.buyer_name || '—'}</dd></div>
+          <div className="md:col-span-2"><dt className="text-fg-subtle text-xs">Destination</dt><dd className="mt-1 text-fg">{dispatch.destination_name || '—'}{dispatch.destination_address && <div className="text-xs text-fg-muted whitespace-pre-line">{dispatch.destination_address}</div>}</dd></div>
           <div>
-            <dt className="text-gray-500 text-xs">{isStock ? 'Order' : 'Purchase Order'}</dt>
+            <dt className="text-fg-subtle text-xs">{isStock ? 'Order' : 'Purchase Order'}</dt>
             <dd className="mt-1">
               {isStock
                 ? (can('order-confirmation.view') ? <Link href={`/sales/order-confirmations/${dispatch.order_confirmation_id}`} className={LINK}>{dispatch.oc_num}</Link> : <span className="font-mono">{dispatch.oc_num}</span>)
                 : (can('purchase-order.view') ? <Link href={`/procurement/purchase-orders/${dispatch.purchase_order_id}`} className={LINK}>{dispatch.po_num}</Link> : <span className="font-mono">{dispatch.po_num}</span>)}
             </dd>
           </div>
-          <div><dt className="text-gray-500 text-xs">{isStock ? 'Source location' : 'Supplier / mill'}</dt><dd className="mt-1 text-gray-900">{isStock ? <><span className="font-mono">{dispatch.location_code}</span> · {dispatch.location_name}</> : dispatch.supplier_name}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Transporter / Vehicle</dt><dd className="mt-1 text-gray-900">{dispatch.transporter || '—'} / {dispatch.vehicle_no || '—'}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Document ref.</dt><dd className="mt-1 text-gray-900">{dispatch.document_reference || '—'}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Invoice / bill ref.</dt><dd className="mt-1 text-gray-900">{dispatch.invoice_reference || '—'}</dd></div>
-          {dispatch.remarks && <div className="md:col-span-4"><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{dispatch.remarks}</dd></div>}
-          <div><dt className="text-gray-500 text-xs">Created</dt><dd className="mt-1 text-gray-900">{dispatch.creator_name || '—'} · {formatDateTime(dispatch.created_at)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Posted</dt><dd className="mt-1 text-gray-900">{dispatch.posted_at ? `${formatDateTime(dispatch.posted_at)} · ${dispatch.poster_name || '—'}` : '—'}</dd></div>
-          {dispatch.cancelled_at && <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Cancelled</dt><dd className="mt-1 text-gray-900">{formatDateTime(dispatch.cancelled_at)} · {dispatch.canceller_name || '—'}{dispatch.cancellation_reason ? ` — ${dispatch.cancellation_reason}` : ''}</dd></div>}
+          <div><dt className="text-fg-subtle text-xs">{isStock ? 'Source location' : 'Supplier / mill'}</dt><dd className="mt-1 text-fg">{isStock ? <><span className="font-mono">{dispatch.location_code}</span> · {dispatch.location_name}</> : dispatch.supplier_name}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Transporter / Vehicle</dt><dd className="mt-1 text-fg">{dispatch.transporter || '—'} / {dispatch.vehicle_no || '—'}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Document ref.</dt><dd className="mt-1 text-fg">{dispatch.document_reference || '—'}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Invoice / bill ref.</dt><dd className="mt-1 text-fg">{dispatch.invoice_reference || '—'}</dd></div>
+          {dispatch.remarks && <div className="md:col-span-4"><dt className="text-fg-subtle text-xs">Remarks</dt><dd className="mt-1 text-fg whitespace-pre-line">{dispatch.remarks}</dd></div>}
+          <div><dt className="text-fg-subtle text-xs">Created</dt><dd className="mt-1 text-fg">{dispatch.creator_name || '—'} · {formatDateTime(dispatch.created_at)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Posted</dt><dd className="mt-1 text-fg">{dispatch.posted_at ? `${formatDateTime(dispatch.posted_at)} · ${dispatch.poster_name || '—'}` : '—'}</dd></div>
+          {dispatch.cancelled_at && <div className="md:col-span-2"><dt className="text-fg-subtle text-xs">Cancelled</dt><dd className="mt-1 text-fg">{formatDateTime(dispatch.cancelled_at)} · {dispatch.canceller_name || '—'}{dispatch.cancellation_reason ? ` — ${dispatch.cancellation_reason}` : ''}</dd></div>}
         </dl>
       </Card>
 
       <Card title="Lines" variant="info">
-        <table className="min-w-full text-sm">
-          <thead className="text-gray-500 text-xs text-left">
+        <table className="data-table">
+          <thead>
             <tr>
-              <th className="py-1.5 font-medium">Product</th>
-              <th className="py-1.5 font-medium">{isStock ? 'Order item' : 'PO line'}</th>
-              {isStock && <th className="py-1.5 font-medium">Finished lot</th>}
-              <th className="py-1.5 font-medium text-right">Quantity</th>
-              <th className="py-1.5 font-medium">{isStock ? 'Stock movement' : 'Order'}</th>
+              <th>Product</th>
+              <th>{isStock ? 'Order item' : 'PO line'}</th>
+              {isStock && <th>Finished lot</th>}
+              <th className="text-right">Quantity</th>
+              <th>{isStock ? 'Stock movement' : 'Order'}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {dispatch.items.map((i) => (
               <tr key={i.id}>
-                <td className="py-1.5 text-gray-900">{i.product_name}</td>
-                <td className="py-1.5 text-gray-700">{isStock ? (i.design_no || i.item_description || '—') : `Ordered ${formatQuantity(i.po_ordered_quantity, i.uom_decimal_places)} ${i.unit || ''}`}</td>
-                {isStock && <td className="py-1.5"><Link href={`/procurement/lots/${i.lot_id}`} className={LINK}>{i.lot_no}</Link></td>}
-                <td className="py-1.5 text-right font-semibold whitespace-nowrap">{formatQuantity(i.quantity, i.uom_decimal_places)} {i.unit}</td>
-                <td className="py-1.5">
+                <td className="cell-strong">{i.product_name}</td>
+                <td className="text-fg-muted">{isStock ? (i.design_no || i.item_description || '—') : `Ordered ${formatQuantity(i.po_ordered_quantity, i.uom_decimal_places)} ${i.unit || ''}`}</td>
+                {isStock && <td><Link href={`/procurement/lots/${i.lot_id}`} className={LINK}>{i.lot_no}</Link></td>}
+                <td className="text-right font-semibold whitespace-nowrap">{formatQuantity(i.quantity, i.uom_decimal_places)} {i.unit}</td>
+                <td>
                   {isStock
-                    ? (i.stock_movement_id ? (can('stock.ledger') ? <Link href={`/inventory/ledger/${i.stock_movement_id}`} className={LINK}>{i.stock_movement_no}</Link> : <span className="font-mono">{i.stock_movement_no}</span>) : <span className="text-gray-400">On posting</span>)
-                    : (i.oc_num ? <Link href={`/sales/order-confirmations/${i.order_confirmation_id}`} className={LINK}>{i.oc_num}</Link> : <span className="text-gray-400">—</span>)}
+                    ? (i.stock_movement_id ? (can('stock.ledger') ? <Link href={`/inventory/ledger/${i.stock_movement_id}`} className={LINK}>{i.stock_movement_no}</Link> : <span className="font-mono">{i.stock_movement_no}</span>) : <span className="text-fg-subtle">On posting</span>)
+                    : (i.oc_num ? <Link href={`/sales/order-confirmations/${i.order_confirmation_id}`} className={LINK}>{i.oc_num}</Link> : <span className="text-fg-subtle">—</span>)}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {!isStock && <p className="text-xs text-gray-500 mt-2 mb-0">Direct supplier dispatch: the mill ships to the customer; the material never enters ERP stock, so no stock movement is created.</p>}
+        {!isStock && <p className="text-xs text-fg-subtle mt-2 mb-0">Direct supplier dispatch: the mill ships to the customer; the material never enters ERP stock, so no stock movement is created.</p>}
       </Card>
 
       {canInvoices && dispatch.status === 'posted' && (
         <Card
           title="Invoices"
           variant="info"
-          actions={can('invoice.create') && dispatch.buyer_id ? <Link href={`/finance/invoices/create?dispatch_id=${id}`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-file-earmark-check me-1"></i> Invoice this dispatch</Link> : null}
+          actions={can('invoice.create') && dispatch.buyer_id ? <Link href={`/finance/invoices/create?dispatch_id=${id}`} className={`${BTN} border border-line-strong text-link hover:bg-surface-hover`}><i className="bi bi-file-earmark-check me-1"></i> Invoice this dispatch</Link> : null}
         >
           {invoices.length === 0 ? (
-            <p className="text-sm text-gray-500 m-0">{dispatch.buyer_id ? 'Not invoiced yet.' : 'No customer on this dispatch, so it cannot be invoiced.'}</p>
+            <p className="text-sm text-fg-subtle m-0">{dispatch.buyer_id ? 'Not invoiced yet.' : 'No customer on this dispatch, so it cannot be invoiced.'}</p>
           ) : (
-            <table className="min-w-full text-sm">
-              <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Invoice</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium">PI</th><th className="py-1.5 font-medium text-right">Amount</th><th className="py-1.5 font-medium">Status</th></tr></thead>
-              <tbody className="divide-y divide-gray-100">
+            <table className="data-table">
+              <thead><tr><th>Invoice</th><th>Date</th><th>PI</th><th className="text-right">Amount</th><th>Status</th></tr></thead>
+              <tbody>
                 {invoices.map((i) => (
                   <tr key={i.id}>
-                    <td className="py-1.5"><Link href={`/finance/invoices/${i.id}`} className={LINK}>{i.invoice_no || `Draft #${i.id}`}</Link></td>
-                    <td className="py-1.5">{formatDate(i.invoice_date)}</td>
-                    <td className="py-1.5">{i.pi_no ? (can('proforma-invoice.view') ? <Link href={`/finance/proforma-invoices/${i.proforma_invoice_id}`} className={LINK}>{i.pi_no}</Link> : <span className="font-mono">{i.pi_no}</span>) : '—'}</td>
-                    <td className="py-1.5 text-right">{i.total_amount === null ? '—' : `${formatAmount(i.total_amount)} ${i.currency_code || ''}`}</td>
-                    <td className="py-1.5"><WorkflowBadge status={i.status} config={COMMERCIAL_STATUS_BADGES} /></td>
+                    <td><Link href={`/finance/invoices/${i.id}`} className={LINK}>{i.invoice_no || `Draft #${i.id}`}</Link></td>
+                    <td>{formatDate(i.invoice_date)}</td>
+                    <td>{i.pi_no ? (can('proforma-invoice.view') ? <Link href={`/finance/proforma-invoices/${i.proforma_invoice_id}`} className={LINK}>{i.pi_no}</Link> : <span className="font-mono">{i.pi_no}</span>) : '—'}</td>
+                    <td className="text-right">{i.total_amount === null ? '—' : `${formatAmount(i.total_amount)} ${i.currency_code || ''}`}</td>
+                    <td><WorkflowBadge status={i.status} config={COMMERCIAL_STATUS_BADGES} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -185,7 +185,7 @@ export default function DispatchShowPage({ params }) {
 
       <Card title="Traceability" variant="info">
         {isStock ? (
-          traces.length === 0 ? <p className="text-sm text-gray-500 m-0">—</p> : (
+          traces.length === 0 ? <p className="text-sm text-fg-subtle m-0">—</p> : (
             <div className="space-y-6">
               {traces.map((production) => <ProductionTrace key={production.processing_record_id} production={production} companyLabel={dispatch.company_label} companyCode={dispatch.company_code} />)}
             </div>
@@ -199,7 +199,7 @@ export default function DispatchShowPage({ params }) {
               <li key={r.material_requirement_id}>
                 Requirement <Link href={`/planning/material-requirements/${r.material_requirement_id}`} className={LINK}>{r.requirement_no}</Link>
                 {' → '}projection <Link href={`/planning/brand-projections/${r.brand_projection_id}`} className={LINK}>{r.projection_no}</Link>
-                <span className="text-gray-500"> · {r.brand_name}</span>
+                <span className="text-fg-subtle"> · {r.brand_name}</span>
               </li>
             ))}
           </ol>

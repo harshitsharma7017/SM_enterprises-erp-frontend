@@ -53,7 +53,7 @@ export default function SupplierReturnsPage() {
   };
 
   const Actions = can('supplier-return.create') ? (
-    <Link href="/procurement/returns/create" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+    <Link href="/procurement/returns/create" className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
       <i className="bi bi-plus-lg mr-1"></i> New Return
     </Link>
   ) : null;
@@ -63,7 +63,7 @@ export default function SupplierReturnsPage() {
       <PageHeading title="Supplier Returns" breadcrumbs={[{ label: 'Procurement' }, { label: 'Supplier Returns' }]} />
 
       <Card title="QC-rejected material returned to suppliers" variant="primary" actions={Actions}>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <SourceFilters
           filters={filters}
@@ -73,37 +73,37 @@ export default function SupplierReturnsPage() {
           searchPlaceholder="Return, QC, lot, GRN, PO or supplier"
         />
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Return No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium">QC / Lot</th>
-                <th className="px-4 py-2 font-medium">GRN / PO</th>
-                <th className="px-4 py-2 font-medium">Supplier</th>
-                <th className="px-4 py-2 font-medium">Material</th>
-                <th className="px-4 py-2 font-medium text-right">Quantity</th>
-                <th className="px-4 py-2 font-medium">Status</th>
+                <th>Return No.</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>QC / Lot</th>
+                <th>GRN / PO</th>
+                <th>Supplier</th>
+                <th>Material</th>
+                <th className="text-right">Quantity</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading returns...</td></tr>
+                <tr><td colSpan="9" className="text-center">Loading returns...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={9} icon="bi-box-arrow-up" title="No supplier returns" message="Returns are raised from the rejected quantity of a completed inspection." />
               ) : rows.map((r) => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2"><Link href={`/procurement/returns/${r.id}`} className="font-mono font-semibold text-gray-900 hover:text-blue-600">{r.return_no}</Link></td>
-                  <td className="px-4 py-2"><CompanyBadge label={r.company_label} code={r.company_code} /></td>
-                  <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{formatDate(r.return_date)}</td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-700">{r.qc_no}<div>{r.lot_no}</div></td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-700">{r.inward_no}<div>{r.po_num}</div></td>
-                  <td className="px-4 py-2 text-gray-700">{r.supplier_name}</td>
-                  <td className="px-4 py-2 text-gray-700">{r.product_name}</td>
-                  <td className="px-4 py-2 text-right font-medium whitespace-nowrap">{formatQuantity(r.quantity, r.uom_decimal_places)} <span className="text-xs text-gray-500">{r.unit}</span></td>
-                  <td className="px-4 py-2"><WorkflowBadge status={r.status} config={POSTING_STATUS_BADGES} /></td>
+                <tr key={r.id}>
+                  <td><Link href={`/procurement/returns/${r.id}`} className="font-mono font-semibold text-fg hover:text-link">{r.return_no}</Link></td>
+                  <td><CompanyBadge label={r.company_label} code={r.company_code} /></td>
+                  <td className="whitespace-nowrap">{formatDate(r.return_date)}</td>
+                  <td className="font-mono text-fg-muted">{r.qc_no}<div>{r.lot_no}</div></td>
+                  <td className="font-mono text-fg-muted">{r.inward_no}<div>{r.po_num}</div></td>
+                  <td className="text-fg-muted">{r.supplier_name}</td>
+                  <td className="text-fg-muted">{r.product_name}</td>
+                  <td className="text-right whitespace-nowrap">{formatQuantity(r.quantity, r.uom_decimal_places)} <span className="text-xs text-fg-subtle">{r.unit}</span></td>
+                  <td><WorkflowBadge status={r.status} config={POSTING_STATUS_BADGES} /></td>
                 </tr>
               ))}
             </tbody>

@@ -57,7 +57,7 @@ export default function ProcessingListPage() {
     <DashboardLayout>
       <PageHeading title="Processing" breadcrumbs={[{ label: 'Production' }, { label: 'Processing' }]} />
       <Card title="Processing of issued material (start one from an issued material issue)" variant="primary">
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
         <InventoryFilters
           filters={filters}
           setFilter={setFilter}
@@ -66,38 +66,38 @@ export default function ProcessingListPage() {
           statuses={STATUSES}
           searchPlaceholder="Processing, issue, job reference or person"
         />
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Processing No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Material Issue</th>
-                <th className="px-4 py-2 font-medium">Job Ref.</th>
-                <th className="px-4 py-2 font-medium">Supervisor / Foreman</th>
-                <th className="px-4 py-2 font-medium">Started</th>
-                <th className="px-4 py-2 font-medium text-right">Produced</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Output Stock</th>
+                <th>Processing No.</th>
+                <th>Company</th>
+                <th>Material Issue</th>
+                <th>Job Ref.</th>
+                <th>Supervisor / Foreman</th>
+                <th>Started</th>
+                <th className="text-right">Produced</th>
+                <th>Status</th>
+                <th>Output Stock</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading processing records...</td></tr>
+                <tr><td colSpan="9" className="text-center">Loading processing records...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={9} icon="bi-gear-wide-connected" title="No processing records" message="Start processing from an issued material issue." />
               ) : rows.map((p) => (
-                <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2"><Link href={`/production/processing/${p.id}`} className="font-mono font-semibold text-gray-900 hover:text-blue-600">{p.processing_no}</Link></td>
-                  <td className="px-4 py-2"><CompanyBadge label={p.company_label} code={p.company_code} /></td>
-                  <td className="px-4 py-2"><Link href={`/production/material-issues/${p.material_issue_id}`} className="font-mono text-xs text-blue-600 hover:underline">{p.issue_no}</Link></td>
-                  <td className="px-4 py-2 text-gray-700">{p.job_reference || '—'}</td>
-                  <td className="px-4 py-2 text-xs text-gray-700">{p.supervisor_name || '—'} / {p.foreman_name || '—'}</td>
-                  <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{formatDate(p.start_date)}</td>
-                  <td className="px-4 py-2 text-right whitespace-nowrap">{p.produced_quantity === null ? '—' : `${formatQuantity(p.produced_quantity, p.produced_uom_decimal_places)} ${p.produced_unit || ''}`}</td>
-                  <td className="px-4 py-2"><WorkflowBadge status={p.status} config={PROCESSING_STATUS_BADGES} /></td>
-                  <td className="px-4 py-2">
-                    {p.output_posted_at ? <span className="font-mono text-xs">{p.output_lot_no}</span> : p.status === 'completed' ? <WorkflowBadge status="not_posted" config={OUTPUT_STATUS_BADGES} /> : <span className="text-gray-400 text-xs">—</span>}
+                <tr key={p.id}>
+                  <td><Link href={`/production/processing/${p.id}`} className="font-mono font-semibold text-fg hover:text-link">{p.processing_no}</Link></td>
+                  <td><CompanyBadge label={p.company_label} code={p.company_code} /></td>
+                  <td><Link href={`/production/material-issues/${p.material_issue_id}`} className="font-mono text-xs text-link hover:underline">{p.issue_no}</Link></td>
+                  <td className="text-fg-muted">{p.job_reference || '—'}</td>
+                  <td className="text-fg-muted">{p.supervisor_name || '—'} / {p.foreman_name || '—'}</td>
+                  <td className="whitespace-nowrap">{formatDate(p.start_date)}</td>
+                  <td className="text-right whitespace-nowrap">{p.produced_quantity === null ? '—' : `${formatQuantity(p.produced_quantity, p.produced_uom_decimal_places)} ${p.produced_unit || ''}`}</td>
+                  <td><WorkflowBadge status={p.status} config={PROCESSING_STATUS_BADGES} /></td>
+                  <td>
+                    {p.output_posted_at ? <span className="font-mono text-xs">{p.output_lot_no}</span> : p.status === 'completed' ? <WorkflowBadge status="not_posted" config={OUTPUT_STATUS_BADGES} /> : <span className="text-fg-subtle text-xs">—</span>}
                   </td>
                 </tr>
               ))}

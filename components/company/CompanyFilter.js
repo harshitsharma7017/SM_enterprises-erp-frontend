@@ -11,13 +11,12 @@ export default function CompanyFilter({ value, onChange, name = 'company_id', em
 
   return (
     <div className={className}>
-      <label className="block text-xs text-gray-500 mb-1">Company</label>
+      <label className="block text-xs text-fg-subtle mb-1">Company</label>
       <select
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-      >
+      className="form-select">
         <option value="">All Companies</option>
         {companies.map((c) => (
           <option key={c.id} value={c.id}>{c.short_name || c.name}</option>

@@ -58,7 +58,7 @@ export default function StockLedgerPage() {
       <PageHeading title="Stock Ledger" breadcrumbs={[{ label: 'Inventory' }, { label: 'Stock Ledger' }]} />
 
       <Card title="Stock movements (posted movements are never edited)" variant="primary">
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <InventoryFilters
           filters={filters}
@@ -68,53 +68,53 @@ export default function StockLedgerPage() {
           searchPlaceholder="Movement, lot, material, QC or reason"
         />
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-3 py-2 font-medium">Movement</th>
-                <th className="px-3 py-2 font-medium">Company</th>
-                <th className="px-3 py-2 font-medium">Date</th>
-                <th className="px-3 py-2 font-medium">Type</th>
-                <th className="px-3 py-2 font-medium">Lot / Material</th>
-                <th className="px-3 py-2 font-medium">Location</th>
-                <th className="px-3 py-2 font-medium">Source</th>
-                <th className="px-3 py-2 font-medium text-right">In</th>
-                <th className="px-3 py-2 font-medium text-right">Out</th>
-                <th className="px-3 py-2 font-medium text-right">Lot balance</th>
-                <th className="px-3 py-2 font-medium">By</th>
+                <th>Movement</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Lot / Material</th>
+                <th>Location</th>
+                <th>Source</th>
+                <th className="text-right">In</th>
+                <th className="text-right">Out</th>
+                <th className="text-right">Lot balance</th>
+                <th>By</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="11" className="text-center py-8 text-gray-500">Loading movements...</td></tr>
+                <tr><td colSpan="11" className="text-center">Loading movements...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={11} icon="bi-journal-text" title="No stock movements" message="Movements appear when inspections are posted to stock." />
               ) : rows.map((m) => {
                 const dp = m.uom_decimal_places;
                 return (
-                  <tr key={m.id} className="hover:bg-gray-50">
-                    <td className="px-3 py-2"><Link href={`/inventory/ledger/${m.id}`} className="font-mono font-semibold text-gray-900 hover:text-blue-600">{m.movement_no}</Link></td>
-                    <td className="px-3 py-2"><CompanyBadge label={m.company_label} code={m.company_code} /></td>
-                    <td className="px-3 py-2 text-gray-500 whitespace-nowrap">{formatDate(m.movement_date)}</td>
-                    <td className="px-3 py-2">{STOCK_MOVEMENT_LABELS[m.movement_type]}</td>
-                    <td className="px-3 py-2">
-                      <Link href={`/inventory/stock/${m.lot_id}`} className="font-mono text-blue-600 hover:underline">{m.lot_no}</Link>
-                      <div className="text-xs text-gray-500">{m.product_name}</div>
+                  <tr key={m.id}>
+                    <td><Link href={`/inventory/ledger/${m.id}`} className="font-mono font-semibold text-fg hover:text-link">{m.movement_no}</Link></td>
+                    <td><CompanyBadge label={m.company_label} code={m.company_code} /></td>
+                    <td className="whitespace-nowrap">{formatDate(m.movement_date)}</td>
+                    <td>{STOCK_MOVEMENT_LABELS[m.movement_type]}</td>
+                    <td>
+                      <Link href={`/inventory/stock/${m.lot_id}`} className="font-mono text-link hover:underline">{m.lot_no}</Link>
+                      <div className="text-xs text-fg-subtle">{m.product_name}</div>
                     </td>
-                    <td className="px-3 py-2 font-mono text-xs">{m.location_code}</td>
-                    <td className="px-3 py-2 text-xs">{m.qc_no ? <span className="font-mono">{m.qc_no}</span> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{m.issue_no}</Link> : m.processing_no ? <Link href={`/production/processing/${m.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{m.processing_no}</Link> : m.dispatch_no ? <Link href={`/dispatch/${m.dispatch_id}`} className="font-mono text-blue-600 hover:underline">{m.dispatch_no}</Link> : <span className="text-gray-700">{m.reason}</span>}</td>
-                    <td className="px-3 py-2 text-right text-green-700 whitespace-nowrap">{Number(m.quantity_in) > 0 ? `${formatQuantity(m.quantity_in, dp)} ${m.unit || ''}` : ''}</td>
-                    <td className="px-3 py-2 text-right text-red-700 whitespace-nowrap">{Number(m.quantity_out) > 0 ? `${formatQuantity(m.quantity_out, dp)} ${m.unit || ''}` : ''}</td>
-                    <td className="px-3 py-2 text-right font-medium">{formatQuantity(m.balance_after, dp)}</td>
-                    <td className="px-3 py-2 text-xs text-gray-500">{m.creator_name || '—'}<div>{formatDateTime(m.created_at)}</div></td>
+                    <td className="font-mono">{m.location_code}</td>
+                    <td>{m.qc_no ? <span className="font-mono">{m.qc_no}</span> : m.issue_no ? <Link href={`/production/material-issues/${m.material_issue_id}`} className="font-mono text-link hover:underline">{m.issue_no}</Link> : m.processing_no ? <Link href={`/production/processing/${m.processing_record_id}`} className="font-mono text-link hover:underline">{m.processing_no}</Link> : m.dispatch_no ? <Link href={`/dispatch/${m.dispatch_id}`} className="font-mono text-link hover:underline">{m.dispatch_no}</Link> : <span className="text-fg-muted">{m.reason}</span>}</td>
+                    <td className="text-right text-green-700 whitespace-nowrap">{Number(m.quantity_in) > 0 ? `${formatQuantity(m.quantity_in, dp)} ${m.unit || ''}` : ''}</td>
+                    <td className="text-right text-red-700 whitespace-nowrap">{Number(m.quantity_out) > 0 ? `${formatQuantity(m.quantity_out, dp)} ${m.unit || ''}` : ''}</td>
+                    <td className="text-right">{formatQuantity(m.balance_after, dp)}</td>
+                    <td>{m.creator_name || '—'}<div>{formatDateTime(m.created_at)}</div></td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Lot balance is the running balance of that lot at that location after the movement.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">Lot balance is the running balance of that lot at that location after the movement.</p>
 
         <Pagination pagination={toPaginationFromPageLimit(pageInfo)} onPageChange={setPage} />
       </Card>

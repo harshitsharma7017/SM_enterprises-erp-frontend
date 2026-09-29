@@ -49,34 +49,34 @@ export default function SupplierPaymentsPage() {
       <PageHeading title="Supplier Payments" />
 
       <Card title="Supplier Payments Tracker" variant="primary">
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-fg-subtle mb-4">
           Payables view from raised purchase orders. Use this for supplier payment planning during demo.
         </p>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">PO No.</th>
-                <th className="px-4 py-2 font-medium">Supplier</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium text-right">Payable Amount</th>
+                <th>PO No.</th>
+                <th>Supplier</th>
+                <th>Status</th>
+                <th className="text-right">Payable Amount</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="4" className="text-center py-8 text-gray-500">Loading Supplier Payments...</td></tr>
+                <tr><td colSpan="4" className="text-center">Loading Supplier Payments...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={4} icon="bi-cash-coin" title="No purchase orders found" message="Raise a Purchase Order to see it here." />
               ) : (
                 rows.map((po) => (
-                  <tr key={po.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-mono font-semibold text-gray-900">{po.po_num}</td>
-                    <td className="px-4 py-2 text-gray-700">{po.supplier_name || '—'}</td>
-                    <td className="px-4 py-2"><WorkflowBadge status={po.status} config={PO_STATUS_BADGES} /></td>
-                    <td className="px-4 py-2 text-right text-gray-900">{formatAmount(po.total_amount)}</td>
+                  <tr key={po.id}>
+                    <td className="font-mono cell-strong">{po.po_num}</td>
+                    <td className="text-fg-muted">{po.supplier_name || '—'}</td>
+                    <td><WorkflowBadge status={po.status} config={PO_STATUS_BADGES} /></td>
+                    <td className="text-right cell-strong">{formatAmount(po.total_amount)}</td>
                   </tr>
                 ))
               )}

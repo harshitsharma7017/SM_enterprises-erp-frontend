@@ -70,8 +70,8 @@ export default function GrnShowPage({ params }) {
     }
   };
 
-  if (loading) return <DashboardLayout><div className="p-4 text-gray-500">Loading goods receipt...</div></DashboardLayout>;
-  if (!grn) return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Goods receipt not found'}</div></DashboardLayout>;
+  if (loading) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading goods receipt...</div></DashboardLayout>;
+  if (!grn) return <DashboardLayout><div className="alert alert-danger">{error || 'Goods receipt not found'}</div></DashboardLayout>;
 
   const isDraft = grn.receipt_status === 'draft';
   const trace = grn.trace || {};
@@ -85,7 +85,7 @@ export default function GrnShowPage({ params }) {
           <>
             <DocumentButton endpoint={`/procurement/inward-entries/${id}/document`} number={grn.inward_no} onError={setError} />
             {isDraft && can('inward-entry.edit') && (
-              <Link href={`/procurement/grn/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}>
+              <Link href={`/procurement/grn/${id}/edit`} className={`${BTN} border border-line-strong text-link hover:bg-surface-hover`}>
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
             )}
@@ -95,16 +95,16 @@ export default function GrnShowPage({ params }) {
               </button>
             )}
             {grn.receipt_status !== 'cancelled' && can('inward-entry.post') && (
-              <button type="button" disabled={busy} onClick={() => run('cancel', `Cancel ${grn.inward_no}? ${isDraft ? '' : 'Its lots are cancelled and the quantities are no longer received.'}`)} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}>
+              <button type="button" disabled={busy} onClick={() => run('cancel', `Cancel ${grn.inward_no}? ${isDraft ? '' : 'Its lots are cancelled and the quantities are no longer received.'}`)} className={`${BTN} border border-line-strong text-[var(--danger)] hover:bg-red-50`}>
                 <i className="bi bi-x-circle me-1"></i> Cancel
               </button>
             )}
             {isDraft && can('inward-entry.delete') && (
-              <button type="button" onClick={remove} className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>
+              <button type="button" onClick={remove} className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>
                 <i className="bi bi-trash me-1"></i> Delete
               </button>
             )}
-            <Link href="/procurement/grn" className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>Back</Link>
+            <Link href="/procurement/grn" className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>Back</Link>
           </>
         )}
       />
@@ -115,89 +115,89 @@ export default function GrnShowPage({ params }) {
 
       <Card title="Receipt" variant="primary">
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500 text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={grn.company_label} code={grn.company_code} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={grn.receipt_status} config={GRN_STATUS_BADGES} /></dd></div>
-          <div><dt className="text-gray-500 text-xs">GRN Date</dt><dd className="mt-1 text-gray-900">{formatDate(grn.inward_date)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Supplier</dt><dd className="mt-1 text-gray-900">{grn.supplier_name}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Company</dt><dd className="mt-1"><CompanyBadge label={grn.company_label} code={grn.company_code} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">Status</dt><dd className="mt-1"><WorkflowBadge status={grn.receipt_status} config={GRN_STATUS_BADGES} /></dd></div>
+          <div><dt className="text-fg-subtle text-xs">GRN Date</dt><dd className="mt-1 text-fg">{formatDate(grn.inward_date)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Supplier</dt><dd className="mt-1 text-fg">{grn.supplier_name}</dd></div>
           <div>
-            <dt className="text-gray-500 text-xs">Purchase Order</dt>
+            <dt className="text-fg-subtle text-xs">Purchase Order</dt>
             <dd className="mt-1 font-mono">
-              {can('purchase-order.view') ? <Link href={`/procurement/purchase-orders/${grn.purchase_order_id}`} className="text-blue-600 hover:underline">{grn.purchase_order_num}</Link> : grn.purchase_order_num}
-              <span className="block text-xs text-gray-500 font-sans">{PO_ORIGIN_LABELS[grn.purchase_order_origin]}</span>
+              {can('purchase-order.view') ? <Link href={`/procurement/purchase-orders/${grn.purchase_order_id}`} className="text-link hover:underline">{grn.purchase_order_num}</Link> : grn.purchase_order_num}
+              <span className="block text-xs text-fg-subtle font-sans">{PO_ORIGIN_LABELS[grn.purchase_order_origin]}</span>
             </dd>
           </div>
           <div>
-            <dt className="text-gray-500 text-xs">Source</dt>
-            <dd className="mt-1 text-gray-900">
+            <dt className="text-fg-subtle text-xs">Source</dt>
+            <dd className="mt-1 text-fg">
               {trace.oc_num && <div>OC <span className="font-mono">{trace.oc_num}</span></div>}
-              {trace.plan_no && <div>Plan <Link href={`/planning/material-plans/${trace.material_plan_id}`} className="font-mono text-blue-600 hover:underline">{trace.plan_no}</Link></div>}
+              {trace.plan_no && <div>Plan <Link href={`/planning/material-plans/${trace.material_plan_id}`} className="font-mono text-link hover:underline">{trace.plan_no}</Link></div>}
               {(trace.requirements || []).map((r) => (
                 <div key={r.material_requirement_id} className="text-xs">
-                  <Link href={`/planning/material-requirements/${r.material_requirement_id}`} className="font-mono text-blue-600 hover:underline">{r.requirement_no}</Link>
+                  <Link href={`/planning/material-requirements/${r.material_requirement_id}`} className="font-mono text-link hover:underline">{r.requirement_no}</Link>
                   {' → '}
-                  <Link href={`/planning/brand-projections/${r.brand_projection_id}`} className="font-mono text-blue-600 hover:underline">{r.projection_no}</Link>
-                  <span className="text-gray-500"> · {r.brand_name}</span>
+                  <Link href={`/planning/brand-projections/${r.brand_projection_id}`} className="font-mono text-link hover:underline">{r.projection_no}</Link>
+                  <span className="text-fg-subtle"> · {r.brand_name}</span>
                 </div>
               ))}
             </dd>
           </div>
-          <div><dt className="text-gray-500 text-xs">Challan / Bill</dt><dd className="mt-1 text-gray-900">{grn.challan_no || '—'}{grn.challan_date ? ` · ${formatDate(grn.challan_date)}` : ''}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Posted</dt><dd className="mt-1 text-gray-900">{grn.posted_at ? `${formatDateTime(grn.posted_at)} · ${grn.poster_name || '—'}` : '—'}</dd></div>
-          {grn.cancelled_at && <div><dt className="text-gray-500 text-xs">Cancelled</dt><dd className="mt-1 text-gray-900">{formatDateTime(grn.cancelled_at)} · {grn.canceller_name || '—'}</dd></div>}
-          {grn.remarks && <div className="md:col-span-4"><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{grn.remarks}</dd></div>}
+          <div><dt className="text-fg-subtle text-xs">Challan / Bill</dt><dd className="mt-1 text-fg">{grn.challan_no || '—'}{grn.challan_date ? ` · ${formatDate(grn.challan_date)}` : ''}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Posted</dt><dd className="mt-1 text-fg">{grn.posted_at ? `${formatDateTime(grn.posted_at)} · ${grn.poster_name || '—'}` : '—'}</dd></div>
+          {grn.cancelled_at && <div><dt className="text-fg-subtle text-xs">Cancelled</dt><dd className="mt-1 text-fg">{formatDateTime(grn.cancelled_at)} · {grn.canceller_name || '—'}</dd></div>}
+          {grn.remarks && <div className="md:col-span-4"><dt className="text-fg-subtle text-xs">Remarks</dt><dd className="mt-1 text-fg whitespace-pre-line">{grn.remarks}</dd></div>}
         </dl>
       </Card>
 
       <Card title="Received Material & Lots" variant="info">
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-3 py-2 font-medium">Material</th>
-                <th className="px-3 py-2 font-medium text-right">Received</th>
-                <th className="px-3 py-2 font-medium">UOM</th>
-                <th className="px-3 py-2 font-medium text-right">Width (inch)</th>
-                <th className="px-3 py-2 font-medium">Mill Lot</th>
-                <th className="px-3 py-2 font-medium text-right">PO Ordered / Received / Pending</th>
-                <th className="px-3 py-2 font-medium">Lot</th>
-                <th className="px-3 py-2 font-medium">QC</th>
+                <th>Material</th>
+                <th className="text-right">Received</th>
+                <th>UOM</th>
+                <th className="text-right">Width (inch)</th>
+                <th>Mill Lot</th>
+                <th className="text-right">PO Ordered / Received / Pending</th>
+                <th>Lot</th>
+                <th>QC</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {grn.items.map((item) => (
                 <tr key={item.id}>
-                  <td className="px-3 py-2 text-gray-900">{item.product_name || item.description || '—'} {item.item_group_code && <span className="text-xs text-gray-500">({item.item_group_code})</span>}</td>
-                  <td className="px-3 py-2 text-right font-medium">{formatQuantity(item.received_quantity, item.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 font-mono text-gray-600">{item.unit || '—'}</td>
-                  <td className="px-3 py-2 text-right">{formatQuantity(item.width_inch, 3)}</td>
-                  <td className="px-3 py-2 text-gray-600">{item.supplier_lot_no || '—'}</td>
-                  <td className="px-3 py-2 text-right text-gray-600 whitespace-nowrap">
+                  <td className="cell-strong">{item.product_name || item.description || '—'} {item.item_group_code && <span className="text-xs text-fg-subtle">({item.item_group_code})</span>}</td>
+                  <td className="text-right">{formatQuantity(item.received_quantity, item.uom_decimal_places)}</td>
+                  <td className="font-mono text-fg-muted">{item.unit || '—'}</td>
+                  <td className="text-right">{formatQuantity(item.width_inch, 3)}</td>
+                  <td className="text-fg-muted">{item.supplier_lot_no || '—'}</td>
+                  <td className="text-right text-fg-muted whitespace-nowrap">
                     {formatQuantity(item.po_ordered_quantity, item.uom_decimal_places)} / {formatQuantity(item.po_received_quantity, item.uom_decimal_places)} / {formatQuantity(item.po_pending_quantity, item.uom_decimal_places)}
                   </td>
-                  <td className="px-3 py-2">
+                  <td>
                     {item.lot_id ? (
                       <span className="inline-flex items-center gap-2">
-                        <Link href={`/procurement/lots/${item.lot_id}`} className="font-mono text-blue-600 hover:underline">{item.lot_no}</Link>
+                        <Link href={`/procurement/lots/${item.lot_id}`} className="font-mono text-link hover:underline">{item.lot_no}</Link>
                         <WorkflowBadge status={item.lot_status} config={LOT_STATUS_BADGES} />
                       </span>
-                    ) : <span className="text-gray-400">On posting</span>}
+                    ) : <span className="text-fg-subtle">On posting</span>}
                   </td>
-                  <td className="px-3 py-2 text-xs whitespace-nowrap">
+                  <td className="whitespace-nowrap">
                     {item.lot_id && item.lot_status === 'received' ? (
                       <>
-                        <span className="text-gray-600">{formatQuantity(item.qc_inspected_quantity, item.uom_decimal_places)} of {formatQuantity(item.received_quantity, item.uom_decimal_places)} inspected</span>
+                        <span className="text-fg-muted">{formatQuantity(item.qc_inspected_quantity, item.uom_decimal_places)} of {formatQuantity(item.received_quantity, item.uom_decimal_places)} inspected</span>
                         {Number(item.received_quantity) - Number(item.qc_claimed_quantity) > 0 && can('inward-entry.approve') && (
-                          <Link href={`/quality-control/create?lot_id=${item.lot_id}`} className="ml-2 text-blue-600 hover:underline">Inspect</Link>
+                          <Link href={`/quality-control/create?lot_id=${item.lot_id}`} className="ml-2 text-link hover:underline">Inspect</Link>
                         )}
                       </>
-                    ) : <span className="text-gray-400">—</span>}
+                    ) : <span className="text-fg-subtle">—</span>}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Only posted receipts count as received. Each lot is inspected in Quality Control; QC rejection does not change the received quantity.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">Only posted receipts count as received. Each lot is inspected in Quality Control; QC rejection does not change the received quantity.</p>
       </Card>
     </DashboardLayout>
   );

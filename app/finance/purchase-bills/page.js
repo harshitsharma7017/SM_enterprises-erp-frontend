@@ -62,42 +62,42 @@ export default function PurchaseBillsPage() {
       <PageHeading title="Purchase Bills" />
 
       <Card title="Purchase Bills (E-Sanchit)" variant="primary">
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-fg-subtle mb-4">
           Generated purchase-bills entries from Export Documents. Use this screen for finance-side tracking and quick file access.
         </p>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Export Doc</th>
-                <th className="px-4 py-2 font-medium">Buyer</th>
-                <th className="px-4 py-2 font-medium">Variant</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Generated At</th>
-                <th className="px-4 py-2 font-medium">File</th>
+                <th>Export Doc</th>
+                <th>Buyer</th>
+                <th>Variant</th>
+                <th>Status</th>
+                <th>Generated At</th>
+                <th>File</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="6" className="text-center py-8 text-gray-500">Loading Purchase Bills...</td></tr>
+                <tr><td colSpan="6" className="text-center">Loading Purchase Bills...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={6} icon="bi-receipt" title="No purchase-bill checklist entries yet" message="Raise an Export Document to auto-create its checklist rows." />
               ) : (
                 rows.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-mono font-semibold text-gray-900">{row.export_document_num || '—'}</td>
-                    <td className="px-4 py-2 text-gray-700">{row.buyer_name || '—'}</td>
-                    <td className="px-4 py-2 text-gray-700">{variantLabel(row)}</td>
-                    <td className="px-4 py-2">
+                  <tr key={row.id}>
+                    <td className="font-mono cell-strong">{row.export_document_num || '—'}</td>
+                    <td className="text-fg-muted">{row.buyer_name || '—'}</td>
+                    <td className="text-fg-muted">{variantLabel(row)}</td>
+                    <td>
                       <WorkflowBadge status={row.status} config={CHECKLIST_STATUS_BADGES} />
                     </td>
-                    <td className="px-4 py-2 text-gray-700">{row.generated_at ? formatDateTime(row.generated_at) : '—'}</td>
-                    <td className="px-4 py-2">
+                    <td className="text-fg-muted">{row.generated_at ? formatDateTime(row.generated_at) : '—'}</td>
+                    <td>
                       {row.file_path ? (
-                        <a href={storageUrl(row.file_path)} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View</a>
+                        <a href={storageUrl(row.file_path)} target="_blank" rel="noopener noreferrer" className="text-link hover:underline">View</a>
                       ) : '—'}
                     </td>
                   </tr>

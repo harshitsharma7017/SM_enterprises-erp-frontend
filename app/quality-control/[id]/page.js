@@ -14,10 +14,10 @@ import DocumentButton from '@/components/ui/DocumentButton';
 
 const BTN = 'px-3 py-1.5 rounded text-sm font-medium disabled:opacity-60';
 
-function Figure({ label, value, tone = 'text-gray-900' }) {
+function Figure({ label, value, tone = 'text-fg' }) {
   return (
-    <div className="rounded border border-gray-200 p-2">
-      <div className="text-xs text-gray-500">{label}</div>
+    <div className="rounded border border-line p-2">
+      <div className="text-xs text-fg-subtle">{label}</div>
       <div className={`font-semibold ${tone}`}>{value}</div>
     </div>
   );
@@ -98,8 +98,8 @@ export default function QcShowPage({ params }) {
     if (reason !== null) run('cancel', { reason });
   };
 
-  if (loading) return <DashboardLayout><div className="p-4 text-gray-500">Loading inspection...</div></DashboardLayout>;
-  if (!qc) return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{error || 'Inspection not found'}</div></DashboardLayout>;
+  if (loading) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading inspection...</div></DashboardLayout>;
+  if (!qc) return <DashboardLayout><div className="alert alert-danger">{error || 'Inspection not found'}</div></DashboardLayout>;
 
   const dp = qc.uom_decimal_places;
   const q = (v) => (v === null || v === undefined ? '—' : `${formatQuantity(v, dp)} ${qc.unit || ''}`);
@@ -118,7 +118,7 @@ export default function QcShowPage({ params }) {
           <>
             <DocumentButton endpoint={`/quality-control/${id}/document`} number={qc.qc_no} onError={setError} />
             {isDraft && can('inward-entry.approve') && (
-              <Link href={`/quality-control/${id}/edit`} className={`${BTN} border border-blue-300 text-blue-700 hover:bg-blue-50`}><i className="bi bi-pencil me-1"></i> Edit</Link>
+              <Link href={`/quality-control/${id}/edit`} className={`${BTN} border border-line-strong text-link hover:bg-surface-hover`}><i className="bi bi-pencil me-1"></i> Edit</Link>
             )}
             {isDraft && can('inward-entry.approve') && (
               <button type="button" disabled={busy} onClick={complete} className={`${BTN} bg-green-600 hover:bg-green-700 text-white`}><i className="bi bi-check2-circle me-1"></i> Complete</button>
@@ -130,9 +130,9 @@ export default function QcShowPage({ params }) {
               <Link href={`/finance/debit-notes/create?quality_inspection_id=${id}`} className={`${BTN} border border-purple-300 text-purple-800 hover:bg-purple-50`}><i className="bi bi-file-earmark-minus me-1"></i> Debit Note</Link>
             )}
             {qc.status !== 'cancelled' && !qc.stock_movement_id && can('inward-entry.approve') && (
-              <button type="button" disabled={busy} onClick={cancel} className={`${BTN} border border-red-300 text-red-600 hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>
+              <button type="button" disabled={busy} onClick={cancel} className={`${BTN} border border-line-strong text-[var(--danger)] hover:bg-red-50`}><i className="bi bi-x-circle me-1"></i> Cancel</button>
             )}
-            <Link href="/quality-control" className={`${BTN} border border-gray-300 text-gray-700 hover:bg-gray-50`}>Back</Link>
+            <Link href="/quality-control" className={`${BTN} border border-line-strong text-fg-muted hover:bg-surface-hover`}>Back</Link>
           </>
         )}
       />
@@ -149,8 +149,8 @@ export default function QcShowPage({ params }) {
       <Card title="Inspection" variant="primary">
         <div className="flex flex-wrap items-center gap-3 mb-4 text-sm">
           <WorkflowBadge status={qcBadgeStatus(qc)} config={QC_STATUS_BADGES} />
-          <span className="text-gray-500">Inspected on {formatDate(qc.inspection_date)}</span>
-          {qc.completed_at && <span className="text-gray-500">· completed {formatDateTime(qc.completed_at)} by {qc.completer_name || '—'}</span>}
+          <span className="text-fg-subtle">Inspected on {formatDate(qc.inspection_date)}</span>
+          {qc.completed_at && <span className="text-fg-subtle">· completed {formatDateTime(qc.completed_at)} by {qc.completer_name || '—'}</span>}
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-4">
           <Figure label="Inspected" value={q(qc.inspected_quantity)} />
@@ -163,11 +163,11 @@ export default function QcShowPage({ params }) {
           <Figure label="Debited (posted)" value={`${q(qc.debited_quantity)} · ${formatAmount(qc.debited_amount)}`} />
         </div>
         <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500 text-xs">Shade</dt><dd className="mt-1 text-gray-900">{qc.shade || '—'}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Edge-to-Edge Shade</dt><dd className="mt-1 text-gray-900">{qc.edge_to_edge_shade || '—'}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Weaving Defects</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{qc.weaving_defects || '—'}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{qc.remarks || '—'}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Recorded by</dt><dd className="mt-1 text-gray-900">{qc.creator_name || '—'} · {formatDateTime(qc.created_at)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Shade</dt><dd className="mt-1 text-fg">{qc.shade || '—'}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Edge-to-Edge Shade</dt><dd className="mt-1 text-fg">{qc.edge_to_edge_shade || '—'}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Weaving Defects</dt><dd className="mt-1 text-fg whitespace-pre-line">{qc.weaving_defects || '—'}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Remarks</dt><dd className="mt-1 text-fg whitespace-pre-line">{qc.remarks || '—'}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Recorded by</dt><dd className="mt-1 text-fg">{qc.creator_name || '—'} · {formatDateTime(qc.created_at)}</dd></div>
         </dl>
       </Card>
 
@@ -176,33 +176,33 @@ export default function QcShowPage({ params }) {
           {qc.stock_movement_id ? (
             <p className="text-sm m-0">
               Accepted {q(qc.stock_quantity)} posted to stock as{' '}
-              {can('stock.ledger') ? <Link href={`/inventory/ledger/${qc.stock_movement_id}`} className="font-mono text-blue-600 hover:underline">{qc.stock_movement_no}</Link> : <span className="font-mono">{qc.stock_movement_no}</span>}
+              {can('stock.ledger') ? <Link href={`/inventory/ledger/${qc.stock_movement_id}`} className="font-mono text-link hover:underline">{qc.stock_movement_no}</Link> : <span className="font-mono">{qc.stock_movement_no}</span>}
               {' '}on {formatDate(qc.stock_movement_date)} at <span className="font-mono">{qc.stock_location_code}</span> ({qc.stock_location_name}).
             </p>
           ) : can('stock.post') ? (
             <form onSubmit={postToStock} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
-              <p className="md:col-span-5 text-sm m-0 text-gray-600">Accepted {q(qc.accepted_quantity)} is not in stock yet. Rejected quantity never enters usable stock.</p>
+              <p className="md:col-span-5 text-sm m-0 text-fg-muted">Accepted {q(qc.accepted_quantity)} is not in stock yet. Rejected quantity never enters usable stock.</p>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Location *</label>
-                <select required value={posting.location_id} onChange={(e) => setPosting({ ...posting, location_id: e.target.value })} className="form-select w-full rounded border-gray-300 text-sm">
+                <label className="block text-xs font-medium text-fg-muted mb-1">Location *</label>
+                <select required value={posting.location_id} onChange={(e) => setPosting({ ...posting, location_id: e.target.value })} className="form-select">
                   <option value="">{locations.length ? '— Select —' : 'No active location'}</option>
                   {locations.map((l) => <option key={l.id} value={l.id}>{l.code} · {l.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Date *</label>
-                <input type="date" required value={posting.movement_date} onChange={(e) => setPosting({ ...posting, movement_date: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                <label className="block text-xs font-medium text-fg-muted mb-1">Date *</label>
+                <input type="date" required value={posting.movement_date} onChange={(e) => setPosting({ ...posting, movement_date: e.target.value })} className="form-input" />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-                <input type="text" maxLength={2000} value={posting.remarks} onChange={(e) => setPosting({ ...posting, remarks: e.target.value })} className="form-input w-full rounded border-gray-300 text-sm" />
+                <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+                <input type="text" maxLength={2000} value={posting.remarks} onChange={(e) => setPosting({ ...posting, remarks: e.target.value })} className="form-input" />
               </div>
               <button type="submit" disabled={busy || !posting.location_id} className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm font-medium disabled:opacity-60">
                 <i className="bi bi-box-arrow-in-down me-1"></i> Post to Stock
               </button>
             </form>
           ) : (
-            <p className="text-sm text-gray-500 m-0">Accepted quantity not posted to stock yet.</p>
+            <p className="text-sm text-fg-subtle m-0">Accepted quantity not posted to stock yet.</p>
           )}
         </Card>
       )}
@@ -212,17 +212,17 @@ export default function QcShowPage({ params }) {
       </Card>
 
       <Card title="Supplier Returns" variant="info">
-        {qc.returns.length === 0 ? <p className="text-sm text-gray-500 m-0">No returns against this inspection.</p> : (
-          <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Return No.</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium">Reason</th><th className="py-1.5 font-medium">Status</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
+        {qc.returns.length === 0 ? <p className="text-sm text-fg-subtle m-0">No returns against this inspection.</p> : (
+          <table className="data-table">
+            <thead><tr><th>Return No.</th><th>Date</th><th className="text-right">Quantity</th><th>Reason</th><th>Status</th></tr></thead>
+            <tbody>
               {qc.returns.map((r) => (
                 <tr key={r.id}>
-                  <td className="py-1.5">{can('supplier-return.view') ? <Link href={`/procurement/returns/${r.id}`} className="font-mono text-blue-600 hover:underline">{r.return_no}</Link> : <span className="font-mono">{r.return_no}</span>}</td>
-                  <td className="py-1.5 text-gray-600">{formatDate(r.return_date)}</td>
-                  <td className="py-1.5 text-right">{q(r.quantity)}</td>
-                  <td className="py-1.5 text-gray-600">{r.reason || '—'}</td>
-                  <td className="py-1.5"><WorkflowBadge status={r.status} config={POSTING_STATUS_BADGES} /></td>
+                  <td>{can('supplier-return.view') ? <Link href={`/procurement/returns/${r.id}`} className="font-mono text-link hover:underline">{r.return_no}</Link> : <span className="font-mono">{r.return_no}</span>}</td>
+                  <td className="text-fg-muted">{formatDate(r.return_date)}</td>
+                  <td className="text-right">{q(r.quantity)}</td>
+                  <td className="text-fg-muted">{r.reason || '—'}</td>
+                  <td><WorkflowBadge status={r.status} config={POSTING_STATUS_BADGES} /></td>
                 </tr>
               ))}
             </tbody>
@@ -231,17 +231,17 @@ export default function QcShowPage({ params }) {
       </Card>
 
       <Card title="Debit Notes" variant="info">
-        {qc.debit_notes.length === 0 ? <p className="text-sm text-gray-500 m-0">No debit notes against this inspection.</p> : (
-          <table className="min-w-full text-sm">
-            <thead className="text-gray-500 text-xs text-left"><tr><th className="py-1.5 font-medium">Debit Note</th><th className="py-1.5 font-medium">Date</th><th className="py-1.5 font-medium text-right">Quantity</th><th className="py-1.5 font-medium text-right">Amount</th><th className="py-1.5 font-medium">Status</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
+        {qc.debit_notes.length === 0 ? <p className="text-sm text-fg-subtle m-0">No debit notes against this inspection.</p> : (
+          <table className="data-table">
+            <thead><tr><th>Debit Note</th><th>Date</th><th className="text-right">Quantity</th><th className="text-right">Amount</th><th>Status</th></tr></thead>
+            <tbody>
               {qc.debit_notes.map((d) => (
                 <tr key={d.id}>
-                  <td className="py-1.5">{can('debit-note.view') ? <Link href={`/finance/debit-notes/${d.id}`} className="font-mono text-blue-600 hover:underline">{d.debit_note_no}</Link> : <span className="font-mono">{d.debit_note_no}</span>}</td>
-                  <td className="py-1.5 text-gray-600">{formatDate(d.debit_note_date)}</td>
-                  <td className="py-1.5 text-right">{q(d.quantity)}</td>
-                  <td className="py-1.5 text-right">{d.amount === null ? '—' : formatAmount(d.amount)}</td>
-                  <td className="py-1.5"><WorkflowBadge status={d.status} config={POSTING_STATUS_BADGES} /></td>
+                  <td>{can('debit-note.view') ? <Link href={`/finance/debit-notes/${d.id}`} className="font-mono text-link hover:underline">{d.debit_note_no}</Link> : <span className="font-mono">{d.debit_note_no}</span>}</td>
+                  <td className="text-fg-muted">{formatDate(d.debit_note_date)}</td>
+                  <td className="text-right">{q(d.quantity)}</td>
+                  <td className="text-right">{d.amount === null ? '—' : formatAmount(d.amount)}</td>
+                  <td><WorkflowBadge status={d.status} config={POSTING_STATUS_BADGES} /></td>
                 </tr>
               ))}
             </tbody>
@@ -254,8 +254,8 @@ export default function QcShowPage({ params }) {
           <ul className="list-none p-0 m-0 space-y-1 text-sm">
             {qc.lot_inspections.map((h) => (
               <li key={h.id} className="flex items-center gap-3">
-                <Link href={`/quality-control/${h.id}`} className="font-mono text-blue-600 hover:underline">{h.qc_no}</Link>
-                <span className="text-gray-500">{formatDate(h.inspection_date)} · {q(h.inspected_quantity)}</span>
+                <Link href={`/quality-control/${h.id}`} className="font-mono text-link hover:underline">{h.qc_no}</Link>
+                <span className="text-fg-subtle">{formatDate(h.inspection_date)} · {q(h.inspected_quantity)}</span>
                 <WorkflowBadge status={qcBadgeStatus(h)} config={QC_STATUS_BADGES} />
               </li>
             ))}

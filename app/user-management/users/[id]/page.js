@@ -36,7 +36,7 @@ export default function UserShowPage({ params }) {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="p-4 text-gray-500">Loading user...</div>
+        <div className="p-4 text-fg-subtle">Loading user...</div>
       </DashboardLayout>
     );
   }
@@ -44,7 +44,7 @@ export default function UserShowPage({ params }) {
   if (error || !target) {
     return (
       <DashboardLayout>
-        <div className="bg-red-50 text-red-600 p-3 rounded">{error || 'User not found'}</div>
+        <div className="alert alert-danger">{error || 'User not found'}</div>
       </DashboardLayout>
     );
   }
@@ -60,32 +60,32 @@ export default function UserShowPage({ params }) {
         actions={(
           <>
             {can('user.edit') && (
-              <Link href={`/user-management/users/${id}/edit`} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium">
+              <Link href={`/user-management/users/${id}/edit`} className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded text-sm font-medium">
                 <i className="bi bi-pencil me-1"></i> Edit
               </Link>
             )}
-            <Link href="/user-management/users" className="border border-gray-300 px-3 py-1.5 rounded text-sm text-gray-700 hover:bg-gray-50">
+            <Link href="/user-management/users" className="border border-line-strong px-3 py-1.5 rounded text-sm text-fg-muted hover:bg-surface-hover">
               Back
             </Link>
           </>
         )}
       />
 
-      <div className="bg-white border rounded shadow-sm p-4 mb-4">
+      <div className="bg-surface border rounded shadow-sm p-4 mb-4">
         <dl className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
           <div>
-            <dt className="text-gray-500">Name</dt>
-            <dd className="mt-0.5 text-gray-900">
+            <dt className="text-fg-subtle">Name</dt>
+            <dd className="mt-0.5 text-fg">
               {target.name}
               {protectedAccount && <i className="bi bi-shield-lock-fill text-amber-500 ml-1.5" title="Protected system account"></i>}
-              {isSelf && <span className="ml-1.5 text-xs text-gray-400">(you)</span>}
+              {isSelf && <span className="ml-1.5 text-xs text-fg-subtle">(you)</span>}
             </dd>
           </div>
-          <div><dt className="text-gray-500">Email</dt><dd className="mt-0.5 text-gray-900">{target.email}</dd></div>
-          <div><dt className="text-gray-500">Phone</dt><dd className="mt-0.5 text-gray-900">{target.phone || '—'}</dd></div>
-          <div><dt className="text-gray-500">Status</dt><dd className="mt-0.5"><StatusBadge status={target.is_active ? 'active' : 'inactive'} /></dd></div>
+          <div><dt className="text-fg-subtle">Email</dt><dd className="mt-0.5 text-fg">{target.email}</dd></div>
+          <div><dt className="text-fg-subtle">Phone</dt><dd className="mt-0.5 text-fg">{target.phone || '—'}</dd></div>
+          <div><dt className="text-fg-subtle">Status</dt><dd className="mt-0.5"><StatusBadge status={target.is_active ? 'active' : 'inactive'} /></dd></div>
           <div>
-            <dt className="text-gray-500">Roles</dt>
+            <dt className="text-fg-subtle">Roles</dt>
             <dd className="mt-0.5">
               {(target.roles || []).length === 0 ? '—' : (
                 <div className="flex flex-wrap gap-1">
@@ -96,7 +96,7 @@ export default function UserShowPage({ params }) {
               )}
             </dd>
           </div>
-          <div><dt className="text-gray-500">Created</dt><dd className="mt-0.5 text-gray-900">{formatDateTime(target.created_at)}</dd></div>
+          <div><dt className="text-fg-subtle">Created</dt><dd className="mt-0.5 text-fg">{formatDateTime(target.created_at)}</dd></div>
         </dl>
       </div>
     </DashboardLayout>

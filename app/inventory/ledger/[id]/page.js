@@ -27,8 +27,8 @@ export default function StockMovementPage({ params }) {
     return () => { mounted = false; };
   }, [id]);
 
-  if (error) return <DashboardLayout><div className="bg-red-50 text-red-600 p-3 rounded">{error}</div></DashboardLayout>;
-  if (!movement) return <DashboardLayout><div className="p-4 text-gray-500">Loading movement...</div></DashboardLayout>;
+  if (error) return <DashboardLayout><div className="alert alert-danger">{error}</div></DashboardLayout>;
+  if (!movement) return <DashboardLayout><div className="p-4 text-fg-subtle">Loading movement...</div></DashboardLayout>;
 
   const q = (v) => `${formatQuantity(v, movement.uom_decimal_places)} ${movement.unit || ''}`;
 
@@ -37,34 +37,34 @@ export default function StockMovementPage({ params }) {
       <PageHeading
         title={movement.movement_no}
         breadcrumbs={[{ label: 'Stock Ledger', href: '/inventory/ledger' }, { label: movement.movement_no }]}
-        actions={<Link href="/inventory/ledger" className="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50">Back</Link>}
+        actions={<Link href="/inventory/ledger" className="px-3 py-1.5 rounded text-sm font-medium border border-line-strong text-fg-muted hover:bg-surface-hover">Back</Link>}
       />
 
       <Card title="Movement" variant="primary">
         <dl className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 text-sm">
-          <div><dt className="text-gray-500 text-xs">Type</dt><dd className="mt-1 text-gray-900">{STOCK_MOVEMENT_LABELS[movement.movement_type]}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Date</dt><dd className="mt-1 text-gray-900">{formatDate(movement.movement_date)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Quantity</dt><dd className={`mt-1 text-lg font-semibold ${movement.direction === 'in' ? 'text-green-700' : 'text-red-700'}`}>{movement.direction === 'in' ? '+' : '−'}{q(movement.quantity)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Lot balance after</dt><dd className="mt-1 text-lg font-semibold">{q(movement.balance_after)}</dd></div>
-          <div><dt className="text-gray-500 text-xs">Location</dt><dd className="mt-1 text-gray-900"><span className="font-mono">{movement.location_code}</span> · {movement.location_name}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Type</dt><dd className="mt-1 text-fg">{STOCK_MOVEMENT_LABELS[movement.movement_type]}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Date</dt><dd className="mt-1 text-fg">{formatDate(movement.movement_date)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Quantity</dt><dd className={`mt-1 text-lg font-semibold ${movement.direction === 'in' ? 'text-green-700' : 'text-red-700'}`}>{movement.direction === 'in' ? '+' : '−'}{q(movement.quantity)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Lot balance after</dt><dd className="mt-1 text-lg font-semibold">{q(movement.balance_after)}</dd></div>
+          <div><dt className="text-fg-subtle text-xs">Location</dt><dd className="mt-1 text-fg"><span className="font-mono">{movement.location_code}</span> · {movement.location_name}</dd></div>
           <div>
-            <dt className="text-gray-500 text-xs">Source</dt>
-            <dd className="mt-1 text-gray-900">
+            <dt className="text-fg-subtle text-xs">Source</dt>
+            <dd className="mt-1 text-fg">
               {movement.quality_inspection_id ? (
-                <>Inspection <Link href={`/quality-control/${movement.quality_inspection_id}`} className="font-mono text-blue-600 hover:underline">{movement.qc_no}</Link></>
+                <>Inspection <Link href={`/quality-control/${movement.quality_inspection_id}`} className="font-mono text-link hover:underline">{movement.qc_no}</Link></>
               ) : movement.dispatch_id ? (
-                <>Dispatch <Link href={`/dispatch/${movement.dispatch_id}`} className="font-mono text-blue-600 hover:underline">{movement.dispatch_no}</Link></>
+                <>Dispatch <Link href={`/dispatch/${movement.dispatch_id}`} className="font-mono text-link hover:underline">{movement.dispatch_no}</Link></>
               ) : movement.processing_record_id ? (
-                <>Production output of <Link href={`/production/processing/${movement.processing_record_id}`} className="font-mono text-blue-600 hover:underline">{movement.processing_no}</Link></>
+                <>Production output of <Link href={`/production/processing/${movement.processing_record_id}`} className="font-mono text-link hover:underline">{movement.processing_no}</Link></>
               ) : movement.material_issue_id ? (
-                <>Material issue <Link href={`/production/material-issues/${movement.material_issue_id}`} className="font-mono text-blue-600 hover:underline">{movement.issue_no}</Link>{movement.job_reference ? ` · job ${movement.job_reference}` : ''}</>
+                <>Material issue <Link href={`/production/material-issues/${movement.material_issue_id}`} className="font-mono text-link hover:underline">{movement.issue_no}</Link>{movement.job_reference ? ` · job ${movement.job_reference}` : ''}</>
               ) : 'Stock adjustment'}
             </dd>
           </div>
-          {movement.reason && <div className="md:col-span-2"><dt className="text-gray-500 text-xs">Reason</dt><dd className="mt-1 text-gray-900">{movement.reason}</dd></div>}
-          {movement.remarks && <div className="md:col-span-4"><dt className="text-gray-500 text-xs">Remarks</dt><dd className="mt-1 text-gray-900 whitespace-pre-line">{movement.remarks}</dd></div>}
-          <div><dt className="text-gray-500 text-xs">Posted by</dt><dd className="mt-1 text-gray-900">{movement.creator_name || '—'} · {formatDateTime(movement.created_at)}</dd></div>
-          {can('stock.view') && <div><dt className="text-gray-500 text-xs">Lot stock</dt><dd className="mt-1"><Link href={`/inventory/stock/${movement.lot_id}`} className="text-blue-600 hover:underline">View lot stock</Link></dd></div>}
+          {movement.reason && <div className="md:col-span-2"><dt className="text-fg-subtle text-xs">Reason</dt><dd className="mt-1 text-fg">{movement.reason}</dd></div>}
+          {movement.remarks && <div className="md:col-span-4"><dt className="text-fg-subtle text-xs">Remarks</dt><dd className="mt-1 text-fg whitespace-pre-line">{movement.remarks}</dd></div>}
+          <div><dt className="text-fg-subtle text-xs">Posted by</dt><dd className="mt-1 text-fg">{movement.creator_name || '—'} · {formatDateTime(movement.created_at)}</dd></div>
+          {can('stock.view') && <div><dt className="text-fg-subtle text-xs">Lot stock</dt><dd className="mt-1"><Link href={`/inventory/stock/${movement.lot_id}`} className="text-link hover:underline">View lot stock</Link></dd></div>}
         </dl>
       </Card>
 

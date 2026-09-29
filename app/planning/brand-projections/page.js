@@ -66,7 +66,7 @@ export default function BrandProjectionsPage() {
   const brandOptions = brands.filter((b) => !filters.company_id || String(b.company_id) === String(filters.company_id));
 
   const Actions = can('brand-projection.create') ? (
-    <Link href="/planning/brand-projections/create" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+    <Link href="/planning/brand-projections/create" className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
       <i className="bi bi-plus-lg mr-1"></i> New Projection
     </Link>
   ) : null;
@@ -76,80 +76,80 @@ export default function BrandProjectionsPage() {
       <PageHeading title="Brand Projections" breadcrumbs={[{ label: 'Planning' }, { label: 'Brand Projections' }]} />
 
       <Card title="Seasonal material projections by brand" variant="primary" actions={Actions}>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <form className="flex flex-wrap items-end gap-3 mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
+        <form className="filter-bar mb-4" onSubmit={(e) => { e.preventDefault(); fetchRows(); }}>
           <div className="flex-1 min-w-[180px]">
-            <label className="block text-xs text-gray-500 mb-1">Search</label>
-            <input type="text" value={filters.search} onChange={(e) => setFilter('search', e.target.value)} placeholder="Number, title or brand" className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+            <label className="block text-xs text-fg-subtle mb-1">Search</label>
+            <input type="text" value={filters.search} onChange={(e) => setFilter('search', e.target.value)} placeholder="Number, title or brand" className="form-input" />
           </div>
-          <CompanyFilter value={filters.company_id} onChange={(e) => setFilter('company_id', e.target.value)} emptyOptionLabel={null} className="w-52" />
+          <CompanyFilter value={filters.company_id} onChange={(e) => setFilter('company_id', e.target.value)} emptyOptionLabel={null} />
           {can('brand.view') && (
-            <div className="w-48">
-              <label className="block text-xs text-gray-500 mb-1">Brand</label>
-              <select value={filters.brand_id} onChange={(e) => setFilter('brand_id', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+            <div>
+              <label className="block text-xs text-fg-subtle mb-1">Brand</label>
+              <select value={filters.brand_id} onChange={(e) => setFilter('brand_id', e.target.value)} className="form-select">
                 <option value="">All Brands</option>
                 {brandOptions.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
             </div>
           )}
-          <div className="w-36">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
-            <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
+            <select value={filters.status} onChange={(e) => setFilter('status', e.target.value)} className="form-select">
               <option value="">All</option>
               <option value="draft">Draft</option>
               <option value="finalized">Finalized</option>
             </select>
           </div>
-          <div className="w-40">
-            <label className="block text-xs text-gray-500 mb-1">Period from</label>
-            <input type="date" value={filters.period_from} onChange={(e) => setFilter('period_from', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Period from</label>
+            <input type="date" value={filters.period_from} onChange={(e) => setFilter('period_from', e.target.value)} className="form-input" />
           </div>
-          <div className="w-40">
-            <label className="block text-xs text-gray-500 mb-1">Period to</label>
-            <input type="date" value={filters.period_to} onChange={(e) => setFilter('period_to', e.target.value)} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm" />
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Period to</label>
+            <input type="date" value={filters.period_to} onChange={(e) => setFilter('period_to', e.target.value)} className="form-input" />
           </div>
-          <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
+          <button type="button" onClick={() => { setFilters(EMPTY_FILTERS); setPage(1); }} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">
             Reset
           </button>
         </form>
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">Projection No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Brand</th>
-                <th className="px-4 py-2 font-medium">Title</th>
-                <th className="px-4 py-2 font-medium">Period</th>
-                <th className="px-4 py-2 font-medium text-center">Lines</th>
-                <th className="px-4 py-2 font-medium text-center">Requirements</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium text-right w-24">Actions</th>
+                <th>Projection No.</th>
+                <th>Company</th>
+                <th>Brand</th>
+                <th>Title</th>
+                <th>Period</th>
+                <th className="text-center">Lines</th>
+                <th className="text-center">Requirements</th>
+                <th>Status</th>
+                <th className="text-right w-24">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="9" className="text-center py-8 text-gray-500">Loading brand projections...</td></tr>
+                <tr><td colSpan="9" className="text-center">Loading brand projections...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={9} icon="bi-graph-up-arrow" title="No brand projections" message="Record a brand's seasonal material projection to start planning." />
               ) : rows.map((p) => (
-                <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 font-mono font-semibold text-gray-900">
-                    <Link href={`/planning/brand-projections/${p.id}`} className="hover:text-blue-600">{p.projection_no}</Link>
+                <tr key={p.id}>
+                  <td className="font-mono cell-strong">
+                    <Link href={`/planning/brand-projections/${p.id}`} className="hover:text-link">{p.projection_no}</Link>
                   </td>
-                  <td className="px-4 py-2"><CompanyBadge label={p.company_label} code={p.company_code} /></td>
-                  <td className="px-4 py-2 text-gray-800">{p.brand_name}</td>
-                  <td className="px-4 py-2 text-gray-700">{p.title}</td>
-                  <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{formatDate(p.period_start)} – {formatDate(p.period_end)}</td>
-                  <td className="px-4 py-2 text-center text-gray-600">{p.items_count}</td>
-                  <td className="px-4 py-2 text-center text-gray-600">{p.requirements_count}</td>
-                  <td className="px-4 py-2"><WorkflowBadge status={p.status} config={PROJECTION_STATUS_BADGES} /></td>
-                  <td className="px-4 py-2 text-right whitespace-nowrap">
-                    <Link href={`/planning/brand-projections/${p.id}`} className="px-2 py-1 text-sm border border-gray-300 text-gray-600 hover:bg-gray-50 rounded-l-md" title="View"><i className="bi bi-eye"></i></Link>
+                  <td><CompanyBadge label={p.company_label} code={p.company_code} /></td>
+                  <td className="cell-strong">{p.brand_name}</td>
+                  <td className="text-fg-muted">{p.title}</td>
+                  <td className="whitespace-nowrap">{formatDate(p.period_start)} – {formatDate(p.period_end)}</td>
+                  <td className="text-center text-fg-muted">{p.items_count}</td>
+                  <td className="text-center text-fg-muted">{p.requirements_count}</td>
+                  <td><WorkflowBadge status={p.status} config={PROJECTION_STATUS_BADGES} /></td>
+                  <td className="text-right whitespace-nowrap">
+                    <Link href={`/planning/brand-projections/${p.id}`} className="px-2 py-1 text-sm border border-line-strong text-fg-muted hover:bg-surface-hover rounded-l-md" title="View"><i className="bi bi-eye"></i></Link>
                     {can('brand-projection.edit') && p.status === 'draft' && (
-                      <Link href={`/planning/brand-projections/${p.id}/edit`} className="px-2 py-1 text-sm border border-l-0 border-blue-300 text-blue-600 hover:bg-blue-50 rounded-r-md" title="Edit"><i className="bi bi-pencil"></i></Link>
+                      <Link href={`/planning/brand-projections/${p.id}/edit`} className="px-2 py-1 text-sm border border-l-0 border-line-strong text-link hover:bg-surface-hover rounded-r-md" title="Edit"><i className="bi bi-pencil"></i></Link>
                     )}
                   </td>
                 </tr>

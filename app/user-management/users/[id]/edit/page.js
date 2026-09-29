@@ -36,9 +36,9 @@ export default function UserEditPage({ params }) {
       <PageHeading title="Edit User" breadcrumbs={[{ label: 'Users', href: '/user-management/users' }, { label: user?.name || '...' }]} />
       <Card title={user ? `Edit — ${user.name}` : 'Edit User'} variant="primary">
         {loading ? (
-          <div className="p-4 text-gray-500">Loading user...</div>
+          <div className="p-4 text-fg-subtle">Loading user...</div>
         ) : error || !user ? (
-          <div className="bg-red-50 text-red-600 p-3 rounded">{error || 'User not found'}</div>
+          <div className="alert alert-danger">{error || 'User not found'}</div>
         ) : (
           <UserForm mode="edit" user={user} />
         )}

@@ -106,10 +106,10 @@ export default function PurchaseOrdersPage() {
         title="Purchase Orders"
         actions={can('purchase-order.create') && (
           <>
-            <Link href="/procurement/purchase-orders/create-planning" className="border border-blue-600 text-blue-700 hover:bg-blue-50 px-4 py-2 rounded text-sm font-medium">
+            <Link href="/procurement/purchase-orders/create-planning" className="border border-blue-600 text-link hover:bg-surface-hover px-4 py-2 rounded text-sm font-medium">
               <i className="bi bi-list-check me-1"></i> New Planning PO
             </Link>
-            <Link href="/procurement/purchase-orders/create" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium">
+            <Link href="/procurement/purchase-orders/create" className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded text-sm font-medium">
               <i className="bi bi-plus-lg me-1"></i> New PO
             </Link>
           </>
@@ -117,27 +117,27 @@ export default function PurchaseOrdersPage() {
       />
 
       <Card title="Purchase Orders" variant="primary">
-        <form onSubmit={handleSearch} className="flex flex-wrap items-end gap-3 mb-4">
-          <div className="flex-1 min-w-[220px]">
-            <label className="block text-xs text-gray-500 mb-1">Search</label>
+        <form onSubmit={handleSearch} className="filter-bar mb-4">
+          <div className="filter-bar-wide">
+            <label className="block text-xs text-fg-subtle mb-1">Search</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="PO no., contract no., supplier"
-              className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
             />
           </div>
-          <div className="w-56">
-            <label className="block text-xs text-gray-500 mb-1">Supplier</label>
-            <select value={supplierFilter} onChange={(e) => { setSupplierFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Supplier</label>
+            <select value={supplierFilter} onChange={(e) => { setSupplierFilter(e.target.value); setPage(1); }} className="form-select">
               <option value="">All Suppliers</option>
               {suppliers.map((s) => <option key={s.id} value={s.id}>{s.company_name}</option>)}
             </select>
           </div>
-          <div className="w-52">
-            <label className="block text-xs text-gray-500 mb-1">Origin</label>
-            <select value={originFilter} onChange={(e) => { setOriginFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Origin</label>
+            <select value={originFilter} onChange={(e) => { setOriginFilter(e.target.value); setPage(1); }} className="form-select">
               <option value="">All Origins</option>
               {Object.entries(PO_ORIGIN_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
@@ -146,70 +146,69 @@ export default function PurchaseOrdersPage() {
             value={companyFilter}
             onChange={(e) => { setCompanyFilter(e.target.value); setPage(1); }}
             emptyOptionLabel="Unassigned"
-            className="w-56"
           />
-          <div className="w-48">
-            <label className="block text-xs text-gray-500 mb-1">Status</label>
-            <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm">
+          <div>
+            <label className="block text-xs text-fg-subtle mb-1">Status</label>
+            <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="form-select">
               <option value="">All</option>
               {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{PO_STATUS_BADGES[s].label}</option>)}
             </select>
           </div>
-          <div className="flex gap-2">
-            <button type="submit" className="px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm flex items-center">
+          <div className="filter-bar-actions">
+            <button type="submit" className="px-3 py-1.5 btn-neutral rounded text-sm flex items-center">
               <i className="bi bi-funnel mr-1"></i>Filter
             </button>
-            <button type="button" onClick={handleReset} className="px-3 py-1.5 border border-gray-400 text-gray-600 hover:bg-gray-50 rounded text-sm">
+            <button type="button" onClick={handleReset} className="px-3 py-1.5 border border-line-strong text-fg-muted hover:bg-surface-hover rounded text-sm">
               Reset
             </button>
           </div>
         </form>
 
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">PO No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium">Source</th>
-                <th className="px-4 py-2 font-medium">Supplier</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium text-right w-32">Actions</th>
+                <th>PO No.</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>Source</th>
+                <th>Supplier</th>
+                <th>Status</th>
+                <th className="text-right w-32">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="7" className="text-center py-8 text-gray-500">Loading Purchase Orders...</td></tr>
+                <tr><td colSpan="7" className="text-center">Loading Purchase Orders...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={7} icon="bi-cart-check" title="No Purchase Orders yet" message="Raise a PO from a confirmed Order Confirmation, or create one directly." />
               ) : (
                 rows.map((po) => (
-                  <tr key={po.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-mono font-semibold text-gray-900">{po.po_num}</td>
-                    <td className="px-4 py-2"><CompanyBadge label={po.company_label} code={po.company_code} /></td>
-                    <td className="px-4 py-2 text-gray-500">{formatDate(po.po_date)}</td>
-                    <td className="px-4 py-2 text-gray-700">
-                      <div className="text-xs text-gray-500">{PO_ORIGIN_LABELS[po.origin] || '—'}</div>
+                  <tr key={po.id}>
+                    <td className="font-mono cell-strong">{po.po_num}</td>
+                    <td><CompanyBadge label={po.company_label} code={po.company_code} /></td>
+                    <td>{formatDate(po.po_date)}</td>
+                    <td className="text-fg-muted">
+                      <div className="text-xs text-fg-subtle">{PO_ORIGIN_LABELS[po.origin] || '—'}</div>
                       <div className="font-mono">{po.origin === 'order_confirmation' ? (po.oc_num || '—') : (po.material_plan_no || 'Requirements')}</div>
                     </td>
-                    <td className="px-4 py-2">
-                      <div className="text-gray-900">{po.supplier_company_name || '—'}</div>
-                      {po.supplier_display_code && <div className="text-xs text-gray-500">{po.supplier_display_code}</div>}
+                    <td>
+                      <div className="text-fg">{po.supplier_company_name || '—'}</div>
+                      {po.supplier_display_code && <div className="text-xs text-fg-subtle">{po.supplier_display_code}</div>}
                     </td>
-                    <td className="px-4 py-2"><WorkflowBadge status={po.status} config={PO_STATUS_BADGES} /></td>
-                    <td className="px-4 py-2 text-right">
+                    <td><WorkflowBadge status={po.status} config={PO_STATUS_BADGES} /></td>
+                    <td className="text-right">
                       <div className="inline-flex items-center gap-2">
                         {can('purchase-order.view') && (
-                          <Link href={`/procurement/purchase-orders/${po.id}`} className="text-gray-500 hover:text-gray-900" title="View"><i className="bi bi-eye"></i></Link>
+                          <Link href={`/procurement/purchase-orders/${po.id}`} className="text-fg-subtle hover:text-fg" title="View"><i className="bi bi-eye"></i></Link>
                         )}
                         {can('purchase-order.edit') && po.status !== 'cancelled' && (
-                          <Link href={`/procurement/purchase-orders/${po.id}/edit`} className="text-blue-600 hover:text-blue-900" title="Edit"><i className="bi bi-pencil"></i></Link>
+                          <Link href={`/procurement/purchase-orders/${po.id}/edit`} className="text-link hover:text-blue-900" title="Edit"><i className="bi bi-pencil"></i></Link>
                         )}
                         {can('purchase-order.delete') && (po.origin === 'order_confirmation' || po.status === 'draft') && (
-                          <button onClick={() => deletePo(po.id, po.po_num)} className="text-red-600 hover:text-red-900" title="Delete"><i className="bi bi-trash"></i></button>
+                          <button onClick={() => deletePo(po.id, po.po_num)} className="text-[var(--danger)] hover:text-red-900" title="Delete"><i className="bi bi-trash"></i></button>
                         )}
                       </div>
                     </td>

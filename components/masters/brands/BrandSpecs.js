@@ -3,8 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 import FormSection from '../../ui/FormSection';
 import { apiClient } from '../../../lib/api-client';
 import { useAuth } from '../../../hooks/useAuth';
-
-const INPUT = 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
 const EMPTY = { product_id: '', design: '', quality: '', width: '', colour: '', printing: '', specification: '', remarks: '', status: 'active' };
 const TEXT_FIELDS = [
   ['design', 'Design', 'e.g. HB wave pattern'],
@@ -101,10 +99,10 @@ export default function BrandSpecs({ brandId, companyId }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden mt-6">
+    <div className="bg-surface rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden mt-6">
       <div className="p-6">
         <FormSection title="Product Specifications">
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-fg-subtle mb-4">
             How this brand wants each material. Shown beside the product on this brand&apos;s projection lines, orders and purchase orders (and printed on the PO).
           </p>
           {notice && <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded mb-4 text-sm">{notice}</div>}
@@ -114,40 +112,40 @@ export default function BrandSpecs({ brandId, companyId }) {
             </div>
           )}
 
-          <div className="overflow-x-auto border border-gray-200 rounded-md mb-4">
-            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-              <thead className="bg-gray-50 text-gray-700">
+          <div className="table-wrap mb-4">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">Product</th>
-                  <th className="px-3 py-2 font-medium">Design</th>
-                  <th className="px-3 py-2 font-medium">Quality</th>
-                  <th className="px-3 py-2 font-medium">Width</th>
-                  <th className="px-3 py-2 font-medium">Colour</th>
-                  <th className="px-3 py-2 font-medium">Printing</th>
-                  <th className="px-3 py-2 font-medium">Specification</th>
-                  <th className="px-3 py-2 font-medium">Status</th>
-                  {canEdit && <th className="px-3 py-2"></th>}
+                  <th>Product</th>
+                  <th>Design</th>
+                  <th>Quality</th>
+                  <th>Width</th>
+                  <th>Colour</th>
+                  <th>Printing</th>
+                  <th>Specification</th>
+                  <th>Status</th>
+                  {canEdit && <th></th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody>
                 {specs.length === 0 ? (
-                  <tr><td colSpan={canEdit ? 9 : 8} className="px-3 py-6 text-center text-gray-500">No specifications yet.</td></tr>
+                  <tr><td colSpan={canEdit ? 9 : 8} className="text-center">No specifications yet.</td></tr>
                 ) : specs.map((s) => (
                   <tr key={s.id} className={editingId === s.id ? 'bg-blue-50' : ''}>
-                    <td className="px-3 py-2"><div className="font-medium">{s.product_name}</div><div className="text-xs text-gray-500">{s.item_group_code}</div></td>
-                    <td className="px-3 py-2">{s.design || '—'}</td>
-                    <td className="px-3 py-2">{s.quality || '—'}</td>
-                    <td className="px-3 py-2">{s.width || '—'}</td>
-                    <td className="px-3 py-2">{s.colour || '—'}</td>
-                    <td className="px-3 py-2">{s.printing || '—'}</td>
-                    <td className="px-3 py-2 whitespace-pre-line max-w-xs">{s.specification || '—'}</td>
-                    <td className="px-3 py-2">
+                    <td><div className="font-medium">{s.product_name}</div><div className="text-xs text-fg-subtle">{s.item_group_code}</div></td>
+                    <td>{s.design || '—'}</td>
+                    <td>{s.quality || '—'}</td>
+                    <td>{s.width || '—'}</td>
+                    <td>{s.colour || '—'}</td>
+                    <td>{s.printing || '—'}</td>
+                    <td className="whitespace-pre-line max-w-xs">{s.specification || '—'}</td>
+                    <td>
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${s.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{s.status === 'active' ? 'Active' : 'Inactive'}</span>
                     </td>
                     {canEdit && (
-                      <td className="px-3 py-2 text-right whitespace-nowrap">
-                        <button type="button" onClick={() => edit(s)} className="text-blue-600 hover:text-blue-800 text-xs mr-3"><i className="bi bi-pencil"></i> Edit</button>
-                        <button type="button" onClick={() => remove(s)} className="text-red-600 hover:text-red-800 text-xs"><i className="bi bi-trash"></i> Delete</button>
+                      <td className="text-right whitespace-nowrap">
+                        <button type="button" onClick={() => edit(s)} className="text-link hover:text-link-hover text-xs mr-3"><i className="bi bi-pencil"></i> Edit</button>
+                        <button type="button" onClick={() => remove(s)} className="text-[var(--danger)] hover:text-red-800 text-xs"><i className="bi bi-trash"></i> Delete</button>
                       </td>
                     )}
                   </tr>
@@ -157,43 +155,43 @@ export default function BrandSpecs({ brandId, companyId }) {
           </div>
 
           {canEdit && (
-            <form onSubmit={save} className="border border-gray-200 rounded-md p-4 bg-gray-50">
-              <h4 className="text-sm font-semibold text-gray-700 mt-0 mb-3">{editingId ? 'Edit specification' : 'Add specification'}</h4>
+            <form onSubmit={save} className="border border-line rounded-md p-4 bg-surface-raised">
+              <h4 className="text-sm font-semibold text-fg-muted mt-0 mb-3">{editingId ? 'Edit specification' : 'Add specification'}</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Product <span className="text-red-500">*</span></label>
-                  <select required value={form.product_id} onChange={(e) => setForm({ ...form, product_id: e.target.value })} className={INPUT}>
+                  <label className="block text-xs font-medium text-fg-muted mb-1">Product <span className="text-[var(--danger)]">*</span></label>
+                  <select required value={form.product_id} onChange={(e) => setForm({ ...form, product_id: e.target.value })} className="form-select">
                     <option value="">— Select —</option>
                     {products.map((p) => <option key={p.id} value={p.id}>{p.name}{p.item_group_code ? ` (${p.item_group_code})` : ''}</option>)}
                   </select>
                 </div>
                 {TEXT_FIELDS.map(([name, label, placeholder]) => (
                   <div key={name}>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
-                    <input type="text" value={form[name]} onChange={(e) => setForm({ ...form, [name]: e.target.value })} placeholder={placeholder} className={INPUT} />
+                    <label className="block text-xs font-medium text-fg-muted mb-1">{label}</label>
+                    <input type="text" value={form[name]} onChange={(e) => setForm({ ...form, [name]: e.target.value })} placeholder={placeholder} className="form-input" />
                   </div>
                 ))}
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Specification</label>
-                  <textarea rows={2} value={form.specification} onChange={(e) => setForm({ ...form, specification: e.target.value })} placeholder="Any other requirement — finish, fold, shrinkage allowance, packing" className={INPUT} />
+                  <label className="block text-xs font-medium text-fg-muted mb-1">Specification</label>
+                  <textarea rows={2} value={form.specification} onChange={(e) => setForm({ ...form, specification: e.target.value })} placeholder="Any other requirement — finish, fold, shrinkage allowance, packing" className="form-textarea" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
-                  <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={INPUT}>
+                  <label className="block text-xs font-medium text-fg-muted mb-1">Status</label>
+                  <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="form-select">
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>
                 </div>
                 <div className="md:col-span-3">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-                  <input type="text" value={form.remarks} onChange={(e) => setForm({ ...form, remarks: e.target.value })} className={INPUT} />
+                  <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+                  <input type="text" value={form.remarks} onChange={(e) => setForm({ ...form, remarks: e.target.value })} className="form-input" />
                 </div>
               </div>
               <div className="flex gap-2 mt-3">
-                <button type="submit" disabled={busy} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60">
+                <button type="submit" disabled={busy} className="px-4 py-2 rounded-md text-sm font-medium text-white bg-accent hover:bg-accent-hover disabled:opacity-60">
                   <i className="bi bi-check-lg mr-1"></i> {editingId ? 'Update' : 'Add'} Specification
                 </button>
-                {editingId && <button type="button" onClick={reset} className="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">Cancel edit</button>}
+                {editingId && <button type="button" onClick={reset} className="px-4 py-2 border border-line-strong rounded-md text-sm text-fg-muted bg-surface hover:bg-surface-hover">Cancel edit</button>}
               </div>
             </form>
           )}

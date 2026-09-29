@@ -53,7 +53,7 @@ export default function QualityControlListPage() {
   };
 
   const Actions = can('inward-entry.approve') ? (
-    <Link href="/quality-control/create" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
+    <Link href="/quality-control/create" className="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm inline-flex items-center no-underline">
       <i className="bi bi-plus-lg mr-1"></i> New Inspection
     </Link>
   ) : null;
@@ -63,7 +63,7 @@ export default function QualityControlListPage() {
       <PageHeading title="Quality Control" breadcrumbs={[{ label: 'Procurement' }, { label: 'Quality Control' }]} />
 
       <Card title="Inspections of received lots" variant="primary" actions={Actions}>
-        {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <SourceFilters
           filters={filters}
@@ -73,47 +73,47 @@ export default function QualityControlListPage() {
           searchPlaceholder="QC, lot, GRN, PO, material or supplier"
         />
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2 font-medium">QC No.</th>
-                <th className="px-4 py-2 font-medium">Company</th>
-                <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium">Lot / Material</th>
-                <th className="px-4 py-2 font-medium">GRN / PO</th>
-                <th className="px-4 py-2 font-medium">Supplier</th>
-                <th className="px-4 py-2 font-medium text-right">Inspected</th>
-                <th className="px-4 py-2 font-medium text-right">Accepted</th>
-                <th className="px-4 py-2 font-medium text-right">Rejected</th>
-                <th className="px-4 py-2 font-medium text-right">Returned</th>
-                <th className="px-4 py-2 font-medium">Status</th>
+                <th>QC No.</th>
+                <th>Company</th>
+                <th>Date</th>
+                <th>Lot / Material</th>
+                <th>GRN / PO</th>
+                <th>Supplier</th>
+                <th className="text-right">Inspected</th>
+                <th className="text-right">Accepted</th>
+                <th className="text-right">Rejected</th>
+                <th className="text-right">Returned</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {loading ? (
-                <tr><td colSpan="11" className="text-center py-8 text-gray-500">Loading inspections...</td></tr>
+                <tr><td colSpan="11" className="text-center">Loading inspections...</td></tr>
               ) : rows.length === 0 ? (
                 <EmptyState colspan={11} icon="bi-clipboard-check" title="No inspections" message="Inspect a lot once its goods receipt is posted." />
               ) : rows.map((q) => {
                 const dp = q.uom_decimal_places;
                 const qty = (v) => (v === null ? '—' : formatQuantity(v, dp));
                 return (
-                  <tr key={q.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2"><Link href={`/quality-control/${q.id}`} className="font-mono font-semibold text-gray-900 hover:text-blue-600">{q.qc_no}</Link></td>
-                    <td className="px-4 py-2"><CompanyBadge label={q.company_label} code={q.company_code} /></td>
-                    <td className="px-4 py-2 text-gray-500 whitespace-nowrap">{formatDate(q.inspection_date)}</td>
-                    <td className="px-4 py-2">
-                      <div className="font-mono text-gray-800">{q.lot_no}</div>
-                      <div className="text-xs text-gray-500">{q.product_name} · {formatQuantity(q.width_inch, 3)}&quot;</div>
+                  <tr key={q.id}>
+                    <td><Link href={`/quality-control/${q.id}`} className="font-mono font-semibold text-fg hover:text-link">{q.qc_no}</Link></td>
+                    <td><CompanyBadge label={q.company_label} code={q.company_code} /></td>
+                    <td className="whitespace-nowrap">{formatDate(q.inspection_date)}</td>
+                    <td>
+                      <div className="font-mono text-fg">{q.lot_no}</div>
+                      <div className="text-xs text-fg-subtle">{q.product_name} · {formatQuantity(q.width_inch, 3)}&quot;</div>
                     </td>
-                    <td className="px-4 py-2 font-mono text-xs text-gray-700">{q.inward_no}<div>{q.po_num}</div></td>
-                    <td className="px-4 py-2 text-gray-700">{q.supplier_name}</td>
-                    <td className="px-4 py-2 text-right whitespace-nowrap">{qty(q.inspected_quantity)} <span className="text-xs text-gray-500">{q.unit}</span></td>
-                    <td className="px-4 py-2 text-right text-green-700">{qty(q.accepted_quantity)}</td>
-                    <td className="px-4 py-2 text-right text-red-700">{qty(q.rejected_quantity)}</td>
-                    <td className="px-4 py-2 text-right text-gray-700">{formatQuantity(q.returned_quantity, dp)}</td>
-                    <td className="px-4 py-2"><WorkflowBadge status={qcBadgeStatus(q)} config={QC_STATUS_BADGES} /></td>
+                    <td className="font-mono text-fg-muted">{q.inward_no}<div>{q.po_num}</div></td>
+                    <td className="text-fg-muted">{q.supplier_name}</td>
+                    <td className="text-right whitespace-nowrap">{qty(q.inspected_quantity)} <span className="text-xs text-fg-subtle">{q.unit}</span></td>
+                    <td className="text-right text-green-700">{qty(q.accepted_quantity)}</td>
+                    <td className="text-right text-red-700">{qty(q.rejected_quantity)}</td>
+                    <td className="text-right text-fg-muted">{formatQuantity(q.returned_quantity, dp)}</td>
+                    <td><WorkflowBadge status={qcBadgeStatus(q)} config={QC_STATUS_BADGES} /></td>
                   </tr>
                 );
               })}

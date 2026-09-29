@@ -267,7 +267,7 @@ export default function InquiryForm({ inquiryId = null }) {
   };
 
   if (loading) {
-    return <div className="p-4 text-gray-500">Loading form data...</div>;
+    return <div className="p-4 text-fg-subtle">Loading form data...</div>;
   }
 
   return (
@@ -283,8 +283,8 @@ export default function InquiryForm({ inquiryId = null }) {
       <FormSection title="Inquiry Identity" icon="bi-chat-square-text" subtitle="→ Buyer Master · Agent Master · OC on confirmation">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Company {!inquiryId && <span className="text-red-500">*</span>}
+            <label className="block text-xs font-medium text-fg-muted mb-1">
+              Company {!inquiryId && <span className="text-[var(--danger)]">*</span>}
             </label>
             {lockedCompany ? (
               <div className="py-1.5"><CompanyBadge label={lockedCompany.label} code={lockedCompany.code} /></div>
@@ -294,45 +294,44 @@ export default function InquiryForm({ inquiryId = null }) {
                   value={formData.company_id}
                   onChange={handleCompanyChange}
                   required={!inquiryId}
-                  className="form-select w-full rounded border-gray-300 text-sm"
                 />
-                {inquiryId && <p className="text-[11px] text-gray-500 mt-1">Created before multi-company support — assign its company (cannot be changed later).</p>}
+                {inquiryId && <p className="text-[11px] text-fg-subtle mt-1">Created before multi-company support — assign its company (cannot be changed later).</p>}
               </>
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Inquiry No.</label>
-            <input type="text" readOnly value={inquiryId ? inquiryNo : `${numberPreview} (auto)`} className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
-            <p className="text-[11px] text-gray-500 mt-1">FY {financialYear}</p>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Inquiry No.</label>
+            <input type="text" readOnly value={inquiryId ? inquiryNo : `${numberPreview} (auto)`} className="form-input border-dashed" />
+            <p className="text-[11px] text-fg-subtle mt-1">FY {financialYear}</p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Date <span className="text-red-500">*</span></label>
-            <input type="date" name="inquiry_date" required value={formData.inquiry_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Inquiry Date"/>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" name="inquiry_date" required value={formData.inquiry_date} onChange={handleChange} className="form-input"  placeholder="Enter Inquiry Date"/>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Buyer&apos;s Ref / Season</label>
-            <input type="text" name="buyer_ref" maxLength={100} placeholder="e.g. SS-2026" value={formData.buyer_ref} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Buyer&apos;s Ref / Season</label>
+            <input type="text" name="buyer_ref" maxLength={100} placeholder="e.g. SS-2026" value={formData.buyer_ref} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Source</label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Source</label>
             <div className="flex gap-2">
-              <select name="source_id" value={formData.source_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+              <select name="source_id" value={formData.source_id} onChange={handleChange} className="form-select">
                 <option value="">— Select —</option>
                 {sources.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
-              <button type="button" onClick={addSource} className="px-2 border border-gray-300 rounded text-gray-500 hover:bg-gray-50" title="Add new source"><i className="bi bi-plus-lg"></i></button>
+              <button type="button" onClick={addSource} className="px-2 border border-line-strong rounded text-fg-subtle hover:bg-surface-hover" title="Add new source"><i className="bi bi-plus-lg"></i></button>
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Buyer</label>
-            <select name="buyer_id" value={formData.buyer_id} onChange={handleBuyerChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Buyer</label>
+            <select name="buyer_id" value={formData.buyer_id} onChange={handleBuyerChange} className="form-select">
               <option value="">— Select —</option>
               {buyers.filter((b) => buyerFitsCompany(b, formData.company_id) || String(b.id) === String(formData.buyer_id)).map((b) => <option key={b.id} value={b.id}>{b.company_name}{b.display_code ? ` (${b.display_code})` : ''}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Category</label>
-            <select name="category_id" value={formData.category_id} onChange={handleCategoryChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Category</label>
+            <select name="category_id" value={formData.category_id} onChange={handleCategoryChange} className="form-select">
               <option value="">— Select —</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -343,53 +342,53 @@ export default function InquiryForm({ inquiryId = null }) {
       <FormSection title="Order Format & Terms" icon="bi-file-earmark-ruled">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Order Format</label>
-            <select name="document_format_id" value={formData.document_format_id} onChange={handleFormatChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Order Format</label>
+            <select name="document_format_id" value={formData.document_format_id} onChange={handleFormatChange} className="form-select">
               <option value="">— Select —</option>
               {formats.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Format Type</label>
-            <input type="text" readOnly value={selectedFormat?.module || ''} placeholder="— From Format —" className="form-input w-full rounded border-gray-300 text-sm bg-gray-50 border-dashed text-gray-500" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Format Type</label>
+            <input type="text" readOnly value={selectedFormat?.module || ''} placeholder="— From Format —" className="form-input border-dashed" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Agent <span className="text-gray-400 font-normal">(Buyer Master)</span></label>
-            <select name="agent_id" value={formData.agent_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Agent <span className="text-fg-subtle font-normal">(Buyer Master)</span></label>
+            <select name="agent_id" value={formData.agent_id} onChange={handleChange} className="form-select">
               <option value="">— Select —</option>
               {agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Commission Type</label>
-            <select name="agent_commission_type" value={formData.agent_commission_type} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Commission Type</label>
+            <select name="agent_commission_type" value={formData.agent_commission_type} onChange={handleChange} className="form-select">
               <option value="">— Select —</option>
               <option value="percent">Percent</option>
               <option value="flat">Flat</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Commission</label>
-            <input type="number" step="0.01" min="0" name="agent_commission_value" placeholder="0.00" value={formData.agent_commission_value} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Commission</label>
+            <input type="number" step="0.01" min="0" name="agent_commission_value" placeholder="0.00" value={formData.agent_commission_value} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Currency <span className="text-gray-400 font-normal">(Buyer Master)</span></label>
-            <select name="currency_id" value={formData.currency_id} onChange={handleChange} className="form-select w-full rounded border-gray-300 text-sm">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Currency <span className="text-fg-subtle font-normal">(Buyer Master)</span></label>
+            <select name="currency_id" value={formData.currency_id} onChange={handleChange} className="form-select">
               <option value="">— Select —</option>
               {currencies.map((c) => <option key={c.id} value={c.id}>{c.iso_code} — {c.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Exchange Rate (₹)</label>
-            <input type="number" step="0.01" min="0" name="exchange_rate" placeholder="e.g. 88.50" value={formData.exchange_rate} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Exchange Rate (₹)</label>
+            <input type="number" step="0.01" min="0" name="exchange_rate" placeholder="e.g. 88.50" value={formData.exchange_rate} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Expected Shipment Date</label>
-            <input type="date" name="expected_shipment_date" value={formData.expected_shipment_date} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm"  placeholder="Enter Expected Shipment Date"/>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Expected Shipment Date</label>
+            <input type="date" name="expected_shipment_date" value={formData.expected_shipment_date} onChange={handleChange} className="form-input"  placeholder="Enter Expected Shipment Date"/>
           </div>
           <div className="md:col-span-3">
-            <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-            <input type="text" name="remarks" maxLength={2000} placeholder="General remarks…" value={formData.remarks} onChange={handleChange} className="form-input w-full rounded border-gray-300 text-sm" />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+            <input type="text" name="remarks" maxLength={2000} placeholder="General remarks…" value={formData.remarks} onChange={handleChange} className="form-input" />
           </div>
         </div>
       </FormSection>
@@ -408,20 +407,20 @@ export default function InquiryForm({ inquiryId = null }) {
 
         <div className="mt-6 border-t pt-4">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-semibold text-gray-700">Buyer Follow-up</h4>
-            <button type="button" onClick={addFollowup} className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-2 py-1 rounded hover:bg-blue-100">
+            <h4 className="text-sm font-semibold text-fg-muted">Buyer Follow-up</h4>
+            <button type="button" onClick={addFollowup} className="text-xs bg-blue-50 text-link border border-blue-200 px-2 py-1 rounded hover:bg-blue-100">
               <i className="bi bi-plus-lg"></i> Add buyer follow-up
             </button>
           </div>
           <div className="space-y-2">
             {followups.map((f, i) => (
               <div key={f.id || i} className="flex gap-2 items-center">
-                <input type="date" value={f.date} onChange={(e) => updateFollowup(i, { date: e.target.value })} className="form-input rounded border-gray-300 text-sm w-44" />
-                <input type="text" placeholder="Comment" value={f.comment} onChange={(e) => updateFollowup(i, { comment: e.target.value })} className="form-input flex-1 rounded border-gray-300 text-sm" />
-                <button type="button" onClick={() => removeFollowup(i)} className="text-red-500 hover:text-red-700 px-1"><i className="bi bi-trash"></i></button>
+                <input type="date" value={f.date} onChange={(e) => updateFollowup(i, { date: e.target.value })} className="form-input w-44" />
+                <input type="text" placeholder="Comment" value={f.comment} onChange={(e) => updateFollowup(i, { comment: e.target.value })} className="form-input flex-1" />
+                <button type="button" onClick={() => removeFollowup(i)} className="text-[var(--danger)] hover:text-[var(--danger)] px-1"><i className="bi bi-trash"></i></button>
               </div>
             ))}
-            {followups.length === 0 && <p className="text-sm text-gray-400">No follow-up entries recorded.</p>}
+            {followups.length === 0 && <p className="text-sm text-fg-subtle">No follow-up entries recorded.</p>}
           </div>
         </div>
       </FormSection>
@@ -429,12 +428,12 @@ export default function InquiryForm({ inquiryId = null }) {
       <FormSection title="Delivery & Packing Details" icon="bi-box-seam">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Details</label>
-            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Delivery Details"></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Delivery Details</label>
+            <textarea name="delivery_details" rows={3} value={formData.delivery_details} onChange={handleChange} className="form-textarea" placeholder="Enter Delivery Details"></textarea>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Packing Details</label>
-            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea w-full rounded border-gray-300 text-sm" placeholder="Enter Packing Details"></textarea>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Packing Details</label>
+            <textarea name="packing_details" rows={3} value={formData.packing_details} onChange={handleChange} className="form-textarea" placeholder="Enter Packing Details"></textarea>
           </div>
         </div>
       </FormSection>
@@ -442,23 +441,23 @@ export default function InquiryForm({ inquiryId = null }) {
       <FormSection title="Module Connections" icon="bi-diagram-3">
         <div className="flex flex-wrap gap-2">
           {['Buyer Master', 'Agent Master', 'Order Format', 'Order Confirmation (on confirmation)'].map((m) => (
-            <span key={m} className="px-2 py-1 rounded-md border border-gray-200 bg-gray-50 text-gray-700 text-sm">{m}</span>
+            <span key={m} className="px-2 py-1 rounded-md border border-line bg-surface-raised text-fg-muted text-sm">{m}</span>
           ))}
         </div>
       </FormSection>
 
-      <div className="bg-white border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">
-        <select value={formData.status} onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))} className="form-select rounded border-gray-300 text-sm">
+      <div className="bg-surface border rounded shadow-sm px-6 py-4 flex items-center gap-3 flex-wrap">
+        <select value={formData.status} onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))} className="form-select">
           {statuses.map((s) => <option key={s} value={s}>{STATUS_LABELS[s] || s}</option>)}
         </select>
         <div className="flex-1" />
-        <Link href={inquiryId ? `/sales/inquiries/${inquiryId}` : '/sales/inquiries'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={inquiryId ? `/sales/inquiries/${inquiryId}` : '/sales/inquiries'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
-        <button type="button" disabled={saving} onClick={() => submit('draft')} className="px-4 py-2 border border-gray-400 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm disabled:opacity-50">
+        <button type="button" disabled={saving} onClick={() => submit('draft')} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm disabled:opacity-50">
           Save Draft
         </button>
-        <button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-50">
+        <button type="submit" disabled={saving} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-50">
           <i className="bi bi-check-lg me-1"></i> {saving ? 'Saving…' : 'Submit'}
         </button>
       </div>

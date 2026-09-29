@@ -8,9 +8,7 @@ import CompanySelect from '@/components/company/CompanySelect';
 import TraceChain from '@/components/quality/TraceChain';
 import { apiClient } from '@/lib/api-client';
 import { toDateInputValue, todayDateInputValue, formatQuantity } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
-const LABEL = 'block text-xs font-medium text-gray-700 mb-1';
+const LABEL = 'block text-xs font-medium text-fg-muted mb-1';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 const EMPTY = { inspection_date: todayDateInputValue(), inspected_quantity: '', accepted_quantity: '', rejected_quantity: '', return_quantity: '', shade: '', edge_to_edge_shade: '', weaving_defects: '', remarks: '' };
 const asInput = (v) => (v === null || v === undefined ? '' : String(Number(v)));
@@ -136,7 +134,7 @@ export default function QcForm({ qcId = null, initialLotId = null }) {
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading...</div>;
 
   const dp = lot?.uom_decimal_places ?? 0;
   const available = lot ? Number(lot.uninspected_quantity) + ownClaim : 0;
@@ -159,12 +157,12 @@ export default function QcForm({ qcId = null, initialLotId = null }) {
         {!qcId && !initialLotId && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className={LABEL}>Company <span className="text-red-500">*</span></label>
-              <CompanySelect value={companyId} onChange={handleCompanyChange} required className="form-select w-full rounded border-gray-300 text-sm" />
+              <label className={LABEL}>Company <span className="text-[var(--danger)]">*</span></label>
+              <CompanySelect value={companyId} onChange={handleCompanyChange} required />
             </div>
             <div className="md:col-span-2">
-              <label className={LABEL}>Lot <span className="text-red-500">*</span></label>
-              <select value={lotId} onChange={handleLotChange} required disabled={!companyId || !!savedId} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <label className={LABEL}>Lot <span className="text-[var(--danger)]">*</span></label>
+              <select value={lotId} onChange={handleLotChange} required disabled={!companyId || !!savedId} className="form-select">
                 <option value="">{companyId ? (lots.length ? '— Select a lot awaiting inspection —' : 'No lots awaiting inspection') : 'Select a company first'}</option>
                 {lots.map((l) => (
                   <option key={l.id} value={l.id}>
@@ -179,75 +177,75 @@ export default function QcForm({ qcId = null, initialLotId = null }) {
           <>
             <TraceChain doc={{ ...lot, lot_id: lot.id }} quantityLabel="Received quantity" quantity={lot.quantity} />
             <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">Received</div><div className="font-semibold">{formatQuantity(lot.quantity, dp)} {lot.unit}</div></div>
-              <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">Inspected (completed)</div><div className="font-semibold">{formatQuantity(lot.inspected_quantity, dp)}</div></div>
-              <div className="rounded border border-gray-200 p-2"><div className="text-xs text-gray-500">Accepted / Rejected</div><div className="font-semibold"><span className="text-green-700">{formatQuantity(lot.accepted_quantity, dp)}</span> / <span className="text-red-700">{formatQuantity(lot.rejected_quantity, dp)}</span></div></div>
-              <div className="rounded border border-blue-200 bg-blue-50 p-2"><div className="text-xs text-blue-700">Available for this inspection</div><div className="font-semibold text-blue-900">{formatQuantity(available, dp)} {lot.unit}</div></div>
+              <div className="rounded border border-line p-2"><div className="text-xs text-fg-subtle">Received</div><div className="font-semibold">{formatQuantity(lot.quantity, dp)} {lot.unit}</div></div>
+              <div className="rounded border border-line p-2"><div className="text-xs text-fg-subtle">Inspected (completed)</div><div className="font-semibold">{formatQuantity(lot.inspected_quantity, dp)}</div></div>
+              <div className="rounded border border-line p-2"><div className="text-xs text-fg-subtle">Accepted / Rejected</div><div className="font-semibold"><span className="text-green-700">{formatQuantity(lot.accepted_quantity, dp)}</span> / <span className="text-red-700">{formatQuantity(lot.rejected_quantity, dp)}</span></div></div>
+              <div className="rounded border border-blue-200 bg-blue-50 p-2"><div className="text-xs text-link">Available for this inspection</div><div className="font-semibold text-blue-900">{formatQuantity(available, dp)} {lot.unit}</div></div>
             </div>
           </>
         ) : (
-          <p className="text-sm text-gray-500 m-0">Select a lot to load its details.</p>
+          <p className="text-sm text-fg-subtle m-0">Select a lot to load its details.</p>
         )}
       </FormSection>
 
       <FormSection title="Inspection" icon="bi-clipboard-check" subtitle={`Quantities in ${lot?.unit || 'the lot unit'}${dp > 0 ? `, up to ${dp} decimal place(s)` : ', whole numbers'}. Accepted + Rejected must equal Inspected.`}>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
-            <label className={LABEL}>Inspection Date <span className="text-red-500">*</span></label>
-            <input type="date" required value={form.inspection_date} onChange={set('inspection_date')} className={INPUT} />
+            <label className={LABEL}>Inspection Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" required value={form.inspection_date} onChange={set('inspection_date')} className="form-input" />
           </div>
           <div>
-            <label className={LABEL}>Inspected Qty <span className="text-red-500">*</span></label>
-            <input type="number" required min="0" step={stepFor(dp)} value={form.inspected_quantity} onChange={set('inspected_quantity')} className={`${INPUT} text-right`} />
+            <label className={LABEL}>Inspected Qty <span className="text-[var(--danger)]">*</span></label>
+            <input type="number" required min="0" step={stepFor(dp)} value={form.inspected_quantity} onChange={set('inspected_quantity')} className={`form-input text-right`} />
           </div>
           <div>
             <label className={LABEL}>Accepted Qty</label>
-            <input type="number" min="0" step={stepFor(dp)} value={form.accepted_quantity} onChange={set('accepted_quantity')} className={`${INPUT} text-right`} />
+            <input type="number" min="0" step={stepFor(dp)} value={form.accepted_quantity} onChange={set('accepted_quantity')} className={`form-input text-right`} />
           </div>
           <div>
             <label className={LABEL}>Rejected Qty</label>
-            <input type="number" min="0" step={stepFor(dp)} value={form.rejected_quantity} onChange={set('rejected_quantity')} className={`${INPUT} text-right`} />
+            <input type="number" min="0" step={stepFor(dp)} value={form.rejected_quantity} onChange={set('rejected_quantity')} className={`form-input text-right`} />
           </div>
           <div>
             <label className={LABEL}>Marked for Return</label>
-            <input type="number" min="0" step={stepFor(dp)} value={form.return_quantity} onChange={set('return_quantity')} className={`${INPUT} text-right`} />
+            <input type="number" min="0" step={stepFor(dp)} value={form.return_quantity} onChange={set('return_quantity')} className={`form-input text-right`} />
           </div>
         </div>
         <div className="mt-2 text-xs space-y-0.5">
-          {overLot && <p className="m-0 text-red-600">Inspected quantity is more than the {formatQuantity(available, dp)} {lot.unit} available on this lot.</p>}
-          {sumMismatch && <p className="m-0 text-red-600">Accepted + Rejected ({formatQuantity((micro(form.accepted_quantity) + micro(form.rejected_quantity)) / 1e6, dp)}) does not equal Inspected ({formatQuantity(form.inspected_quantity, dp)}).</p>}
-          {returnTooHigh && <p className="m-0 text-red-600">Marked for return cannot exceed the rejected quantity.</p>}
-          <p className="m-0 text-gray-500">&quot;Marked for return&quot; records the inspector&apos;s recommendation only. Material is returned through a separate Supplier Return.</p>
+          {overLot && <p className="m-0 text-[var(--danger)]">Inspected quantity is more than the {formatQuantity(available, dp)} {lot.unit} available on this lot.</p>}
+          {sumMismatch && <p className="m-0 text-[var(--danger)]">Accepted + Rejected ({formatQuantity((micro(form.accepted_quantity) + micro(form.rejected_quantity)) / 1e6, dp)}) does not equal Inspected ({formatQuantity(form.inspected_quantity, dp)}).</p>}
+          {returnTooHigh && <p className="m-0 text-[var(--danger)]">Marked for return cannot exceed the rejected quantity.</p>}
+          <p className="m-0 text-fg-subtle">&quot;Marked for return&quot; records the inspector&apos;s recommendation only. Material is returned through a separate Supplier Return.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div>
             <label className={LABEL}>Shade</label>
-            <input type="text" maxLength={100} value={form.shade} onChange={set('shade')} className={INPUT} />
+            <input type="text" maxLength={100} value={form.shade} onChange={set('shade')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Edge-to-Edge Shade</label>
-            <input type="text" maxLength={100} value={form.edge_to_edge_shade} onChange={set('edge_to_edge_shade')} className={INPUT} />
+            <input type="text" maxLength={100} value={form.edge_to_edge_shade} onChange={set('edge_to_edge_shade')} className="form-input" />
           </div>
           <div>
             <label className={LABEL}>Weaving Defects</label>
-            <textarea rows={3} maxLength={2000} value={form.weaving_defects} onChange={set('weaving_defects')} className={INPUT}></textarea>
+            <textarea rows={3} maxLength={2000} value={form.weaving_defects} onChange={set('weaving_defects')} className="form-textarea"></textarea>
           </div>
           <div>
             <label className={LABEL}>Remarks</label>
-            <textarea rows={3} maxLength={2000} value={form.remarks} onChange={set('remarks')} className={INPUT}></textarea>
+            <textarea rows={3} maxLength={2000} value={form.remarks} onChange={set('remarks')} className="form-textarea"></textarea>
           </div>
         </div>
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving || !lot} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving || !lot} className="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
           <i className="bi bi-check-lg mr-1"></i> Save Draft
         </button>
         <button type="button" disabled={saving || !lot} onClick={() => save(true)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium text-sm disabled:opacity-60">
           <i className="bi bi-check2-circle mr-1"></i> Save &amp; Complete
         </button>
-        <Link href={savedId ? `/quality-control/${savedId}` : '/quality-control'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={savedId ? `/quality-control/${savedId}` : '/quality-control'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
       </div>

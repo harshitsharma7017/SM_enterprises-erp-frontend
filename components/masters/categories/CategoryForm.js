@@ -97,18 +97,18 @@ export default function CategoryForm({ categoryId }) {
   };
 
   if (loading) {
-    return <DashboardLayout><div className="py-12 text-center text-gray-500">Loading...</div></DashboardLayout>;
+    return <DashboardLayout><div className="py-12 text-center text-fg-subtle">Loading...</div></DashboardLayout>;
   }
 
   return (
     <DashboardLayout>
       <div className="mb-4 flex items-center gap-3">
-        <h2 className="text-2xl font-semibold text-gray-900 m-0">
+        <h2 className="text-2xl font-semibold text-fg m-0">
           {categoryId ? 'Edit Category' : 'Add Category'}
         </h2>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden">
+      <div className="bg-surface rounded-lg shadow-sm border border-[var(--card-border)] overflow-hidden">
         <form onSubmit={handleSubmit}>
           <div className="p-6">
             <FormSection title="Category Details" icon="bi-tags" subtitle="Products, jobbers and suppliers are all linked to a category.">
@@ -116,22 +116,22 @@ export default function CategoryForm({ categoryId }) {
                 
                 {/* Code Field */}
                 <div className="flex flex-col sm:flex-row mb-4">
-                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-gray-700 pt-1">
+                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-fg-muted pt-1">
                     Category Code
                   </label>
                   <div className="sm:w-3/4">
                     <div className="flex rounded-md shadow-sm">
-                      <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-100 text-gray-500 text-sm">
+                      <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-line-strong bg-surface-raised text-fg-subtle text-sm">
                         <i className="bi bi-hash"></i>
                       </span>
                       <input
                         type="text"
                         readOnly
                         value={formData.code}
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 bg-gray-50 text-gray-500 font-mono sm:text-sm"
+                        className="form-input flex-1 min-w-0 rounded-none rounded-r-md font-mono"
                        placeholder="Enter Code"/>
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-1 text-xs text-fg-subtle">
                       {categoryId ? 'Codes never change — they appear on documents already sent.' : 'Assigned automatically when you save.'}
                     </p>
                   </div>
@@ -139,8 +139,8 @@ export default function CategoryForm({ categoryId }) {
 
                 {/* Name Field */}
                 <div className="flex flex-col sm:flex-row mb-4">
-                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-gray-700 pt-1">
-                    Category Name <span className="text-red-500 font-normal">*</span>
+                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-fg-muted pt-1">
+                    Category Name <span className="text-[var(--danger)] font-normal">*</span>
                   </label>
                   <div className="sm:w-3/4">
                     <input
@@ -150,34 +150,34 @@ export default function CategoryForm({ categoryId }) {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Men's Shirts"
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="form-input focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
                     />
                   </div>
                 </div>
 
                 {/* Formats Field (Custom Multi-select) */}
                 <div className="flex flex-col sm:flex-row mb-4 relative">
-                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-gray-700 pt-1">
+                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-fg-muted pt-1">
                     Order Formats Linked
                   </label>
                   <div className="sm:w-3/4">
                     <div className="relative">
                       <div 
-                        className="min-h-[38px] w-full border border-gray-300 rounded-md shadow-sm p-1.5 flex flex-wrap gap-1 cursor-pointer bg-white"
+                        className="min-h-[38px] w-full border border-line-strong rounded-md shadow-sm p-1.5 flex flex-wrap gap-1 cursor-pointer bg-surface"
                         onClick={() => setIsFormatDropdownOpen(!isFormatDropdownOpen)}
                       >
                         {formData.format_ids.length === 0 && (
-                          <span className="text-gray-400 text-sm p-0.5 ml-1">Select formats...</span>
+                          <span className="text-fg-subtle text-sm p-0.5 ml-1">Select formats...</span>
                         )}
                         {formData.format_ids.map(id => {
                           const format = formats.find(f => f.id === id);
                           if (!format) return null;
                           return (
-                            <span key={id} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                            <span key={id} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-raised text-fg-muted">
                               {format.name}
                               <button
                                 type="button"
-                                className="ml-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                className="ml-1 text-fg-subtle hover:text-fg-muted focus:outline-none"
                                 onClick={(e) => { e.stopPropagation(); toggleFormat(id); }}
                               >
                                 &times;
@@ -188,20 +188,20 @@ export default function CategoryForm({ categoryId }) {
                       </div>
                       
                       {isFormatDropdownOpen && (
-                        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto sm:text-sm">
+                        <div className="absolute z-10 mt-1 w-full bg-surface shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto sm:text-sm">
                           {formats.length === 0 ? (
-                            <div className="px-3 py-2 text-gray-500">No formats available.</div>
+                            <div className="px-3 py-2 text-fg-subtle">No formats available.</div>
                           ) : formats.map((format) => {
                             const isSelected = formData.format_ids.includes(format.id);
                             return (
                               <div
                                 key={format.id}
-                                className={`cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50 ${isSelected ? 'bg-blue-50 text-blue-900 font-medium' : 'text-gray-900'}`}
+                                className={`cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-surface-hover ${isSelected ? 'bg-blue-50 text-blue-900 font-medium' : 'text-fg'}`}
                                 onClick={() => toggleFormat(format.id)}
                               >
                                 {format.name}
                                 {isSelected && (
-                                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
+                                  <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-link">
                                     <i className="bi bi-check2"></i>
                                   </span>
                                 )}
@@ -215,7 +215,7 @@ export default function CategoryForm({ categoryId }) {
                         <div className="fixed inset-0 z-0" onClick={() => setIsFormatDropdownOpen(false)}></div>
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-1 text-xs text-fg-subtle">
                       Every format picked here is offered when raising an order under this category.
                     </p>
                   </div>
@@ -223,8 +223,8 @@ export default function CategoryForm({ categoryId }) {
 
                 {/* Status Field */}
                 <div className="flex flex-col sm:flex-row mb-4">
-                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-gray-700 pt-1">
-                    Status <span className="text-red-500 font-normal">*</span>
+                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-fg-muted pt-1">
+                    Status <span className="text-[var(--danger)] font-normal">*</span>
                   </label>
                   <div className="sm:w-3/4">
                     <select
@@ -232,8 +232,7 @@ export default function CategoryForm({ categoryId }) {
                       required
                       value={formData.status}
                       onChange={handleChange}
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    >
+                    className="form-select">
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
@@ -242,7 +241,7 @@ export default function CategoryForm({ categoryId }) {
 
                 {/* Remarks Field */}
                 <div className="flex flex-col sm:flex-row">
-                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-gray-700 pt-1">
+                  <label className="sm:w-1/4 sm:min-w-[200px] text-sm font-semibold text-fg-muted pt-1">
                     Remarks
                   </label>
                   <div className="sm:w-3/4">
@@ -252,7 +251,7 @@ export default function CategoryForm({ categoryId }) {
                       value={formData.remarks}
                       onChange={handleChange}
                       placeholder="Optional notes"
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="form-textarea focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
                     ></textarea>
                   </div>
                 </div>
@@ -261,18 +260,18 @@ export default function CategoryForm({ categoryId }) {
             </FormSection>
           </div>
 
-          <div className="bg-gray-50 px-6 py-4 flex items-center gap-2 border-t border-gray-200">
+          <div className="bg-surface-raised px-6 py-4 flex items-center gap-2 border-t border-line">
             <button
               type="submit"
               disabled={submitting}
-              className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${submitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-accent hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--focus-ring)] ${submitting ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               <i className="bi bi-check-lg mr-1"></i> {categoryId ? 'Update' : 'Save'} Category
             </button>
             <button
               type="button"
               onClick={() => router.push('/masters/categories')}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex items-center px-4 py-2 border border-line-strong shadow-sm text-sm font-medium rounded-md text-fg-muted bg-surface hover:bg-surface-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--focus-ring)]"
             >
               Cancel
             </button>

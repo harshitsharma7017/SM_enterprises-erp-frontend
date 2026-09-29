@@ -9,8 +9,6 @@ import CompanyBadge from '@/components/company/CompanyBadge';
 import { PO_ORIGIN_LABELS } from '@/components/ui/Badge';
 import { apiClient } from '@/lib/api-client';
 import { toDateInputValue, todayDateInputValue, formatQuantity } from '@/components/sales/shared/format';
-
-const INPUT = 'form-input w-full rounded border-gray-300 text-sm';
 const stepFor = (decimals) => (Number(decimals) > 0 ? String(1 / 10 ** Number(decimals)) : '1');
 
 // Normalise a source row (requirement or plan line) into a form line.
@@ -177,7 +175,7 @@ export default function PlanningPoForm({ poId = null }) {
     }
   };
 
-  if (loading) return <div className="p-4 text-gray-500">Loading purchase order...</div>;
+  if (loading) return <div className="p-4 text-fg-subtle">Loading purchase order...</div>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
@@ -195,38 +193,38 @@ export default function PlanningPoForm({ poId = null }) {
       <FormSection title="Source & Supplier" icon="bi-diagram-3" subtitle="A planning PO needs no inquiry or order confirmation.">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Origin <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Origin <span className="text-[var(--danger)]">*</span></label>
             {poId ? (
-              <div className="py-1.5 text-sm text-gray-900">{PO_ORIGIN_LABELS[header.origin]}</div>
+              <div className="py-1.5 text-sm text-fg">{PO_ORIGIN_LABELS[header.origin]}</div>
             ) : (
-              <select value={header.origin} onChange={(e) => resetSources({ origin: e.target.value, material_plan_id: '' })} className="form-select w-full rounded border-gray-300 text-sm">
+              <select value={header.origin} onChange={(e) => resetSources({ origin: e.target.value, material_plan_id: '' })} className="form-select">
                 <option value="material_requirement">Material Requirement</option>
                 <option value="material_plan">Material Plan</option>
               </select>
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Company <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-medium text-fg-muted mb-1">Company <span className="text-[var(--danger)]">*</span></label>
             {poId ? (
               <div className="py-1.5"><CompanyBadge label={saved?.company_label} code={saved?.company_code} /></div>
             ) : (
-              <CompanySelect value={header.company_id} onChange={(e) => resetSources({ company_id: e.target.value, supplier_id: '', material_plan_id: '' })} required className="form-select w-full rounded border-gray-300 text-sm" />
+              <CompanySelect value={header.company_id} onChange={(e) => resetSources({ company_id: e.target.value, supplier_id: '', material_plan_id: '' })} required />
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Supplier / Mill <span className="text-red-500">*</span></label>
-            <select name="supplier_id" required value={header.supplier_id} onChange={handleChange} disabled={!header.company_id || confirmed} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+            <label className="block text-xs font-medium text-fg-muted mb-1">Supplier / Mill <span className="text-[var(--danger)]">*</span></label>
+            <select name="supplier_id" required value={header.supplier_id} onChange={handleChange} disabled={!header.company_id || confirmed} className="form-select">
               <option value="">{header.company_id ? '— Select supplier —' : 'Select a company first'}</option>
               {suppliers.map((s) => <option key={s.id} value={s.id}>{s.company_name}{s.display_code ? ` (${s.display_code})` : ''}{s.company_id ? '' : ' · shared'}</option>)}
             </select>
           </div>
           {isPlan && (
             <div className="md:col-span-3">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Material Plan <span className="text-red-500">*</span></label>
+              <label className="block text-xs font-medium text-fg-muted mb-1">Material Plan <span className="text-[var(--danger)]">*</span></label>
               {poId ? (
-                <div className="py-1.5 font-mono text-sm text-gray-900">{saved?.material_plan_no}</div>
+                <div className="py-1.5 font-mono text-sm text-fg">{saved?.material_plan_no}</div>
               ) : (
-                <select value={header.material_plan_id} onChange={(e) => resetSources({ material_plan_id: e.target.value })} disabled={!header.company_id} required className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+                <select value={header.material_plan_id} onChange={(e) => resetSources({ material_plan_id: e.target.value })} disabled={!header.company_id} required className="form-select">
                   <option value="">{header.company_id ? (plans.length ? '— Select a planned material plan —' : 'No planned material plans for this company') : 'Select a company first'}</option>
                   {plans.map((p) => <option key={p.id} value={p.id}>{p.plan_no} · {p.title} ({p.items_count} lines)</option>)}
                 </select>
@@ -234,25 +232,25 @@ export default function PlanningPoForm({ poId = null }) {
             </div>
           )}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">PO Date <span className="text-red-500">*</span></label>
-            <input type="date" name="po_date" required value={header.po_date} onChange={handleChange} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">PO Date <span className="text-[var(--danger)]">*</span></label>
+            <input type="date" name="po_date" required value={header.po_date} onChange={handleChange} className="form-input" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Dispatch Date</label>
-            <input type="date" name="dispatch_date" value={header.dispatch_date} onChange={handleChange} className={INPUT} />
+            <label className="block text-xs font-medium text-fg-muted mb-1">Dispatch Date</label>
+            <input type="date" name="dispatch_date" value={header.dispatch_date} onChange={handleChange} className="form-input" />
           </div>
           <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Details</label>
-              <textarea name="delivery_details" rows={2} maxLength={2000} value={header.delivery_details} onChange={handleChange} placeholder="e.g. dispatch directly to the customer's vendor" className={INPUT}></textarea>
+              <label className="block text-xs font-medium text-fg-muted mb-1">Delivery Details</label>
+              <textarea name="delivery_details" rows={2} maxLength={2000} value={header.delivery_details} onChange={handleChange} placeholder="e.g. dispatch directly to the customer's vendor" className="form-textarea"></textarea>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Packing Details</label>
-              <textarea name="packing_details" rows={2} maxLength={2000} value={header.packing_details} onChange={handleChange} className={INPUT}></textarea>
+              <label className="block text-xs font-medium text-fg-muted mb-1">Packing Details</label>
+              <textarea name="packing_details" rows={2} maxLength={2000} value={header.packing_details} onChange={handleChange} className="form-textarea"></textarea>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Remarks</label>
-              <textarea name="remarks" rows={2} maxLength={1000} value={header.remarks} onChange={handleChange} className={INPUT}></textarea>
+              <label className="block text-xs font-medium text-fg-muted mb-1">Remarks</label>
+              <textarea name="remarks" rows={2} maxLength={1000} value={header.remarks} onChange={handleChange} className="form-textarea"></textarea>
             </div>
           </div>
         </div>
@@ -262,8 +260,8 @@ export default function PlanningPoForm({ poId = null }) {
         {!confirmed && (
           <div className="flex flex-wrap items-end gap-2 mb-3">
             <div className="flex-1 min-w-[280px]">
-              <label className="block text-xs text-gray-500 mb-1">Add {isPlan ? 'plan line' : 'material requirement'}</label>
-              <select value={pick} onChange={(e) => setPick(e.target.value)} disabled={!header.company_id || (isPlan && !header.material_plan_id)} className="form-select w-full rounded border-gray-300 text-sm disabled:bg-gray-50">
+              <label className="block text-xs text-fg-subtle mb-1">Add {isPlan ? 'plan line' : 'material requirement'}</label>
+              <select value={pick} onChange={(e) => setPick(e.target.value)} disabled={!header.company_id || (isPlan && !header.material_plan_id)} className="form-select">
                 <option value="">{available.length ? '— Select —' : 'Nothing left to order'}</option>
                 {available.map((c) => {
                   const key = isPlan ? c.material_plan_item_id : c.id;
@@ -275,54 +273,54 @@ export default function PlanningPoForm({ poId = null }) {
                 })}
               </select>
             </div>
-            <button type="button" onClick={addLine} disabled={!pick} className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+            <button type="button" onClick={addLine} disabled={!pick} className="px-3 py-1.5 border border-line-strong rounded text-sm text-fg-muted hover:bg-surface-hover disabled:opacity-50">
               <i className="bi bi-plus-lg mr-1"></i> Add
             </button>
           </div>
         )}
 
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
-          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600">
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead>
               <tr>
-                <th className="px-3 py-2 font-medium">Material / Requirement</th>
-                <th className="px-3 py-2 font-medium text-right">Required</th>
-                {isPlan && <th className="px-3 py-2 font-medium text-right">Planned</th>}
-                <th className="px-3 py-2 font-medium text-right">Ordered</th>
-                <th className="px-3 py-2 font-medium text-right">Remaining</th>
-                <th className="px-3 py-2 font-medium w-36 text-right">Order Qty</th>
-                <th className="px-3 py-2 font-medium">UOM</th>
-                <th className="px-3 py-2 font-medium w-28 text-right">₹/Unit</th>
-                <th className="px-3 py-2 font-medium">Remarks</th>
-                {!confirmed && <th className="px-3 py-2 w-10"></th>}
+                <th>Material / Requirement</th>
+                <th className="text-right">Required</th>
+                {isPlan && <th className="text-right">Planned</th>}
+                <th className="text-right">Ordered</th>
+                <th className="text-right">Remaining</th>
+                <th className="w-36 text-right">Order Qty</th>
+                <th>UOM</th>
+                <th className="w-28 text-right">₹/Unit</th>
+                <th>Remarks</th>
+                {!confirmed && <th className="w-10"></th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
+            <tbody>
               {lines.length === 0 ? (
-                <tr><td colSpan={isPlan ? 10 : 9} className="px-3 py-6 text-center text-gray-500">No materials added yet.</td></tr>
+                <tr><td colSpan={isPlan ? 10 : 9} className="text-center">No materials added yet.</td></tr>
               ) : lines.map((line, index) => (
                 <tr key={line.source_id}>
-                  <td className="px-3 py-2">
-                    <div className="text-gray-900">{line.product_name}</div>
-                    <div className="text-xs text-gray-500 font-mono">{line.requirement_no} · {line.projection_no} · {line.brand_name}</div>
+                  <td>
+                    <div className="text-fg">{line.product_name}</div>
+                    <div className="text-xs text-fg-subtle font-mono">{line.requirement_no} · {line.projection_no} · {line.brand_name}</div>
                   </td>
-                  <td className="px-3 py-2 text-right">{formatQuantity(line.required_quantity, line.uom_decimal_places)}</td>
-                  {isPlan && <td className="px-3 py-2 text-right">{formatQuantity(line.planned_quantity, line.uom_decimal_places)}</td>}
-                  <td className="px-3 py-2 text-right text-gray-600">{formatQuantity(line.ordered_quantity_total, line.uom_decimal_places)}</td>
-                  <td className="px-3 py-2 text-right text-gray-600">{formatQuantity(line.remaining, line.uom_decimal_places)}</td>
-                  <td className="px-3 py-2">
-                    <input type="number" min="0" max={line.remaining} step={stepFor(line.uom_decimal_places)} required value={line.ordered_quantity} onChange={(e) => updateLine(index, { ordered_quantity: e.target.value })} className={`${INPUT} text-right`} />
+                  <td className="text-right">{formatQuantity(line.required_quantity, line.uom_decimal_places)}</td>
+                  {isPlan && <td className="text-right">{formatQuantity(line.planned_quantity, line.uom_decimal_places)}</td>}
+                  <td className="text-right text-fg-muted">{formatQuantity(line.ordered_quantity_total, line.uom_decimal_places)}</td>
+                  <td className="text-right text-fg-muted">{formatQuantity(line.remaining, line.uom_decimal_places)}</td>
+                  <td>
+                    <input type="number" min="0" max={line.remaining} step={stepFor(line.uom_decimal_places)} required value={line.ordered_quantity} onChange={(e) => updateLine(index, { ordered_quantity: e.target.value })} className={`form-input text-right`} />
                   </td>
-                  <td className="px-3 py-2 font-mono text-gray-600">{line.uom_code}</td>
-                  <td className="px-3 py-2">
-                    <input type="number" min="0" step="0.01" value={line.cost_price} onChange={(e) => updateLine(index, { cost_price: e.target.value })} className={`${INPUT} text-right`} />
+                  <td className="font-mono text-fg-muted">{line.uom_code}</td>
+                  <td>
+                    <input type="number" min="0" step="0.01" value={line.cost_price} onChange={(e) => updateLine(index, { cost_price: e.target.value })} className={`form-input text-right`} />
                   </td>
-                  <td className="px-3 py-2">
-                    <input type="text" maxLength={1000} value={line.remarks} onChange={(e) => updateLine(index, { remarks: e.target.value })} className={INPUT} />
+                  <td>
+                    <input type="text" maxLength={1000} value={line.remarks} onChange={(e) => updateLine(index, { remarks: e.target.value })} className="form-input" />
                   </td>
                   {!confirmed && (
-                    <td className="px-3 py-2 text-right">
-                      <button type="button" onClick={() => removeLine(index)} className="text-red-500 hover:text-red-700" title="Remove line"><i className="bi bi-x-lg"></i></button>
+                    <td className="text-right">
+                      <button type="button" onClick={() => removeLine(index)} className="text-[var(--danger)] hover:text-[var(--danger)]" title="Remove line"><i className="bi bi-x-lg"></i></button>
                     </td>
                   )}
                 </tr>
@@ -330,14 +328,14 @@ export default function PlanningPoForm({ poId = null }) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-500 mt-2 mb-0">Ordered counts confirmed purchase orders; quantities on other draft POs are held and already excluded from Remaining.</p>
+        <p className="text-xs text-fg-subtle mt-2 mb-0">Ordered counts confirmed purchase orders; quantities on other draft POs are held and already excluded from Remaining.</p>
       </FormSection>
 
-      <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
-        <button type="submit" disabled={saving || lines.length === 0} className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm ${saving || lines.length === 0 ? 'opacity-70 cursor-not-allowed' : ''}`}>
+      <div className="flex items-center gap-2 border-t border-line pt-4">
+        <button type="submit" disabled={saving || lines.length === 0} className={`bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded font-medium text-sm ${saving || lines.length === 0 ? 'opacity-70 cursor-not-allowed' : ''}`}>
           <i className="bi bi-check-lg mr-1"></i> {poId ? 'Update' : 'Save Draft'} PO
         </button>
-        <Link href={poId ? `/procurement/purchase-orders/${poId}` : '/procurement/purchase-orders'} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium text-sm">
+        <Link href={poId ? `/procurement/purchase-orders/${poId}` : '/procurement/purchase-orders'} className="px-4 py-2 border border-line-strong rounded text-fg-muted hover:bg-surface-hover font-medium text-sm">
           Cancel
         </Link>
       </div>
