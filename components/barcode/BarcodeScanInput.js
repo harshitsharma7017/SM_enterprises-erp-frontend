@@ -2,95 +2,103 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { apiClient } from '@/lib/api-client';
+import { useBarcodeCamera } from '@/hooks/useBarcodeCamera';
 
 /**
  * One scan field for every scanner, with no vendor SDK:
  * - handheld (keyboard-wedge) scanners type the value and press Enter into
  *   the focused field — the field keeps focus after each scan;
  * - typing / pasting the value works the same way;
- * - the camera uses the browser's own BarcodeDetector API where available
- *   (e.g. Chrome on Android; needs HTTPS or localhost), and says so where not.
+ * - the device camera decodes Code 128 in the browser, natively where that
+ *   exists and via a WebAssembly decoder everywhere else, so it also works on
+ *   iPhone / iPad and Firefox (see hooks/useBarcodeCamera.js).
+ *
  * Every value goes to POST /barcodes/scan (company-scoped, recorded in the
  * scan history); `onResult` receives the resolved lot, `onError` a refusal.
+ * Values are queued and submitted one at a time in arrival order, so a burst
+ * from the camera is never silently dropped.
  */
 export default function BarcodeScanInput({ companyId, context = 'lookup', locationId = '', onResult, onError, disabled = false, autoFocus = false, placeholder = 'Scan or type a barcode, then Enter' }) {
   const [value, setValue] = useState('');
   const [busy, setBusy] = useState(false);
-  const [camera, setCamera] = useState(false);
-  const [cameraError, setCameraError] = useState(null);
+  const [scanCount, setScanCount] = useState(0);
   const inputRef = useRef(null);
   const videoRef = useRef(null);
-  const streamRef = useRef(null);
-  const timerRef = useRef(null);
 
-  const stopCamera = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
-    if (streamRef.current) streamRef.current.getTracks().forEach((track) => track.stop());
-    streamRef.current = null;
-    setCamera(false);
-  }, []);
+  const queueRef = useRef([]);
+  const drainingRef = useRef(false);
+  const cameraOpenRef = useRef(false);
 
-  useEffect(() => stopCamera, [stopCamera]);
+  // The drain loop outlives any one render, so it reads the live props through
+  // a ref: a company or location changed mid-drain applies to the values still
+  // waiting rather than to a stale closure.
+  const configRef = useRef({ companyId, context, locationId, onResult, onError });
+  useEffect(() => {
+    configRef.current = { companyId, context, locationId, onResult, onError };
+  }, [companyId, context, locationId, onResult, onError]);
 
-  const submit = useCallback(async (raw) => {
-    const code = String(raw || '').trim();
-    if (!code || busy) return;
-    if (!companyId) {
-      onError?.('Select the company you are working in first.');
-      return;
-    }
+  const drain = useCallback(async () => {
+    if (drainingRef.current) return;
+    drainingRef.current = true;
     setBusy(true);
     try {
-      const res = await apiClient.post('/barcodes/scan', { barcode: code, company_id: Number(companyId), context, location_id: locationId ? Number(locationId) : null });
-      onResult?.(res.data, res);
-    } catch (err) {
-      onError?.(err.message || 'Scan failed', code);
+      while (queueRef.current.length > 0) {
+        const code = queueRef.current.shift();
+        const { companyId: company, context: ctx, locationId: location, onResult: resolved, onError: refused } = configRef.current;
+        if (!company) {
+          refused?.('Select the company you are working in first.');
+          queueRef.current = [];
+          break;
+        }
+        try {
+          const res = await apiClient.post('/barcodes/scan', {
+            barcode: code,
+            company_id: Number(company),
+            context: ctx,
+            location_id: location ? Number(location) : null,
+          });
+          resolved?.(res.data, res);
+        } catch (err) {
+          refused?.(err.message || 'Scan failed', code);
+        }
+        setScanCount((n) => n + 1);
+      }
     } finally {
-      setValue('');
+      drainingRef.current = false;
       setBusy(false);
-      inputRef.current?.focus();
+      // Re-focus for the next handheld scan, but not while the camera is open:
+      // on a phone that would raise the on-screen keyboard over the viewfinder.
+      if (!cameraOpenRef.current) inputRef.current?.focus();
     }
-  }, [busy, companyId, context, locationId, onResult, onError]);
+  }, []);
 
-  const startCamera = async () => {
-    setCameraError(null);
-    if (typeof window === 'undefined' || !('BarcodeDetector' in window) || !navigator.mediaDevices?.getUserMedia) {
-      setCameraError('Camera scanning is not supported in this browser. Use a handheld scanner or type the barcode.');
-      return;
-    }
-    try {
-      const detector = new window.BarcodeDetector({ formats: ['code_128'] });
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-      streamRef.current = stream;
-      setCamera(true);
-      // The <video> mounts on the next render.
-      requestAnimationFrame(() => {
-        if (!videoRef.current) return;
-        videoRef.current.srcObject = stream;
-        videoRef.current.play().catch(() => {});
-        timerRef.current = setInterval(async () => {
-          if (!videoRef.current || videoRef.current.readyState < 2) return;
-          try {
-            const found = await detector.detect(videoRef.current);
-            if (found.length > 0) {
-              stopCamera();
-              submit(found[0].rawValue);
-            }
-          } catch {
-            // A frame that cannot be read yet; keep trying.
-          }
-        }, 300);
-      });
-    } catch (err) {
-      stopCamera();
-      setCameraError(err?.name === 'NotAllowedError' ? 'Camera permission was denied.' : 'The camera could not be started.');
-    }
+  const enqueue = useCallback((raw) => {
+    const code = String(raw || '').trim();
+    if (!code) return;
+    queueRef.current.push(code);
+    setValue('');
+    drain();
+  }, [drain]);
+
+  const { active, starting, error, start, stop, torchOn, torchAvailable, toggleTorch } = useBarcodeCamera({ videoRef, onDetect: enqueue, enabled: !disabled });
+
+  useEffect(() => {
+    cameraOpenRef.current = active;
+  }, [active]);
+
+  // A company change invalidates anything still queued for the previous one.
+  useEffect(() => {
+    queueRef.current = [];
+  }, [companyId]);
+
+  const openCamera = () => {
+    setScanCount(0);
+    start();
   };
 
   return (
     <div>
-      <form onSubmit={(e) => { e.preventDefault(); submit(value); }} className="flex gap-2">
+      <form onSubmit={(e) => { e.preventDefault(); enqueue(value); }} className="flex gap-2">
         <input
           ref={inputRef}
           type="text"
@@ -102,22 +110,62 @@ export default function BarcodeScanInput({ companyId, context = 'lookup', locati
           autoCapitalize="characters"
           spellCheck={false}
           maxLength={100}
-          disabled={disabled || busy}
+          disabled={disabled}
           className="form-input"
           aria-label="Barcode"
         />
         <button type="submit" disabled={disabled || busy || !value.trim()} className="px-3 py-1.5 rounded text-sm font-medium bg-accent hover:bg-accent-hover text-white disabled:opacity-60 whitespace-nowrap">
           <i className="bi bi-upc-scan me-1"></i> {busy ? 'Checking…' : 'Scan'}
         </button>
-        <button type="button" onClick={camera ? stopCamera : startCamera} disabled={disabled} className="px-3 py-1.5 rounded text-sm font-medium border border-line-strong text-fg-muted hover:bg-surface-hover whitespace-nowrap" title="Scan with the device camera">
-          <i className={`bi ${camera ? 'bi-camera-video-off' : 'bi-camera'} me-1`}></i> {camera ? 'Stop' : 'Camera'}
+        <button
+          type="button"
+          onClick={active ? stop : openCamera}
+          disabled={disabled || starting}
+          aria-pressed={active}
+          className="px-3 py-1.5 rounded text-sm font-medium border border-line-strong text-fg-muted hover:bg-surface-hover disabled:opacity-60 whitespace-nowrap"
+          title="Scan with the device camera"
+        >
+          <i className={`bi ${active ? 'bi-camera-video-off' : 'bi-camera'} me-1`}></i>
+          {starting ? 'Starting…' : active ? 'Stop' : 'Camera'}
         </button>
       </form>
-      {cameraError && <p className="text-xs text-amber-700 mt-1 mb-0">{cameraError}</p>}
-      {camera && (
+
+      {starting && !active && (
+        <p className="text-xs text-fg-subtle mt-2 mb-0">
+          <i className="bi bi-hourglass-split me-1"></i> Preparing the camera. The first use on this device also downloads the decoder.
+        </p>
+      )}
+
+      {error && (
+        <div className={`alert ${error.kind === 'insecure' ? 'alert-info' : 'alert-warning'} mt-2 mb-0`} role="status">
+          <i className={`bi ${error.kind === 'insecure' ? 'bi-shield-lock' : 'bi-exclamation-triangle'}`}></i>
+          <span>{error.message}</span>
+        </div>
+      )}
+
+      {active && (
         <div className="mt-2">
-          <video ref={videoRef} muted playsInline className="w-full max-w-md rounded border border-line-strong bg-black" />
-          <p className="text-xs text-fg-subtle mt-1 mb-0">Point the camera at the barcode.</p>
+          <div className="relative w-full max-w-md">
+            <video ref={videoRef} muted playsInline className="w-full rounded border border-line-strong bg-black aspect-video object-cover" />
+            {/* A soft aiming guide. Detection runs on the whole frame, so a
+                barcode outside the guide still scans — it just helps people
+                hold the phone at a readable distance. */}
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-[8%] inset-y-[30%] rounded border-2 border-white/70"></div>
+          </div>
+          <div className="flex items-center gap-3 mt-1 flex-wrap">
+            <p className="text-xs text-fg-subtle mb-0">Point the camera at the barcode. Scanning stays on — keep going lot by lot.</p>
+            {torchAvailable && (
+              <button type="button" onClick={toggleTorch} aria-pressed={torchOn} className="text-xs text-link hover:underline whitespace-nowrap">
+                <i className={`bi ${torchOn ? 'bi-lightbulb-fill' : 'bi-lightbulb'} me-1`}></i>
+                {torchOn ? 'Light off' : 'Light on'}
+              </button>
+            )}
+          </div>
+          {scanCount > 0 && (
+            <p className="text-xs text-fg-subtle mt-1 mb-0" aria-live="polite">
+              {scanCount} scanned since the camera opened. Each label reads once — stop and start the camera to re-read one.
+            </p>
+          )}
         </div>
       )}
     </div>

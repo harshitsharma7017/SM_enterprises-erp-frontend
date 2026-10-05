@@ -54,12 +54,36 @@ Uploaded files (format images, company logo, export checklist files) and printab
 
 ## Available Scripts
 
-| Command         | Description                              |
-| ---------------- | ----------------------------------------- |
-| `npm run dev`   | Start the development server              |
-| `npm run build` | Create a production build                 |
-| `npm run start` | Serve the production build                 |
-| `npm run lint`  | Run ESLint                                 |
+| Command            | Description                                                  |
+| ------------------- | ------------------------------------------------------------- |
+| `npm run dev`      | Start the development server                                  |
+| `npm run dev:https`| Start it over HTTPS, reachable on the LAN — needed to test camera scanning on a phone |
+| `npm run build`    | Create a production build                                     |
+| `npm run start`    | Serve the production build                                    |
+| `npm run lint`     | Run ESLint                                                    |
+| `npm test`         | Run the test suite once                                       |
+
+`dev` and `build` are preceded by `scripts/copy-decoder-wasm.mjs`, which copies the
+barcode decoder's WebAssembly into `public/wasm/` (a gitignored build artifact).
+
+## Barcode scanning
+
+**Scan Barcode** and the dispatch / material-issue forms all use one input
+([`components/barcode/BarcodeScanInput.js`](components/barcode/BarcodeScanInput.js)),
+which accepts three things: a handheld keyboard-wedge scanner, a typed or pasted
+value, and the device camera.
+
+Camera scanning decodes Code 128 in the browser. Where a native `BarcodeDetector`
+exists (Chrome on Android) it is used directly; everywhere else — notably iPhone
+and iPad, where every browser is WebKit and has no such API, plus Firefox — a
+ZXing WebAssembly decoder is fetched on first use from this app's own origin.
+
+Browsers only grant camera access in a [secure context](https://developer.mozilla.org/docs/Web/Security/Secure_Contexts),
+so scanning works on `localhost` and over HTTPS but not over plain HTTP. Reaching
+a plain `http://<LAN-IP>:3000` dev server from a phone will report this rather
+than fail silently; use `npm run dev:https` for that, and serve production over
+HTTPS. In deployments with a tightened Content-Security-Policy, the decoder needs
+`'wasm-unsafe-eval'` in `script-src`.
 
 ## Project Structure
 

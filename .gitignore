@@ -23,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+# copied from node_modules by scripts/copy-decoder-wasm.mjs (predev/prebuild)
+/public/wasm/
 
 # debug
 npm-debug.log*
