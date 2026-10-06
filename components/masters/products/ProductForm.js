@@ -292,7 +292,7 @@ export default function ProductForm({ productId = null }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
+    <form onSubmit={handleSubmit} className="space-y-6">
       
       {/* Identification */}
       <div className="bg-surface border rounded shadow-sm">

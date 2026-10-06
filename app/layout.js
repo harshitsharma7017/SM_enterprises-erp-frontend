@@ -2,6 +2,7 @@ import { Source_Sans_3 } from 'next/font/google';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './globals.css';
 import { ThemeProvider, THEME_INIT_SCRIPT } from '../components/providers/ThemeProvider';
+import AppShell from '../components/layout/AppShell';
 
 // Self-hosted via next/font instead of a jsDelivr <link>: no third-party
 // request, and no layout shift while the font loads.
@@ -31,8 +32,12 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         {/* Mounted around children rather than around <html> so Next can keep
             optimising the static parts of the tree. Sits at the root so /login,
-            which renders outside DashboardLayout, inherits the theme too. */}
-        <ThemeProvider>{children}</ThemeProvider>
+            which renders outside the app shell, inherits the theme too. The
+            shell lives here rather than in each page so it is not remounted on
+            every navigation. */}
+        <ThemeProvider>
+          <AppShell>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   );

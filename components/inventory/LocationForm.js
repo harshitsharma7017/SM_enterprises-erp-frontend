@@ -46,7 +46,7 @@ export default function LocationForm({ location = null, onSaved }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl">
+    <form onSubmit={handleSubmit}>
       {error && <div className="bg-red-50 border border-red-200 text-red-700 rounded p-3 text-sm mb-4">{error}</div>}
       <FormSection title="Location" icon="bi-geo-alt" subtitle="Where accepted stock is physically held. The company cannot be changed after creation.">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

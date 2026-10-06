@@ -15,6 +15,7 @@ vi.mock('next/navigation', () => ({
 const SHELL_FILES = [
   'components/layout/Sidebar.js',
   'components/layout/DashboardLayout.js',
+  'components/layout/AppShell.js',
   'components/layout/Header.js',
 ];
 

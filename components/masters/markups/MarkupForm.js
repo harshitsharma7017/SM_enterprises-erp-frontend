@@ -130,7 +130,7 @@ export default function MarkupForm({ markupId = null }) {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        <div className="flex-1 max-w-4xl">
+        <div className="flex-1 min-w-0">
           <form onSubmit={handleSubmit} className="space-y-6">
             {errors.length > 0 && (
               <div className="p-4 bg-red-50 border border-red-200 rounded-md">

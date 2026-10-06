@@ -263,7 +263,7 @@ export default function OcForm({ ocId = null }) {
   }
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="space-y-6 max-w-6xl">
+    <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
       {lookupBlocked && (
         <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded p-3 text-sm">
           Could not load buyers/categories/formats/currencies for this form — the Order Confirmation module

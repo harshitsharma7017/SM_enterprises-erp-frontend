@@ -236,7 +236,6 @@ export default function Sidebar({ can, canAny, collapsed, onToggleCollapse }) {
             <>
               {!collapsed && <li className="nav-header">Reports</li>}
               <NavItem href="/reports/outstanding" icon="bi-hourglass-split" label="Outstanding" permission="outstanding.view" can={can} collapsed={collapsed} isActive={isActive} />
-              <NavItem href="/reports" icon="bi-bar-chart-line" label="Reports" permission="report.view" can={can} collapsed={collapsed} isActive={(path) => pathname === path} />
               {/* Each report also needs its module's view permission — the server enforces the same rule. */}
               {can('report.view') && (
                 <>

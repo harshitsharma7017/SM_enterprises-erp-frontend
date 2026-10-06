@@ -168,7 +168,7 @@ export default function MaterialIssueForm({ issueId = null }) {
   const unused = stock.filter((s) => !lines.some((l) => String(l.lot_id) === String(s.lot_id)));
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {errors.length > 0 && (
         <div className="bg-red-50 border border-red-200 text-red-700 rounded p-3 text-sm">
           <ul className="list-disc list-inside space-y-0.5">{errors.map((m) => <li key={m}>{m}</li>)}</ul>

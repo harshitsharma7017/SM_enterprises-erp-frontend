@@ -79,7 +79,7 @@ export default function ReportsIndexPage() {
             {can('outstanding.view') && <li><Link href="/reports/outstanding" className="text-link hover:underline">Outstanding</Link></li>}
             {reports.map((r) => <li key={r.key}><Link href={`/reports/${r.key}`} className="text-link hover:underline">{r.title}</Link> <span className="text-fg-subtle text-xs">· Excel export{r.can_export ? '' : ' (needs report.export)'}</span></li>)}
             {can('inward-entry.view') && <li><Link href="/reports/traceability" className="text-link hover:underline">Lot Traceability</Link></li>}
-            {can('report.import') && <li><Link href="/reports/import" className="text-link hover:underline">Excel Import</Link> <span className="text-fg-subtle text-xs">· brands, products, draft brand projections</span></li>}
+            {can('report.import') && <li><Link href="/reports/import" className="text-link hover:underline">Excel Import</Link> <span className="text-fg-subtle text-xs">· masters, opening stock, draft brand projections</span></li>}
           </ul>
         </Card>
       </div>

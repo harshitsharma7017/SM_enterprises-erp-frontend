@@ -189,7 +189,7 @@ export default function ExportDocumentForm({ documentId }) {
   }
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="space-y-6 max-w-6xl">
+    <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
       {lookupBlocked && (
         <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded p-3 text-sm">
           Could not load Incoterm/Port/Shipment Method options — this form reuses the Buyer module&apos;s

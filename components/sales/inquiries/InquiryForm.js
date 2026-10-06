@@ -271,7 +271,7 @@ export default function InquiryForm({ inquiryId = null }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-6xl">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {errors.length > 0 && (
         <div className="bg-red-50 border border-red-200 text-red-700 rounded p-3 text-sm">
           <ul className="list-disc list-inside space-y-0.5">

@@ -95,18 +95,18 @@ export default function ProductsPage() {
           {error && <div className="alert alert-danger">{error}</div>}
 
           <div className="filter-bar mb-4">
-            <form onSubmit={handleSearch} className="flex-1 min-w-[200px] flex gap-2">
-              <div className="flex-1">
+            <form onSubmit={handleSearch} className="filter-bar-wide">
+              <div>
                 <label className="block text-xs text-fg-subtle mb-1">Search</label>
                 <div className="flex">
                   <input 
                     type="text" 
                     placeholder="Search..." 
-                    className="form-input rounded-l focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
+                    className="form-input flex-1 min-w-0 rounded-r-none focus:ring-[var(--focus-ring)] focus:border-[var(--focus-ring)]"
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                   />
-                  <button type="submit" className="bg-surface-raised hover:bg-gray-200 border border-line-strong border-l-0 rounded-r px-3 py-1.5 text-sm text-fg-muted">
+                  <button type="submit" className="flex items-center bg-surface-raised hover:bg-surface-hover border border-line-strong border-l-0 rounded-r-md px-3 text-sm text-fg-muted" aria-label="Search">
                     <i className="bi bi-search"></i>
                   </button>
                 </div>
